@@ -57,7 +57,7 @@
             highlight-current-row
             style="width: 100%;text-align:left;"
           >
-            <el-table-column align="center" label="项目编号" fixed="left">
+            <el-table-column align="center" label="项目编号" fixed="left" width="120px">
               <template slot-scope="scope">
                 <span>{{scope.row.XMBH}}</span>
               </template>
@@ -196,26 +196,26 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="历史计划金额" prop="LSJHZJE">
+              <el-form-item label="历史计划金额" prop="LSJE">
                 <el-input v-model="temp.LSJE"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="12">
-              <el-form-item label="本年计划金额" prop="BNJHZJE">
+              <el-form-item label="本年计划金额" prop="BNJE">
                 <el-input v-model="temp.BNJE"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="未来计划金额" prop="WLJHZJE">
+              <el-form-item label="未来计划金额" prop="WLJE">
                 <el-input v-model="temp.WLJE"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="12">
-              <el-form-item label="是否存在物资" prop="SFCZWZ">
+              <el-form-item label="是否存在物资" prop="CZWZ">
                 <el-select size="mini" style="width:100%;" v-model="temp.CZWZ">
                   <el-option
                     v-for="(item,key) in selectOptions"
@@ -259,7 +259,7 @@
             </el-col>
           </el-row>
           <el-row>
-            <el-col :span="24" v-show="temp.SFCZWZ==!0">
+            <el-col :span="24" v-show="temp.CZWZ==!0">
               <el-form
                 :model="inServForm"
                 ref="inServForm"
@@ -280,17 +280,17 @@
                   >
                     <el-table-column prop="fildna" label="物资名称">
                       <template slot-scope="scope">
-                        <el-input size="mini" v-model="scope.row.fildna"></el-input>
+                        <el-input size="mini" v-model="scope.row.WZMC"></el-input>
                       </template>
                     </el-table-column>
                     <el-table-column prop="fildna" label="物资数量">
                       <template slot-scope="scope">
-                        <el-input size="mini" v-model="scope.row.fildnasl"></el-input>
+                        <el-input size="mini" v-model="scope.row.WZSL"></el-input>
                       </template>
                     </el-table-column>
                     <el-table-column prop="fildtp" label="类型">
                       <template slot-scope="scope">
-                        <el-select v-model="scope.row.fildtp" clearable>
+                        <el-select v-model="scope.row.WZLX" clearable>
                           <el-option
                             v-for="(item,index) in fildtps"
                             :key="index"
@@ -302,16 +302,22 @@
                     </el-table-column>
                     <el-table-column prop="remark" label="物资说明">
                       <template slot-scope="scope">
-                        <el-input size="mini" v-model="scope.row.remark"></el-input>
+                        <el-input size="mini" v-model="scope.row.WZSM"></el-input>
                       </template>
                     </el-table-column>
                     <el-table-column fixed="right" label="操作">
                       <template slot-scope="scope">
                         <el-button
-                          type="danger"
+                          type="warning"
                           @click.native.prevent="deleteRow(scope.$index, infiledList)"
                           size="small"
                         >移除</el-button>
+                        <el-button
+                          type="danger"
+                          @click.native.prevent="deleteDetailInfo(scope.$index, infiledList,scope.row)"
+                          size="small"
+                          v-if="scope.row.WZID"
+                        >删除</el-button>
                       </template>
                     </el-table-column>
                   </el-table>
@@ -319,37 +325,6 @@
               </el-form>
             </el-col>
           </el-row>
-          <!-- <el-col :span="24">
-            <el-form-item label="入库时间" prop="RKSJ">
-              <el-date-picker
-                type="date"
-                placeholder="选择日期"
-                v-model="temp.RKSJ"
-                style="width: 100%;"
-              ></el-date-picker>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="数量" prop="SL">
-              <el-input v-model="temp.SL"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="金额" prop="JE">
-              <el-input v-model="temp.JE"></el-input>
-            </el-form-item>
-          </el-col>
-
-          <el-col :span="24">
-            <el-form-item label="仓库号" prop="CKH">
-              <el-input v-model="temp.CKH"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="库存地点" prop="KCDD">
-              <el-input v-model="temp.KCDD"></el-input>
-            </el-form-item>
-          </el-col>-->
         </el-form>
         <div style="text-align:center">
           <el-button @click="editVisible = false">取消</el-button>
@@ -377,7 +352,9 @@ import {
   GetInfo,
   CreateInfo,
   UpdateInfo,
-  DeleteInfo
+  DeleteInfo,
+  GetDetailInfo,
+  DeleteDetailInfo
 } from "@/app_src/api/jygl/CBJHSQ";
 export default {
   name: "CBJHSQ",
@@ -389,12 +366,10 @@ export default {
   //   },
   data() {
     const changeNumber = (rule, value, callback) => {
-      var str = /^[+|-]?\d+\.\d+$/;
-      var reg = new RegExp("str");
-      if (!RegExp.test(value)) {
+      var str = /^[+|-]?\d+(.\d+)?$/;
+      if (!str.test(value)) {
         return callback(new Error("数字格式不正确！"));
-      }
-      else{
+      } else {
         callback();
       }
     };
@@ -418,9 +393,9 @@ export default {
         XMMC: [
           { required: true, message: "请输入项目名称", trigger: "change" }
         ],
-        XMLB: [
-          { required: true, message: "请输入项目类别", trigger: "change" }
-        ],
+        // XMLB: [
+        //   { required: true, message: "请输入项目类别", trigger: "change" }
+        // ],
         CBDW: [
           { required: true, message: "请输入承办单位", trigger: "change" }
         ],
@@ -429,7 +404,19 @@ export default {
         ],
         JHZJE: [
           { required: true, message: "请输入计划总金额", trigger: "change" },
-          {validator: checkAge, trigger: 'blur'}
+          { validator: changeNumber, trigger: "change" }
+        ],
+        LSJE: [
+          { required: true, message: "请输入计划总金额", trigger: "change" },
+          { validator: changeNumber, trigger: "change" }
+        ],
+        BNJE: [
+          { required: true, message: "请输入计划总金额", trigger: "change" },
+          { validator: changeNumber, trigger: "change" }
+        ],
+        WLJE: [
+          { required: true, message: "请输入计划总金额", trigger: "change" },
+          { validator: changeNumber, trigger: "change" }
         ]
       },
       total: 15,
@@ -485,7 +472,7 @@ export default {
       rows.splice(index, 1);
     },
     addRow(tableData, event) {
-      tableData.push({ fildna: "", fildtp: "", remark: "" });
+      tableData.push({ WZMC: "", WZSL: "", WZLX: "", WZSM: "" });
     },
     handleProcess() {
       this.workFlowVisible = true;
@@ -506,6 +493,7 @@ export default {
         CZWZ: "",
         SFCW: ""
       };
+      this.infiledList = [];
     },
 
     getList() {
@@ -515,13 +503,6 @@ export default {
           this.list = response.data.items;
           this.total = response.data.totoal;
           this.listLoading = false;
-          // this.$notify({
-          //   position: "bottom-right",
-          //   title: "成功",
-          //   message: response.data.message,
-          //   type: "warning",
-          //   duration: 2000
-          // });
         } else {
           this.$notify({
             position: "bottom-right",
@@ -545,6 +526,16 @@ export default {
       this.temp = Object.assign({}, row); // copy obj
       this.editVisible = true;
       this.dialogStatus = "update";
+      if (this.temp.CZWZ === 1) {
+        let temp = {
+          XMBH: this.temp.XMBH
+        };
+        GetDetailInfo(temp).then(response => {
+          if (response.data.code === 2000) {
+            this.infiledList = response.data.items;
+          }
+        });
+      }
       this.$nextTick(() => {
         this.$refs["dataForm"].clearValidate();
       });
@@ -581,10 +572,13 @@ export default {
         .catch(() => {});
     },
     createData() {
-      // 创建
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
-          CreateInfo(this.temp).then(response => {
+          let arr = [...this.infiledList];
+          arr.push(this.temp);
+          //arr.push(this.temp);
+          //console.log(arr);
+          CreateInfo(arr).then(response => {
             if (response.data.code === 2000) {
               this.$notify({
                 position: "bottom-right",
@@ -611,7 +605,9 @@ export default {
     updateData() {
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
-          UpdateInfo(this.temp).then(response => {
+          let arr = [...this.infiledList];
+          arr.push(this.temp);
+          UpdateInfo(arr).then(response => {
             if (response.data.code === 2000) {
               this.$notify({
                 position: "bottom-right",
@@ -634,6 +630,39 @@ export default {
           });
         }
       });
+    },
+    deleteDetailInfo(index, rows, data) {
+      let temp = {
+        WZID: data.WZID
+      };
+      this.$confirm("确认删除本物资信息吗", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          DeleteDetailInfo(temp).then(response => {
+            if (response.data.code === 2000) {
+              this.$notify({
+                position: "bottom-right",
+                title: "成功",
+                message: response.data.message,
+                type: response.data.message,
+                duration: 3000
+              });
+              this.deleteRow(index,rows);
+            } else {
+              this.$notify({
+                position: "bottom-right",
+                title: "失败",
+                message: response.data.message,
+                type: response.data.message,
+                duration: 3000
+              });
+            }
+          });
+        })
+        .catch(() => {});
     },
     handleSizeChange(val) {
       this.listQuery.limit = val;

@@ -6,7 +6,8 @@ export function GetInfo(query) { // 查询用户
     params: query
   })
 }
-export function CreateInfo(data) { // 查询登陆账号对应的用户
+
+export function CreateInfo(data) { 
   return request({
     url: '/CBJHSQ/CreateInfo',
     method: 'post',
@@ -25,5 +26,20 @@ export function UpdateInfo(data) { // 查询登陆账号对应的用户
       url: '/CBJHSQ/DeleteInfo',
       method: 'post',
       data
+    })
+  }
+  export function GetDetailInfo(query) { // 查询用户
+    return request({
+      url: '/CBJHSQ/GetDetailInfo',
+      method: 'get',
+      params: query
+    })
+  }
+
+  export function DeleteDetailInfo(query) { // 查询用户
+    return request({
+      url: '/CBJHSQ/DeleteDetailInfo',
+      method: 'get',
+      params: query
     })
   }
