@@ -651,12 +651,20 @@ this.$store.dispatch('delVisitedViews', this.$route);
 
 <style lang="scss" scoped>
 #SWKC .table-d table {
-  background: #000;
+    font-size: 16px;
+  // background: #000;
+  min-height: 25px;
+  line-height: 25px;
+  text-align: center;
+  border-collapse: collapse;
 }
 #SWKC .table-d table td {
-  background: #fff;
   min-width: 80px;
   min-height: 50px;
+    // background: #fff;
+  text-align: right;
+  border:2px solid #a8aeb2;
+  padding: 5px 10px;
 }
 </style>
 

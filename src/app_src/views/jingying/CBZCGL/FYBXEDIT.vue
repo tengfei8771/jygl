@@ -1,11 +1,11 @@
 <template>
-  <div id="JYKC" class="app-container calendar-list-container">
+  <div id="FYBXEDIT" class="app-container calendar-list-container">
     <el-card class="table-d">
       <el-form ref="dataForm" :model="temp" label-width="120px" style="width: 99%;">
         <table width="100%" border="0" cellspacing="1" cellpadding="0">
           <caption>
             中国石油大港油田公司
-            <br>费用报销
+            <br />费用报销
           </caption>
           <tbody>
             <tr>
@@ -77,131 +77,26 @@
                 <el-input v-model="temp.ZH"></el-input>
               </td>
               <td :colspan="2">
-                <el-input></el-input>
+                <!-- <el-input></el-input> -->
               </td>
             </tr>
             <!-- <tr><td></td><td></td><td></td><td></td></tr> -->
           </tbody>
         </table>
       </el-form>
-       <div style="text-align:center;margin-top:20px;">
-          <el-button @click="closetab">取消</el-button>
-          <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">保存</el-button>
-          <el-button v-else type="primary" @click="updateData">保存</el-button>
-                              <el-button type="success">提交</el-button>
-        </div>
-      <!-- 
-        <el-form ref="dataForm" :model="temp" label-width="120px" style="width: 99%;">
-           <el-row>
-            <el-col :span="12">
-             <el-form-item label="报销时间" prop="SQSJ">
-              <el-date-picker
-                type="date"
-                placeholder="选择日期"
-                v-model="temp.SQSJ"
-                style="width: 100%;"
-              ></el-date-picker>
-            </el-form-item>
-            </el-col>
-            <el-col :span="12">
-
-            <el-form-item label="费用项目" prop="FYXM">
-                    <el-select size="mini" style="width:100%;" v-model="temp.FYXM">
-                      <el-option
-                        v-for="(item,key) in selectOptions"
-                        :key="key"
-                        :label="item.label"
-                        :value="item.value"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="申请单位" prop="SQBM">
-                <el-input v-model="temp.SQBM"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="附件张数" prop="FJZS">
-                <el-input v-model="temp.FJZS"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="报销金额" prop="BXJE">
-                <el-input v-model="temp.BXJE"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="金额大写" prop="BXJEDX">
-                <el-input v-model="temp.BXJEDX"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="24">
-              <el-form-item label="报销事由" prop="BXSY">
-                <el-input v-model="temp.BXSY" type="textarea" :rows="3"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="原借款金额" prop="YJKJE">
-                <el-input v-model="temp.YJKJE"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="现付款金额" prop="XFKJE">
-                <el-input v-model="temp.XFKJE"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="付款方式" prop="FKFS">
-                <el-input v-model="temp.FKFS"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="收款单位" prop="SKDW">
-                <el-input v-model="temp.SKDW"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-             <el-col :span="12">
-              <el-form-item label="开户银行" prop="KHYH">
-                <el-input v-model="temp.KHYH"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="账户" prop="ZH">
-                <el-input v-model="temp.ZH"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-
-
-        
-        </el-form>
-        <div style="text-align:center">
-          <el-button @click="editVisible = false">取消</el-button>
-           <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">保存</el-button>
-          <el-button v-else type="primary" @click="updateData">保存</el-button> 
-          <el-button type="success">审核通过</el-button>
-                    <el-button type="danger">不通过</el-button>
-      </div>-->
+      <div style="text-align:center;margin-top:20px;">
+        <el-button @click="closetab">取消</el-button>
+        <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">保存</el-button>
+        <el-button v-else type="primary" @click="updateData">保存</el-button>
+        <el-button type="success">提交</el-button>
+      </div>
     </el-card>
   </div>
 </template>
 
 <script>
 export default {
-  name: "JYKC",
+  name: "FYBXEDIT",
   data() {
     return {
       temp: {
@@ -221,6 +116,20 @@ export default {
         KHYH: "中国工商银行",
         ZH: "7893777726500043943094"
       },
+      selectOptions: [
+        {
+          value: 0,
+          label: "日常管理"
+        },
+        {
+          value: 1,
+          label: "项目报销"
+        },
+        {
+          value: 2,
+          label: "差旅费报销"
+        }
+      ],
       editVisible: false,
       dialogStatus: "",
       listloading: false,
@@ -337,14 +246,12 @@ export default {
         ZH: ""
       };
     },
-    closetab()
-{
-
-//   window.opener = null;
-// window.open("", "_top").close();
-this.$store.dispatch('delVisitedViews', this.$route);
-  this.$router.go(-1); 
-},
+    closetab() {
+      //   window.opener = null;
+      // window.open("", "_top").close();
+      this.$store.dispatch("delVisitedViews", this.$route);
+      this.$router.go(-1);
+    },
     tableRowClassName({ row, rowIndex }) {
       // 表头行的 className 的回调方法，也可以使用字符串为所有表头行设置一个固定的 className。
       if (rowIndex === 0) {
@@ -424,7 +331,7 @@ this.$store.dispatch('delVisitedViews', this.$route);
             duration: 3000
           });
           //   });
-               this.closetab();
+          this.closetab();
         }
       });
     },
@@ -453,7 +360,7 @@ this.$store.dispatch('delVisitedViews', this.$route);
             duration: 3000
           });
           //   });
-               this.closetab();
+          this.closetab();
         }
       });
     }
@@ -464,11 +371,21 @@ this.$store.dispatch('delVisitedViews', this.$route);
 
 
 <style lang="scss">
-#JYKC .table-d table {
-  background: #000;
+#FYBXEDIT .table-d table {
+  font-size: 16px;
+  // background: #000;
+  min-height: 25px;
+  line-height: 25px;
+  text-align: center;
+  border-collapse: collapse;
+
+
 }
-#JYKC .table-d table td {
-  background: #fff;
+#FYBXEDIT .table-d table td {
+  // background: #fff;
+  text-align: right;
+  border:2px solid #a8aeb2;
+  padding: 5px 10px;
 }
 </style>
 
