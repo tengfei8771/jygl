@@ -68,7 +68,7 @@
                 <span>{{scope.row.XMMC}}</span>
               </template>
             </el-table-column>
-            <el-table-column width="100px" align="right" prop="MSEG" label="项目类别" fixed="left"></el-table-column>
+            <el-table-column width="100px" align="right" prop="XMLB" label="项目类别" fixed="left"></el-table-column>
             <el-table-column width="180px" align="right" prop="CBDW" label="承办单位" fixed="left"></el-table-column>
             <el-table-column width="180px" prop="PC" label="项目批次" align="right"></el-table-column>
             <el-table-column
@@ -205,7 +205,7 @@
           <el-row>
             <el-col :span="12">
               <el-form-item label="是否存在物资" prop="CZWZ">
-                <el-select size="mini" style="width:100%;" v-model="temp.CZWZ">
+                <el-select  style="width:100%;" v-model="temp.CZWZ">
                   <el-option
                     v-for="(item,key) in selectOptions"
                     :key="key"
@@ -224,7 +224,7 @@
           <el-row>
             <el-col :span="12">
               <el-form-item label="是否财务下达" prop="SFCW">
-                <el-select size="mini" style="width:100%;" v-model="temp.SFCW">
+                <el-select style="width:100%;" v-model="temp.SFCW">
                   <el-option
                     v-for="(item,key) in selectOptions"
                     :key="key"
@@ -236,7 +236,7 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="项目批次">
-                <el-select size="mini" style="width:100%;" v-model="temp.XMPC">
+                <el-select  style="width:100%;" v-model="temp.XMPC">
                   <el-option
                     v-for="(item,key) in BatchOptions"
                     :key="key"
