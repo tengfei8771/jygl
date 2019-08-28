@@ -2,7 +2,7 @@
   <div id="JYKC" class="app-container calendar-list-container">
     <el-row style="margin-bottom:10px;">
       <el-col :xs="5" :sm="5" :md="5" :lg="4" :xl="3">
-        <el-input placeholder="报销单号" style="width:95%;" size="mini" clearable></el-input>
+        <el-input placeholder="报销单号" style="width:95%;" size="mini"  v-model="listQuery.BXDH" clearable></el-input>
       </el-col>
       <el-col :xs="5" :sm="5" :md="5" :lg="4" :xl="3">
         <el-button type="primary" icon="el-icon-search" size="mini">查询</el-button>
@@ -18,7 +18,7 @@
           size="mini"
           class="filter-item"
           style="margin-left: 10px;"
-          @click="handleCreate2"
+          @click="handleCreate"
           type="primary"
           icon="el-icon-edit"
         >新增</el-button>
@@ -28,7 +28,7 @@
       <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
         <el-table
           size="mini"
-          :data="goods"
+          :data="list"
           :header-cell-class-name="tableRowClassName"
           v-loading="listloading"
           element-loading-text="给我一点时间"
@@ -59,7 +59,7 @@
                 type="primary"
                 v-if="scope.row.CHECK_STATE=='0'"
                 size="mini"
-                @click="handleCreate2(scope.row)"
+                @click="handleUpdate(scope.row)"
               >修改</el-button>
               <el-button
                 type="danger"
@@ -97,7 +97,7 @@
       </el-col>
     </el-row>
 
-    <el-dialog
+    <!-- <el-dialog
       :visible.sync="editVisible"
       class="selecttrees"
       :title="textMap[dialogStatus]"
@@ -204,7 +204,7 @@
           <el-button type="success">提交</el-button>
         </div>
       </el-card>
-    </el-dialog>
+    </el-dialog> -->
     <el-dialog :visible.sync="workFlowVisible" class="selecttrees" title="查看流程" width="1000px">
       <img src="../../../img/workflow2.png" style="width:980px;" />
     </el-dialog>
@@ -212,293 +212,291 @@
 </template>
 
 <script>
+import waves from "@/frame_src/directive/waves"; // 水波纹指令
+import { getToken } from "@/frame_src/utils/auth";
+import {
+  GetInfo,
+  CreateInfo,
+  UpdateInfo,
+  DeleteInfo,
+  GetOpions
+} from "@/app_src/api/jygl/FYBX";
 export default {
-  name: "JYKC",
+  name: "FYBX",
   data() {
     return {
-      textMap: {
-        update: "修改费用报销",
-        create: "添加费用报销"
-      },
+      // textMap: {
+      //   update: "修改费用报销",
+      //   create: "添加费用报销"
+      // },
       workFlowVisible: false,
       temp: {
-        BXDH: "GY01JL9.11-02",
-        SQBM: "北京项目部",
-        SQSJ: "219-05-31",
-        FYXM: "房屋租赁费",
-        BXSY: "缴纳房租",
-
-        BXJE: 200,
-        BXJEDX: "贰佰元",
-        YJKJE: 0,
-        XFKJE: 0,
-        FKFS: "电汇",
-        FJZS: 2,
-        SKDW: "北京卓进房地产经济有限公司",
-        KHYH: "中国工商银行",
-        ZH: "7893777726500043943094",
-        CHECK_STATE: 0
+        S_ID: "",
+        BXDH: "",
+        DWBM: "",
+        FYXM: "",
+        SQSJ: "",
+        BXSY: "",
+        BXJEDX: "",
+        BXJE:null,
+        YJKJE: null,
+        XFKJE: null,
+        FKFS: "",
+        FJZS: null,
+        SKDW: "",
+        KHH: "",
+        YHZH: "",
+        SPZT:""
       },
       editVisible: false,
       dialogStatus: "",
       listloading: false,
-      goods: [
-        {
-          BXDH: "GY01JL9.03-12",
-          SQBM: "北京项目部",
-          SQSJ: "219-05-31",
-          FYXM: "房屋租赁费",
-          BXSY: "缴纳房租",
+      list: [],
+        listQuery: {
+        limit: 10,
+        page: 1,
+        BXDH: "",
+        XMMC: ""
+      },
+      // goods: [
+      //   {
+      //     BXDH: "GY01JL9.03-12",
+      //     SQBM: "北京项目部",
+      //     SQSJ: "219-05-31",
+      //     FYXM: "房屋租赁费",
+      //     BXSY: "缴纳房租",
 
-          BXJE: 300,
-          BXJEDX: "叁佰元",
-          YJKJE: 0,
-          XFKJE: 0,
-          FKFS: "电汇",
-          FJZS: 2,
-          SKDW: "北京卓进房地产经济有限公司",
-          KHYH: "中国工商银行",
-          ZH: "7893777726500043943094",
-          CHECK_STATE: 1
-        },
-        {
-          BXDH: "GY01JL9.11-02",
-          SQBM: "北京项目部",
-          SQSJ: "219-05-31",
-          FYXM: "房屋租赁费",
-          BXSY: "缴纳房租",
+      //     BXJE: 300,
+      //     BXJEDX: "叁佰元",
+      //     YJKJE: 0,
+      //     XFKJE: 0,
+      //     FKFS: "电汇",
+      //     FJZS: 2,
+      //     SKDW: "北京卓进房地产经济有限公司",
+      //     KHYH: "中国工商银行",
+      //     ZH: "7893777726500043943094",
+      //     CHECK_STATE: 1
+      //   },
+      //   {
+      //     BXDH: "GY01JL9.11-02",
+      //     SQBM: "北京项目部",
+      //     SQSJ: "219-05-31",
+      //     FYXM: "房屋租赁费",
+      //     BXSY: "缴纳房租",
 
-          BXJE: 500,
-          BXJEDX: "伍佰元",
-          YJKJE: 0,
-          XFKJE: 0,
-          FKFS: "电汇",
-          FJZS: 2,
-          SKDW: "北京卓进房地产经济有限公司",
-          KHYH: "中国工商银行",
-          ZH: "7893777726500043943094",
-          CHECK_STATE: 0
-        },
-        {
-          BXDH: "GY01JL9.11-02",
-          SQBM: "北京项目部",
-          SQSJ: "219-05-31",
-          FYXM: "房屋租赁费",
-          BXSY: "缴纳房租",
-          BXJE: 1300,
-          BXJEDX: "一仟叁百元",
-          YJKJE: 0,
-          XFKJE: 0,
-          FKFS: "电汇",
-          FJZS: 2,
-          SKDW: "北京卓进房地产经济有限公司",
-          KHYH: "中国工商银行",
-          ZH: "7893777726500043943094",
-          CHECK_STATE: 1
-        },
-        {
-          BXDH: "GY01JL9.01-12",
-          SQBM: "北京项目部",
-          SQSJ: "219-05-31",
-          FYXM: "房屋租赁费",
-          BXSY: "缴纳房租",
+      //     BXJE: 500,
+      //     BXJEDX: "伍佰元",
+      //     YJKJE: 0,
+      //     XFKJE: 0,
+      //     FKFS: "电汇",
+      //     FJZS: 2,
+      //     SKDW: "北京卓进房地产经济有限公司",
+      //     KHYH: "中国工商银行",
+      //     ZH: "7893777726500043943094",
+      //     CHECK_STATE: 0
+      //   },
+      //   {
+      //     BXDH: "GY01JL9.11-02",
+      //     SQBM: "北京项目部",
+      //     SQSJ: "219-05-31",
+      //     FYXM: "房屋租赁费",
+      //     BXSY: "缴纳房租",
+      //     BXJE: 1300,
+      //     BXJEDX: "一仟叁百元",
+      //     YJKJE: 0,
+      //     XFKJE: 0,
+      //     FKFS: "电汇",
+      //     FJZS: 2,
+      //     SKDW: "北京卓进房地产经济有限公司",
+      //     KHYH: "中国工商银行",
+      //     ZH: "7893777726500043943094",
+      //     CHECK_STATE: 1
+      //   },
+      //   {
+      //     BXDH: "GY01JL9.01-12",
+      //     SQBM: "北京项目部",
+      //     SQSJ: "219-05-31",
+      //     FYXM: "房屋租赁费",
+      //     BXSY: "缴纳房租",
 
-          BXJE: 200,
-          BXJEDX: "贰佰元",
-          YJKJE: 0,
-          XFKJE: 0,
-          FKFS: "电汇",
-          FJZS: 2,
-          SKDW: "北京卓进房地产经济有限公司",
-          KHYH: "中国工商银行",
-          ZH: "7893777726500043943094",
-          CHECK_STATE: 0
-        },
-        {
-          BXDH: "GY01JL9.03-12",
-          SQBM: "北京项目部",
-          SQSJ: "219-05-31",
-          FYXM: "房屋租赁费",
-          BXSY: "缴纳房租",
+      //     BXJE: 200,
+      //     BXJEDX: "贰佰元",
+      //     YJKJE: 0,
+      //     XFKJE: 0,
+      //     FKFS: "电汇",
+      //     FJZS: 2,
+      //     SKDW: "北京卓进房地产经济有限公司",
+      //     KHYH: "中国工商银行",
+      //     ZH: "7893777726500043943094",
+      //     CHECK_STATE: 0
+      //   },
+      //   {
+      //     BXDH: "GY01JL9.03-12",
+      //     SQBM: "北京项目部",
+      //     SQSJ: "219-05-31",
+      //     FYXM: "房屋租赁费",
+      //     BXSY: "缴纳房租",
 
-          BXJE: 300,
-          BXJEDX: "叁佰元",
-          YJKJE: 0,
-          XFKJE: 0,
-          FKFS: "电汇",
-          FJZS: 2,
-          SKDW: "北京卓进房地产经济有限公司",
-          KHYH: "中国工商银行",
-          ZH: "7893777726500043943094",
-          CHECK_STATE: 0
-        },
-        {
-          BXDH: "GY01JL9.11-02",
-          SQBM: "北京项目部",
-          SQSJ: "219-05-31",
-          FYXM: "房屋租赁费",
-          BXSY: "缴纳房租",
+      //     BXJE: 300,
+      //     BXJEDX: "叁佰元",
+      //     YJKJE: 0,
+      //     XFKJE: 0,
+      //     FKFS: "电汇",
+      //     FJZS: 2,
+      //     SKDW: "北京卓进房地产经济有限公司",
+      //     KHYH: "中国工商银行",
+      //     ZH: "7893777726500043943094",
+      //     CHECK_STATE: 0
+      //   },
+      //   {
+      //     BXDH: "GY01JL9.11-02",
+      //     SQBM: "北京项目部",
+      //     SQSJ: "219-05-31",
+      //     FYXM: "房屋租赁费",
+      //     BXSY: "缴纳房租",
 
-          BXJE: 500,
-          BXJEDX: "伍佰元",
-          YJKJE: 0,
-          XFKJE: 0,
-          FKFS: "电汇",
-          FJZS: 2,
-          SKDW: "北京卓进房地产经济有限公司",
-          KHYH: "中国工商银行",
-          ZH: "7893777726500043943094",
-          CHECK_STATE: 0
-        },
-        {
-          BXDH: "GY01JL9.11-02",
-          SQBM: "北京项目部",
-          SQSJ: "219-05-31",
-          FYXM: "房屋租赁费",
-          BXSY: "缴纳房租",
-          BXJE: 1300,
-          BXJEDX: "一仟叁百元",
-          YJKJE: 0,
-          XFKJE: 0,
-          FKFS: "电汇",
-          FJZS: 2,
-          SKDW: "北京卓进房地产经济有限公司",
-          KHYH: "中国工商银行",
-          ZH: "7893777726500043943094",
-          CHECK_STATE: 1
-        },
-        {
-          BXDH: "GY01JL9.11-02",
-          SQBM: "北京项目部",
-          SQSJ: "219-05-31",
-          FYXM: "房屋租赁费",
-          BXSY: "缴纳房租",
-          BXJE: 1300,
-          BXJEDX: "一仟叁百元",
-          YJKJE: 0,
-          XFKJE: 0,
-          FKFS: "电汇",
-          FJZS: 2,
-          SKDW: "北京卓进房地产经济有限公司",
-          KHYH: "中国工商银行",
-          ZH: "7893777726500043943094",
-          CHECK_STATE: 0
-        },
-        {
-          BXDH: "GY01JL9.03-12",
-          SQBM: "北京项目部",
-          SQSJ: "219-05-31",
-          FYXM: "房屋租赁费",
-          BXSY: "缴纳房租",
+      //     BXJE: 500,
+      //     BXJEDX: "伍佰元",
+      //     YJKJE: 0,
+      //     XFKJE: 0,
+      //     FKFS: "电汇",
+      //     FJZS: 2,
+      //     SKDW: "北京卓进房地产经济有限公司",
+      //     KHYH: "中国工商银行",
+      //     ZH: "7893777726500043943094",
+      //     CHECK_STATE: 0
+      //   },
+      //   {
+      //     BXDH: "GY01JL9.11-02",
+      //     SQBM: "北京项目部",
+      //     SQSJ: "219-05-31",
+      //     FYXM: "房屋租赁费",
+      //     BXSY: "缴纳房租",
+      //     BXJE: 1300,
+      //     BXJEDX: "一仟叁百元",
+      //     YJKJE: 0,
+      //     XFKJE: 0,
+      //     FKFS: "电汇",
+      //     FJZS: 2,
+      //     SKDW: "北京卓进房地产经济有限公司",
+      //     KHYH: "中国工商银行",
+      //     ZH: "7893777726500043943094",
+      //     CHECK_STATE: 1
+      //   },
+      //   {
+      //     BXDH: "GY01JL9.11-02",
+      //     SQBM: "北京项目部",
+      //     SQSJ: "219-05-31",
+      //     FYXM: "房屋租赁费",
+      //     BXSY: "缴纳房租",
+      //     BXJE: 1300,
+      //     BXJEDX: "一仟叁百元",
+      //     YJKJE: 0,
+      //     XFKJE: 0,
+      //     FKFS: "电汇",
+      //     FJZS: 2,
+      //     SKDW: "北京卓进房地产经济有限公司",
+      //     KHYH: "中国工商银行",
+      //     ZH: "7893777726500043943094",
+      //     CHECK_STATE: 0
+      //   },
+      //   {
+      //     BXDH: "GY01JL9.03-12",
+      //     SQBM: "北京项目部",
+      //     SQSJ: "219-05-31",
+      //     FYXM: "房屋租赁费",
+      //     BXSY: "缴纳房租",
 
-          BXJE: 300,
-          BXJEDX: "叁佰元",
-          YJKJE: 0,
-          XFKJE: 0,
-          FKFS: "电汇",
-          FJZS: 2,
-          SKDW: "北京卓进房地产经济有限公司",
-          KHYH: "中国工商银行",
-          ZH: "7893777726500043943094",
-          CHECK_STATE: 1
-        },
-        {
-          BXDH: "GY01JL9.11-02",
-          SQBM: "北京项目部",
-          SQSJ: "219-05-31",
-          FYXM: "房屋租赁费",
-          BXSY: "缴纳房租",
+      //     BXJE: 300,
+      //     BXJEDX: "叁佰元",
+      //     YJKJE: 0,
+      //     XFKJE: 0,
+      //     FKFS: "电汇",
+      //     FJZS: 2,
+      //     SKDW: "北京卓进房地产经济有限公司",
+      //     KHYH: "中国工商银行",
+      //     ZH: "7893777726500043943094",
+      //     CHECK_STATE: 1
+      //   },
+      //   {
+      //     BXDH: "GY01JL9.11-02",
+      //     SQBM: "北京项目部",
+      //     SQSJ: "219-05-31",
+      //     FYXM: "房屋租赁费",
+      //     BXSY: "缴纳房租",
 
-          BXJE: 500,
-          BXJEDX: "伍佰元",
-          YJKJE: 0,
-          XFKJE: 0,
-          FKFS: "电汇",
-          FJZS: 2,
-          SKDW: "北京卓进房地产经济有限公司",
-          KHYH: "中国工商银行",
-          ZH: "7893777726500043943094",
-          CHECK_STATE: 1
-        },
-        {
-          BXDH: "GY01JL9.11-02",
-          SQBM: "北京项目部",
-          SQSJ: "219-05-31",
-          FYXM: "房屋租赁费",
-          BXSY: "缴纳房租",
-          BXJE: 1300,
-          BXJEDX: "一仟叁百元",
-          YJKJE: 0,
-          XFKJE: 0,
-          FKFS: "电汇",
-          FJZS: 2,
-          SKDW: "北京卓进房地产经济有限公司",
-          KHYH: "中国工商银行",
-          ZH: "7893777726500043943094",
-          CHECK_STATE: 1
-        },
-        {
-          BXDH: "GY01JL9.01-12",
-          SQBM: "北京项目部",
-          SQSJ: "219-05-31",
-          FYXM: "房屋租赁费",
-          BXSY: "缴纳房租",
+      //     BXJE: 500,
+      //     BXJEDX: "伍佰元",
+      //     YJKJE: 0,
+      //     XFKJE: 0,
+      //     FKFS: "电汇",
+      //     FJZS: 2,
+      //     SKDW: "北京卓进房地产经济有限公司",
+      //     KHYH: "中国工商银行",
+      //     ZH: "7893777726500043943094",
+      //     CHECK_STATE: 1
+      //   },
+      //   {
+      //     BXDH: "GY01JL9.11-02",
+      //     SQBM: "北京项目部",
+      //     SQSJ: "219-05-31",
+      //     FYXM: "房屋租赁费",
+      //     BXSY: "缴纳房租",
+      //     BXJE: 1300,
+      //     BXJEDX: "一仟叁百元",
+      //     YJKJE: 0,
+      //     XFKJE: 0,
+      //     FKFS: "电汇",
+      //     FJZS: 2,
+      //     SKDW: "北京卓进房地产经济有限公司",
+      //     KHYH: "中国工商银行",
+      //     ZH: "7893777726500043943094",
+      //     CHECK_STATE: 1
+      //   },
+      //   {
+      //     BXDH: "GY01JL9.01-12",
+      //     SQBM: "北京项目部",
+      //     SQSJ: "219-05-31",
+      //     FYXM: "房屋租赁费",
+      //     BXSY: "缴纳房租",
 
-          BXJE: 200,
-          BXJEDX: "贰佰元",
-          YJKJE: 0,
-          XFKJE: 0,
-          FKFS: "电汇",
-          FJZS: 2,
-          SKDW: "北京卓进房地产经济有限公司",
-          KHYH: "中国工商银行",
-          ZH: "7893777726500043943094",
-          CHECK_STATE: 0
-        }
-      ]
+      //     BXJE: 200,
+      //     BXJEDX: "贰佰元",
+      //     YJKJE: 0,
+      //     XFKJE: 0,
+      //     FKFS: "电汇",
+      //     FJZS: 2,
+      //     SKDW: "北京卓进房地产经济有限公司",
+      //     KHYH: "中国工商银行",
+      //     ZH: "7893777726500043943094",
+      //     CHECK_STATE: 0
+      //   }
+      // ]
     };
   },
 
   methods: {
     getList() {
-      //   this.listLoading = true;
-      //   getTaxOrgList(this.listQuery).then(response => {
-      //     if (response.data.code === 2000) {
-      //       this.list = response.data.items;
-      this.total = 15;
-      //       this.listLoading = false;
-      //     } else {
-      //       this.listLoading = false;
-      //       this.$notify({
-      //         position: "bottom-right",
-      //         title: "失败",
-      //         message: response.data.message,
-      //         type: "error",
-      //         duration: 2000
-      //       });
-      //     }
-      //   });
+
+       this.listLoading = true;
+      GetInfo(this.listQuery).then(response => {
+        if (response.data.code === 2000) {
+          this.list = response.data.items;
+          this.total = response.data.total;
+          this.listLoading = false;
+        } else {
+          this.$notify({
+            position: "bottom-right",
+            title: "失败",
+            message: response.data.message,
+            type: "warning",
+            duration: 2000
+          });
+        }
+      });
     },
 
-    resetTemp() {
-      this.temp = {
-        BXDH: "",
-        SQBM: "",
-        SQSJ: "",
-        FYXM: "",
-        BXSY: "",
-
-        BXJE: "",
-        BXJEDX: "",
-        YJKJE: "",
-        XFKJE: "",
-        FKFS: "",
-        FJZS: "",
-        SKDW: "",
-        KHYH: "",
-        ZH: ""
-      };
-    },
+  
     tableRowClassName({ row, rowIndex }) {
       // 表头行的 className 的回调方法，也可以使用字符串为所有表头行设置一个固定的 className。
       if (rowIndex === 0) {
@@ -511,25 +509,14 @@ export default {
     },
     handleSizeChange() {},
     handleCurrentChange() {},
+
     handleCreate() {
-      this.resetTemp();
-      this.editVisible = true;
-      this.dialogStatus = "create";
-      if (this.$refs["dataForm"] !== undefined) {
-        this.$refs["dataForm"].resetFields();
-      }
-    },
-    handleCreate2() {
-      this.$router.push({ path: "/jingying/CBZCGL/FYBXEDIT" });
+      this.$router.push({ path: "/jingying/CBZCGL/FYBXEDIT",query:{type:"create"},row:this.temp });
     },
     handleUpdate(row) {
-      this.temp = Object.assign({}, row); // copy obj
-      this.editVisible = true;
-      this.dialogStatus = "update";
-      this.$nextTick(() => {
-        this.$refs["dataForm"].clearValidate();
-      });
+      this.$router.push({ path: "/jingying/CBZCGL/FYBXEDIT",query:{type:"update",row:row} });
     },
+
     handleDelete(row) {
       this.$confirm("确认删除吗！", "提示", {
         confirmButtonText: "确定",
@@ -560,61 +547,11 @@ export default {
         })
         .catch(() => {});
     },
-    createData() {
-      // 创建
-      this.$refs["dataForm"].validate(valid => {
-        if (valid) {
-          //   createTaxOrg(this.temp).then(response => {
-          //     var message = response.data.message;
-          var message = "成功";
-          var title = "失败";
-          var type = "error";
-          //     if (response.data.code === 2000) {
-          this.getList();
-          title = "成功";
-          type = "success";
-          // this.list.unshift(this.temp)
-          //     }
-          this.editVisible = false;
-          this.$notify({
-            position: "bottom-right",
-            title: title,
-            message: message,
-            type: type,
-            duration: 3000
-          });
-          //   });
-        }
-      });
-    },
-    updateData() {
-      this.$refs["dataForm"].validate(valid => {
-        if (valid) {
-          const tempData = Object.assign({}, this.temp); // 这样就不会共用同一个对象
-          //   tempData.S_UpdateBy = this.$store.state.user.userId;
-          //   //tempData.NOTICE_CONTENT=this.content
-          //   updateTaxOrg(tempData).then(response => {
-          //     var message = response.data.message;
-          var message = "成功";
-          var title = "失败";
-          var type = "error";
-          //     if (response.data.code === 2000) {
-          this.getList();
-          title = "成功";
-          type = "success";
-          // }
-          this.editVisible = false;
-          this.$notify({
-            position: "bottom-right",
-            title: title,
-            message: message,
-            type: type,
-            duration: 3000
-          });
-          //   });
-        }
-      });
-    }
+
+     created() {
+    this.listLoading = false;
+    this.getList();
+  }
   }
 };
 </script>

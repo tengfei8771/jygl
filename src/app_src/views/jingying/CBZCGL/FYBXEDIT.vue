@@ -11,7 +11,7 @@
             <tr>
               <td>单位部门</td>
               <td>
-                <el-input v-model="temp.SQBM"></el-input>
+                <el-input v-model="temp.DWBM"></el-input>
               </td>
               <td>费用项目</td>
               <td>
@@ -68,25 +68,32 @@
               </td>
               <td>开户行</td>
               <td>
-                <el-input v-model="temp.KHYH"></el-input>
+                <el-input v-model="temp.KHH"></el-input>
               </td>
             </tr>
             <tr>
               <td>账号</td>
               <td>
-                <el-input v-model="temp.ZH"></el-input>
+                <el-input v-model="temp.YHZH"></el-input>
               </td>
-              <td :colspan="2">
-                <!-- <el-input></el-input> -->
+              <td>申请时间</td>
+              <td>
+                  <el-date-picker
+                      type="date"
+                      v-model="temp.SQSJ"
+                      placeholder="申请时间"
+                      size="mini"
+                      style="width:100%;"
+                      value-format="yyyy-MM-dd"
+                    ></el-date-picker>
               </td>
             </tr>
-            <!-- <tr><td></td><td></td><td></td><td></td></tr> -->
           </tbody>
         </table>
       </el-form>
       <div style="text-align:center;margin-top:20px;">
         <el-button @click="closetab">取消</el-button>
-        <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">保存</el-button>
+        <el-button v-if="this.$route.query.type=='create'" type="primary" @click="createData">保存</el-button>
         <el-button v-else type="primary" @click="updateData">保存</el-button>
         <el-button type="success">提交</el-button>
       </div>
@@ -95,27 +102,36 @@
 </template>
 
 <script>
+import waves from "@/frame_src/directive/waves"; // 水波纹指令
+import { getToken } from "@/frame_src/utils/auth";
+import {
+  GetInfo,
+  CreateInfo,
+  UpdateInfo,
+  DeleteInfo,
+  GetOpions
+} from "@/app_src/api/jygl/FYBX";
 export default {
   name: "FYBXEDIT",
   data() {
     return {
-      temp: {
-        BXDH: "GY01JL9.11-02",
-        SQBM: "北京项目部",
-        SQSJ: "219-05-31",
-        FYXM: "房屋租赁费",
-        BXSY: "缴纳房租",
-
-        BXJE: 200,
-        BXJEDX: "贰佰元",
-        YJKJE: 0,
-        XFKJE: 0,
-        FKFS: "电汇",
-        FJZS: 2,
-        SKDW: "北京卓进房地产经济有限公司",
-        KHYH: "中国工商银行",
-        ZH: "7893777726500043943094"
-      },
+      temp: { CJR:this.$store.state.user.userId},
+      // {
+      //   BXDH: "GY01JL9.11-02",
+      //   SQBM: "北京项目部",
+      //   SQSJ: "219-05-31",
+      //   FYXM: "房屋租赁费",
+      //   BXSY: "缴纳房租",
+      //   BXJE: 200,
+      //   BXJEDX: "贰佰元",
+      //   YJKJE: 0,
+      //   XFKJE: 0,
+      //   FKFS: "电汇",
+      //   FJZS: 2,
+      //   SKDW: "北京卓进房地产经济有限公司",
+      //   KHYH: "中国工商银行",
+      //   ZH: "7893777726500043943094"
+      // },
       selectOptions: [
         {
           value: 0,
@@ -132,101 +148,11 @@ export default {
       ],
       editVisible: false,
       dialogStatus: "",
-      listloading: false,
-      goods: [
-        {
-          BXDH: "GY01JL9.11-02",
-          SQBM: "北京项目部",
-          SQSJ: "219-05-31",
-          FYXM: "房屋租赁费",
-          BXSY: "缴纳房租",
-
-          BXJE: 200,
-          BXJEDX: "贰佰元",
-          YJKJE: 0,
-          XFKJE: 0,
-          FKFS: "电汇",
-          FJZS: 2,
-          SKDW: "北京卓进房地产经济有限公司",
-          KHYH: "中国工商银行",
-          ZH: "7893777726500043943094"
-        },
-        {
-          BXDH: "GY01JL9.11-02",
-          SQBM: "北京项目部",
-          SQSJ: "219-05-31",
-          FYXM: "房屋租赁费",
-          BXSY: "缴纳房租",
-
-          BXJE: 200,
-          BXJEDX: "贰佰元",
-          YJKJE: 0,
-          XFKJE: 0,
-          FKFS: "电汇",
-          FJZS: 2,
-          SKDW: "北京卓进房地产经济有限公司",
-          KHYH: "中国工商银行",
-          ZH: "7893777726500043943094"
-        },
-        {
-          BXDH: "GY01JL9.11-02",
-          SQBM: "北京项目部",
-          SQSJ: "219-05-31",
-          FYXM: "房屋租赁费",
-          BXSY: "缴纳房租",
-
-          BXJE: 200,
-          BXJEDX: "贰佰元",
-          YJKJE: 0,
-          XFKJE: 0,
-          FKFS: "电汇",
-          FJZS: 2,
-          SKDW: "北京卓进房地产经济有限公司",
-          KHYH: "中国工商银行",
-          ZH: "7893777726500043943094"
-        },
-        {
-          BXDH: "GY01JL9.11-02",
-          SQBM: "北京项目部",
-          SQSJ: "219-05-31",
-          FYXM: "房屋租赁费",
-          BXSY: "缴纳房租",
-
-          BXJE: 200,
-          BXJEDX: "贰佰元",
-          YJKJE: 0,
-          XFKJE: 0,
-          FKFS: "电汇",
-          FJZS: 2,
-          SKDW: "北京卓进房地产经济有限公司",
-          KHYH: "中国工商银行",
-          ZH: "7893777726500043943094"
-        }
-      ]
+      listloading: false
     };
   },
 
   methods: {
-    getList() {
-      //   this.listLoading = true;
-      //   getTaxOrgList(this.listQuery).then(response => {
-      //     if (response.data.code === 2000) {
-      //       this.list = response.data.items;
-      this.total = 15;
-      //       this.listLoading = false;
-      //     } else {
-      //       this.listLoading = false;
-      //       this.$notify({
-      //         position: "bottom-right",
-      //         title: "失败",
-      //         message: response.data.message,
-      //         type: "error",
-      //         duration: 2000
-      //       });
-      //     }
-      //   });
-    },
-
     resetTemp() {
       this.temp = {
         BXDH: "",
@@ -308,30 +234,61 @@ export default {
         .catch(() => {});
     },
     createData() {
-      // 创建
+      // // 创建
+      // this.$refs["dataForm"].validate(valid => {
+      //   if (valid) {
+      //     //   createTaxOrg(this.temp).then(response => {
+      //     //     var message = response.data.message;
+      //     var message = "成功";
+      //     var title = "失败";
+      //     var type = "error";
+      //     //     if (response.data.code === 2000) {
+      //     this.getList();
+      //     title = "成功";
+      //     type = "success";
+      //     // this.list.unshift(this.temp)
+      //     //     }
+      //     this.editVisible = false;
+      //     this.$notify({
+      //       position: "bottom-right",
+      //       title: title,
+      //       message: message,
+      //       type: type,
+      //       duration: 3000
+      //     });
+      //     //   });
+      //     this.closetab();
+      //   }
+      // });
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
-          //   createTaxOrg(this.temp).then(response => {
-          //     var message = response.data.message;
-          var message = "成功";
-          var title = "失败";
-          var type = "error";
-          //     if (response.data.code === 2000) {
-          this.getList();
-          title = "成功";
-          type = "success";
-          // this.list.unshift(this.temp)
-          //     }
-          this.editVisible = false;
-          this.$notify({
-            position: "bottom-right",
-            title: title,
-            message: message,
-            type: type,
-            duration: 3000
+          // let arr = [...this.infiledList];
+          // arr.push(this.temp);
+          // //arr.push(this.temp);
+          // //console.log(arr);
+          CreateInfo(this.temp).then(response => {
+            if (response.data.code === 2000) {
+              this.$notify({
+                position: "bottom-right",
+                title: "成功",
+                message: response.data.message,
+                type: response.data.message,
+                duration: 3000
+              });
+              // this.getList();
+              // this.editVisible = false;
+              this.closetab();
+            } else {
+              this.$notify({
+                position: "bottom-right",
+                title: "失败",
+                message: response.data.message,
+                type: "warning",
+                duration: 3000
+              });
+              this.closetab();
+            }
           });
-          //   });
-          this.closetab();
         }
       });
     },
@@ -341,29 +298,55 @@ export default {
           const tempData = Object.assign({}, this.temp); // 这样就不会共用同一个对象
           //   tempData.S_UpdateBy = this.$store.state.user.userId;
           //   //tempData.NOTICE_CONTENT=this.content
-          //   updateTaxOrg(tempData).then(response => {
-          //     var message = response.data.message;
-          var message = "成功";
-          var title = "失败";
-          var type = "error";
-          //     if (response.data.code === 2000) {
-          this.getList();
-          title = "成功";
-          type = "success";
-          // }
-          this.editVisible = false;
-          this.$notify({
-            position: "bottom-right",
-            title: title,
-            message: message,
-            type: type,
-            duration: 3000
+          UpdateInfo(tempData).then(response => {
+            // //   var message = response.data.message;
+            // var message = "成功";
+            // var title = "失败";
+            // var type = "error";
+            // //     if (response.data.code === 2000) {
+            // this.getList();
+            // title = "成功";
+            // type = "success";
+            // // }
+            // this.editVisible = false;
+            // this.$notify({
+            //   position: "bottom-right",
+            //   title: title,
+            //   message: message,
+            //   type: type,
+            //   duration: 3000
+            // });
+            if (response.data.code === 2000) {
+              this.$notify({
+                position: "bottom-right",
+                title: "成功",
+                message: response.data.message,
+                type: response.data.message,
+                duration: 3000
+              });
+              this.closetab();
+            } else {
+              this.$notify({
+                position: "bottom-right",
+                title: "失败",
+                message: response.data.message,
+                type: "warning",
+                duration: 3000
+              });
+              this.closetab();
+            }
           });
-          //   });
           this.closetab();
         }
       });
-    }
+    },
+     created() {
+    // this.listLoading = false;
+    this.temp= this.$route.query.row;
+    // this.GetOpions();
+    // this.getList();
+  }
+
   }
 };
 </script>
@@ -378,13 +361,11 @@ export default {
   line-height: 25px;
   text-align: center;
   border-collapse: collapse;
-
-
 }
 #FYBXEDIT .table-d table td {
   // background: #fff;
   text-align: right;
-  border:2px solid #a8aeb2;
+  border: 1px solid #a8aeb2;
   padding: 5px 10px;
 }
 </style>
