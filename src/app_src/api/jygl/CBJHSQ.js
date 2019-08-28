@@ -44,9 +44,9 @@ export function UpdateInfo(data) {
     })
   }
 
-  export function GetOpions(query) { 
+  export function GetOptions(query) { 
     return request({
-      url: '/CBJHSQ/GetOpions',
+      url: '/Dictionary/GetOptions',
       method: 'get',
       params: query
     })

@@ -344,7 +344,7 @@ import {
   DeleteInfo,
   GetDetailInfo,
   DeleteDetailInfo,
-  GetOpions
+  GetOptions
 } from "@/app_src/api/jygl/CBJHSQ";
 export default {
   name: "CBJHSQ",
@@ -678,7 +678,7 @@ export default {
       let temp = {
         ParentCode: "PC"
       };
-      GetOpions(temp).then(response => {
+      GetOptions(temp).then(response => {
         if (response.data.code === 2000) {
           this.BatchOptions = response.data.items;
         }
