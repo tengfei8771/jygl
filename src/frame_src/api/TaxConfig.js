@@ -1,7 +1,7 @@
 import request from '@/frame_src/utils/request'
 export function getLeftTree(query) { // 查询用户
   return request({
-    url: '/TaxConfig/getLeftTree',
+    url: '/Dictionary/getLeftTree',
     method: 'get',
     params: query
   })
@@ -9,7 +9,7 @@ export function getLeftTree(query) { // 查询用户
 
 export function editNode(data){
     return request({
-        url:'/TaxConfig/editNode',
+        url:'/Dictionary/editNode',
         method:'post',
         data
     })
@@ -17,7 +17,7 @@ export function editNode(data){
 
 export function createNode(data){
   return request({
-      url:'/TaxConfig/createNode',
+      url:'/Dictionary/createNode',
       method:'post',
       data
   })
@@ -25,7 +25,7 @@ export function createNode(data){
 
 export function delNode(data){
   return request({
-      url:'/TaxConfig/delNode',
+      url:'/Dictionary/delNode',
       method:'post',
       data
   })

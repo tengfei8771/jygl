@@ -31,7 +31,7 @@
             highlight-current-row
             style="width: 100%;text-align:left;"
           >
-            <el-table-column align="center" label="项目编号" fixed="left" width="120px">
+             <el-table-column align="center" label="项目编号" fixed="left" width="120px">
               <template slot-scope="scope">
                 <span>{{scope.row.XMBH}}</span>
               </template>
@@ -42,48 +42,37 @@
                 <span>{{scope.row.XMMC}}</span>
               </template>
             </el-table-column>
-            <el-table-column width="100px" align="right" prop="MSEG" label="项目类别" fixed="left">
-              <template slot-scope="scope">
-                <span>{{scope.row.XMLB}}</span>
-              </template>
-            </el-table-column>
-            <el-table-column width="180px" align="right" prop="CBDW" label="承办单位" fixed="left">
-              <template slot-scope="scope">
-                <span>{{scope.row.CBDW}}</span>
-              </template>
-            </el-table-column>
+            <el-table-column width="100px" align="right" prop="MSEG" label="项目类别" fixed="left"></el-table-column>
+            <el-table-column width="180px" align="right" prop="CBDW" label="承办单位" fixed="left"></el-table-column>
+            <el-table-column width="180px" prop="PC" label="项目批次" align="right"></el-table-column>
             <el-table-column
               width="280px"
               align="right"
-              prop="MSEG"
+              prop="JSNR"
               label="建设内容"
               :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{scope.row.JSNR }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column width="120px" align="right" prop="ZGZSL" label="计划总金额">
+            ></el-table-column>
+            <el-table-column width="120px" align="right" label="计划总金额">
               <template slot-scope="scope">
                 <span>{{scope.row.JHZJE |NumFormat}}</span>
               </template>
             </el-table-column>
-            <el-table-column width="120px" align="right" prop="ZGZSL" label="历史计划总金额">
+            <el-table-column width="120px" align="right" label="历史计划总金额">
               <template slot-scope="scope">
                 <span>{{scope.row.LSJE |NumFormat}}</span>
               </template>
             </el-table-column>
-            <el-table-column width="120px" align="right" prop="ZGZSL" label="本年计划总金额">
+            <el-table-column width="120px" align="right" label="本年计划总金额">
               <template slot-scope="scope">
                 <span>{{scope.row.BNJE |NumFormat}}</span>
               </template>
             </el-table-column>
-            <el-table-column width="120px" align="right" prop="ZGZSL" label="未来计划总金额">
+            <el-table-column width="120px" align="right" label="未来计划总金额">
               <template slot-scope="scope">
                 <span>{{scope.row.WLJE |NumFormat}}</span>
               </template>
             </el-table-column>
-            <el-table-column width="100px" align="right" prop="ZGZSL" label="是否存在物资">
+            <el-table-column width="100px" align="right" label="是否存在物资">
               <template slot-scope="scope">
                 <span>{{scope.row.CZWZ|ChangeFlag}}</span>
               </template>

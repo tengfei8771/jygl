@@ -106,7 +106,7 @@
 
     <el-dialog :visible.sync="showed" :title="title" width="40%">
       <el-form :model="temp" ref="temp" label-width="80px" :rules="rules">
-        <el-form-item label="上级" prop="ParentCode">
+        <el-form-item label="上级" >
           <treeselect
             v-model="temp.ParentCode"
             :multiple="false"
@@ -184,9 +184,9 @@ export default {
         username: this.$store.state.user.userId
       },
       rules: {
-        ParentCode: [
-          { required: true, message: "请选择父节点", trigger: "blur" }
-        ],
+        // ParentCode: [
+        //   { required: true, message: "请选择父节点", trigger: "blur" }
+        // ],
         Code: [{ required: true, message: "请输入节点编码", trigger: "blur" }],
         Name: [
           {

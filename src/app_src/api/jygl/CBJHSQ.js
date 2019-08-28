@@ -1,5 +1,5 @@
 import request from '@/frame_src/utils/request'
-export function GetInfo(query) { // 查询用户
+export function GetInfo(query) { 
   return request({
     url: '/CBJHSQ/GetInfo',
     method: 'get',
@@ -39,6 +39,14 @@ export function UpdateInfo(data) {
   export function DeleteDetailInfo(query) { 
     return request({
       url: '/CBJHSQ/DeleteDetailInfo',
+      method: 'get',
+      params: query
+    })
+  }
+
+  export function GetOpions(query) { 
+    return request({
+      url: '/CBJHSQ/GetOpions',
       method: 'get',
       params: query
     })
