@@ -14,21 +14,21 @@ export function CreateInfo(data) {
     data
   })
 }
-export function UpdateInfo(data) { // 查询登陆账号对应的用户
+export function UpdateInfo(data) { 
     return request({
       url: '/CBJHSQ/UpdateInfo',
       method: 'post',
       data
     })
   }
-  export function DeleteInfo(data) { // 查询登陆账号对应的用户
+  export function DeleteInfo(data) { 
     return request({
       url: '/CBJHSQ/DeleteInfo',
       method: 'post',
       data
     })
   }
-  export function GetDetailInfo(query) { // 查询用户
+  export function GetDetailInfo(query) { 
     return request({
       url: '/CBJHSQ/GetDetailInfo',
       method: 'get',
@@ -36,7 +36,7 @@ export function UpdateInfo(data) { // 查询登陆账号对应的用户
     })
   }
 
-  export function DeleteDetailInfo(query) { // 查询用户
+  export function DeleteDetailInfo(query) { 
     return request({
       url: '/CBJHSQ/DeleteDetailInfo',
       method: 'get',

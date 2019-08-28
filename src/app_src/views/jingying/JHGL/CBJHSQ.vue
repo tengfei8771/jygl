@@ -124,7 +124,7 @@
                 <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">修改</el-button>
                 <el-button type="danger" size="mini" @click="handleDelete(scope.row)">删除</el-button>
                 <el-button type="warning" size="mini" @click="handleUpdate(scope.row)">提交</el-button>
-                <el-button type="success" size="mini" @click="handleProcess()">查看流程</el-button>
+                <el-button type="success" size="mini" @click="handleProcess()">流程</el-button>
                 <el-button type="info" size="mini">撤回</el-button>
               </template>
             </el-table-column>
@@ -161,7 +161,7 @@
           <el-row>
             <el-col :span="12">
               <el-form-item label="项目编号" prop="XMBH">
-                <el-input v-model="temp.XMBH" disabled></el-input>
+                <el-input v-model="temp.XMBH" disabled placeholder="系统自动生成，无需填写"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
@@ -234,7 +234,7 @@
           </el-row>
           <el-row>
             <el-col :span="12">
-              <el-form-item label="是否财务下达">
+              <el-form-item label="是否财务下达" prop="SFCW">
                 <el-select size="mini" style="width:100%;" v-model="temp.SFCW">
                   <el-option
                     v-for="(item,key) in selectOptions"
@@ -270,13 +270,13 @@
               >
                 <el-form-item label="物资明细" prop="servin">
                   <el-button type="primary" @click="addRow(infiledList)">新增</el-button>
-
                   <el-table
                     :data="infiledList"
                     size="mini"
                     highlight-current-row
                     border
                     style="width: 100%"
+                    :header-cell-class-name="tableRowClassName"
                   >
                     <el-table-column prop="fildna" label="物资名称">
                       <template slot-scope="scope">
@@ -334,7 +334,7 @@
         </div>
       </el-card>
     </el-dialog>
-    <el-dialog :visible.sync="workFlowVisible" class="selecttrees" title="查看流程" width="1000px">
+    <el-dialog :visible.sync="workFlowVisible" class="selecttrees" title="流程" width="1000px">
       <img src="../../../img/workflow2.png" style="width:980px;" />
     </el-dialog>
   </div>
@@ -417,9 +417,15 @@ export default {
         WLJE: [
           { required: true, message: "请输入计划总金额", trigger: "change" },
           { validator: changeNumber, trigger: "change" }
+        ],
+        CZWZ:[
+          { required: true, message: "请选择是否存在物资", trigger: "change" },
+        ],
+        SFCW:[
+          { required: true, message: "请选择是否财务", trigger: "change" },
         ]
       },
-      total: 15,
+      total: 0,
       listLoading: false,
       importmodeloptions: [
         {
@@ -454,7 +460,8 @@ export default {
         CJR: this.$store.state.user.userId,
         IS_DELETE: 0,
         CZWZ: "",
-        SFCW: ""
+        SFCW: "",
+        XMLE: ""
       },
       inServForm: {},
       textMap: {
@@ -491,7 +498,8 @@ export default {
         CJR: this.$store.state.user.userId,
         IS_DELETE: 0,
         CZWZ: "",
-        SFCW: ""
+        SFCW: "",
+        XMLE: ""
       };
       this.infiledList = [];
     },
@@ -501,7 +509,7 @@ export default {
       GetInfo(this.listQuery).then(response => {
         if (response.data.code === 2000) {
           this.list = response.data.items;
-          this.total = response.data.totoal;
+          this.total = response.data.total;
           this.listLoading = false;
         } else {
           this.$notify({
@@ -526,6 +534,7 @@ export default {
       this.temp = Object.assign({}, row); // copy obj
       this.editVisible = true;
       this.dialogStatus = "update";
+      this.infiledList=[];
       if (this.temp.CZWZ === 1) {
         let temp = {
           XMBH: this.temp.XMBH
@@ -650,7 +659,7 @@ export default {
                 type: response.data.message,
                 duration: 3000
               });
-              this.deleteRow(index,rows);
+              this.deleteRow(index, rows);
             } else {
               this.$notify({
                 position: "bottom-right",
