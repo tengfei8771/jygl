@@ -426,10 +426,6 @@ export default {
           label: "样表二"
         }
       ],
-      taxofficeoptions: [], //税务机关
-      orgregionoptions: [], //机关所在地
-      taxcodeoptions: [], //税号
-      responsibilityoptions: [], //责任中心
       listQuery: {
         limit: 10,
         page: 1,

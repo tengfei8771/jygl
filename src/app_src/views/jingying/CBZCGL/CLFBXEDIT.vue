@@ -1,8 +1,9 @@
 <template>
   <div id="SWKC" class="app-container calendar-list-container">
-      <el-card class="table-d">
-        <el-form ref="dataForm" :model="temp" label-width="120px" style="width: 99%;">
-           <!-- <el-row>
+    <el-card class="table-d">
+      <el-form ref="dataForm" :model="temp" label-width="120px" style="width: 99%;">
+        <el-button type="primary" size="mini" @click="addRow">增加行程</el-button>
+        <!-- <el-row>
             <el-col :span="12">
              <el-form-item label="报销时间" prop="SQSJ">
               <el-date-picker
@@ -130,44 +131,56 @@
       </el-form-item>
     </el-form>
           </el-col>
-                    </el-row> -->
-    <table width="100%" border="0" cellspacing="1" cellpadding="0">
+        </el-row>-->
+        <table width="100%" border="0" cellspacing="0.5" cellpadding="0">
           <caption>
             中国石油大港油田公司
-            <br>差旅费报销单
+            <br />差旅费报销单
           </caption>
           <tbody>
             <tr>
-            <td :colspan="2">出差人员姓名</td>
-            <td :colspan="3">张三</td>
-            <td :rowspan="2">起止日期</td>
-            <td>2019-05-12</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td :colspan="6" :rowspan="2">共3天</td>
+              <td :colspan="2">出差人员姓名</td>
+              <td :colspan="5">
+                <el-input v-model="temp.CCXM"></el-input>
+              </td>
+              <td :colspan="2">部门</td>
+              <td :colspan="4">
+                <el-select style="width:100%" placeholder="请选择部门" v-model="temp.DWBM"></el-select>
+              </td>
+              <td :colspan="1">出差原因</td>
+              <td :colspan="5">
+                <el-input v-model="temp.CCSY"></el-input>
+              </td>
             </tr>
             <tr>
-            <td :colspan="2">出差事由</td>
-            <td :colspan="3">联通学习</td>
-            <td>2019-05-12</td>
-            <td></td>
-            <td></td>
-            <td></td>
+              <td :rowspan="1" colspan="2">开始日期</td>
+              <td :colspan="5">
+                <el-date-picker style="width:100%" v-model="temp.CCKSSJ" @change="StarTime"></el-date-picker>
+              </td>
+              <td :rowspan="1" colspan="2 ">结束日期</td>
+              <td :colspan="4">
+                <el-date-picker
+                  style="width:100%"
+                  v-model="temp.CCJSSJ"
+                  @change="EndTime"
+                  :picker-options="pickerOptions"
+                ></el-date-picker>
+              </td>
+              <td colspan="1">出差天数</td>
+              <td colspan="5">共{{temp.CCTS}}天</td>
             </tr>
             <tr>
-              <td :colspan="4">乘车船、飞机起止时间</td>
-              <td :rowspan="2">起止地点</td>
-              <td :colspan="3">出勤补助</td>
-              <td :colspan="3">硬座、火车补助</td>
-              <td :colspan="3">车船飞机费</td>
-              <td :colspan="2">杂费</td>
+              <td :rowspan="2">出发地点</td>
+              <td :colspan="6">乘车船、飞机起止时间</td>
+              <td :rowspan="2">到达地点</td>
+              <td :colspan="4">出勤补助</td>
+              <td :colspan="4">硬座、火车补助</td>
+              <td :colspan="2">车船飞机费</td>
+              <td :colspan="1">杂费</td>
             </tr>
             <tr>
-              <td>月日</td>
-              <td>时间</td>
-              <td>月日</td>
-              <td>时间</td>
+              <td :colspan="3">出发日期</td>
+              <td :colspan="3">结束日期</td>
               <td>天数</td>
               <td>标准</td>
               <td>金额</td>
@@ -180,7 +193,54 @@
               <td>费别</td>
               <td>金额</td>
             </tr>
-            <tr>
+            <tr v-for="(item,key) in temp.XCList" :key="key">
+              <td>
+                <el-input v-model="item.CFDD"></el-input>
+              </td>
+              <td :colspan="3">
+                <el-date-picker v-model="item.CFRQ" style="max-width:140px;"></el-date-picker>
+              </td>
+              <td :colspan="3">
+                <el-date-picker v-model="item.DDRQ" style="max-width:140px;"></el-date-picker>
+              </td>
+              <td>
+                <el-input v-model="item.CCDD"></el-input>
+              </td>
+              <td>
+                <el-input v-model="item.CQTS"></el-input>
+              </td>
+              <td>
+                <el-input v-model="item.CQBZ"></el-input>
+              </td>
+              <td>
+                <el-input v-model="item.BZJE"></el-input>
+              </td>
+              <td>
+                <el-input v-model="item.BFB"></el-input>
+              </td>
+              <td>
+                <el-input v-model="item.TS"></el-input>
+              </td>
+              <td>
+                <el-input v-model="item.HCFY"></el-input>
+              </td>
+              <td>
+                <el-input v-model="item.FCLB"></el-input>
+              </td>
+              <td>
+                <el-input v-model="item.FCXB"></el-input>
+              </td>
+              <td>
+                <el-input v-model="item.FCJE"></el-input>
+              </td>
+              <td>
+                <el-input v-model="item.ZFLB"></el-input>
+              </td>
+              <td>
+                <el-input v-model="item.ZFJE"></el-input>
+              </td>
+            </tr>
+            <!-- <tr>
               <td>&nbsp;</td>
               <td></td>
               <td></td>
@@ -324,170 +384,160 @@
               <td></td>
               <td></td>
             </tr>
+            -->
+            <!-- <tr>
+              <td :colspan="5"></td>
+              <td>合计</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>-->
             <tr>
-              <td>&nbsp;</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr>
-              <td :colspan="5">合计</td>
-                            <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr>
-              <td :colspan="2"> 总计（大写）</td>
-              <td :colspan="5"> 贰佰元整</td>
-              <td>￥(小写)</td>
-              <td :colspan="4">200</td>
+              <td :colspan="2">总计（大写）</td>
+              <td :colspan="6"></td>
+              <td :colspan="2">￥(小写)</td>
+              <td :colspan="3">{{temp.HJJE}}</td>
               <td :colspan="2">预借差旅费</td>
-              <td :colspan="2"></td>
+              <td :colspan="4">
+                <el-input v-model="temp.YJCLF"></el-input>
+              </td>
             </tr>
             <tr>
               <td :colspan="2">备注</td>
-              <td :colspan="3"></td>
+              <td :colspan="6">
+                <el-input v-model="temp.REMARK"></el-input>
+              </td>
               <td :colspan="2">刷卡人姓名</td>
-              <td :colspan="5"></td>
+              <td :colspan="3"></td>
               <td :colspan="2">应交回（补付）金额</td>
-              <td :colspan="2"></td>
+              <td :colspan="4">
+                <el-input v-model="temp.YTBJE"></el-input>
+              </td>
             </tr>
           </tbody>
         </table>
-        </el-form>
-        <div style="text-align:center;margin-top:20px;">
-          <el-button @click="closetab">取消</el-button>
-          <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">保存</el-button>
-          <el-button v-else type="primary" @click="updateData">保存</el-button>
-                              <el-button type="success">提交</el-button>
-        </div>
-      </el-card>
+      </el-form>
+      <div style="text-align:center;margin-top:20px;">
+        <el-button @click="closetab">取消</el-button>
+        <el-button type="primary" @click="createData">保存</el-button>
+        <el-button type="success">提交</el-button>
+      </div>
+    </el-card>
   </div>
 </template>
 
 <script>
+import { GetInfo, CreateInfo } from "@/app_src/api/jygl/CLFBX";
 export default {
   name: "SWKC",
   data() {
     return {
-            infiledList: [],
+      infiledList: [],
       fildtps: [{ text: "火车", value: "1" }, { text: "汽车", value: "2" }],
-         textMap: {
+      textMap: {
         update: "修改差旅费用报销",
         create: "添加差旅费用报销"
       },
-            temp: {
-          BXDH: "GY01JL9.11-02",
-          SQBM: "北京项目部",
-          SQSJ: "219-05-31",
-          CCR: "张三,李四",
-          CCKSSJ: "2019-5-9",
-          CCJSSJ: "219-5-10",
-          CCSY: "学习交流",
-          CCTS: 3,
-          BXJE: 200,
-          BXJEDX: "贰佰元",
-          YJCLF: 0,
-          YTBJE: 0,
-          CHECK_STATE:1
+      pickerOptions: {},
+      temp: {
+        DWBM: "",
+        CCXM: "",
+        CCSY: "",
+        CCKSSJ: "",
+        CCJSSJ: "",
+        CCTS: 0,
+        HJJE: "",
+        HJDX: "",
+        YJCLF: "",
+        YTBJE: "",
+        REMARK: "",
+        SKRXM: "",
+        CJR: "",
+        CJSJ: "",
+        CJSJ: "",
+        BJSJ: "",
+        userId: this.$store.state.user.userId,
+        XCList: [
+          {
+            CFRQ: "",
+            DDRQ: "",
+            CFDD: "",
+            CCDD: "",
+            CQTS: "",
+            CQBZ: "",
+            BZJE: "",
+            BFB: "",
+            TS: "",
+            HCFY: "",
+            FCLB: "",
+            FCXB: "",
+            FCJE: "",
+            ZFLB: "",
+            ZFJE: "",
+            CJR: "",
+            CJSJ: "",
+            BJR: "",
+            BJSJ: ""
+          }
+        ]
       },
       editVisible: false,
       dialogStatus: "",
-      listloading: false,
-      fac: [
-        {
-          BXDH: "GY01JL9.11-02",
-          SQBM: "北京项目部",
-          SQSJ: "219-05-31",
-          CCR: "张三,李四",
-          CCKSSJ: "2019-5-9",
-          CCJSSJ: "219-5-10",
-          CCSY: "学习交流",
-          CCTS: 3,
-          BXJE: 200,
-          BXJEDX: "贰佰元",
-          YJCLF: 0,
-          YTBJE: 0,
-          CHECK_STATE:0
-        },
-        {
-          BXDH: "GY01JL9.01-22",
-          SQBM: "北京项目部",
-          SQSJ: "219-05-31",
-          CCR: "王五",
-          CCKSSJ: "2019-5-9",
-          CCJSSJ: "219-5-10",
-          CCSY: "系统运维",
-          CCTS: 3,
-          BXJE: 200,
-          BXJEDX: "贰佰元",
-          YJCLF: 0,
-          YTBJE: 0,
-          CHECK_STATE:2
-        },
-        {
-          BXDH: "GY03JL9.10-08",
-          SQBM: "北京项目部",
-          SQSJ: "219-05-31",
-          CCR: "赵六",
-          CCKSSJ: "2019-5-9",
-          CCJSSJ: "219-5-10",
-          CCSY: "商务接待",
-          CCTS: 3,
-          BXJE: 200,
-          BXJEDX: "贰佰元",
-          YJCLF: 0,
-          YTBJE: 0,
-          CHECK_STATE:0
-        },
-        {
-          BXDH: "GY02JL9.12-05",
-          SQBM: "北京项目部",
-          SQSJ: "219-05-31",
-          CCR: "李雷",
-          CCKSSJ: "2019-5-9",
-          CCJSSJ: "219-5-10",
-          CCSY: "程序开发",
-          CCTS: 3,
-          BXJE: 200,
-          BXJEDX: "贰佰元",
-          YJCLF: 0,
-          YTBJE: 0,
-          CHECK_STATE:1
-        }
-      ]
+      listloading: false
     };
   },
   methods: {
-          deleteRow(index, rows) {
+    deleteRow(index, rows) {
       //删除改行
       rows.splice(index, 1);
     },
     addRow(tableData, event) {
       tableData.push({ fildna: "", fildtp: "", remark: "" });
     },
-
-      getList() {
+    StarTime() {
+      this.pickerOptions = {
+        disabledDate: time => {
+          return time.getTime() < this.temp.CCKSSJ;
+        }
+      };
+    },
+    EndTime() {
+      this.temp.CCTS = (this.temp.CCJSSJ - this.temp.CCKSSJ) / 86400000;
+    },
+    addRow() {
+      let obj = {
+        CFRQ: "",
+        CFSJ: "",
+        DDRQ: "",
+        CFDD: "",
+        CCDD: "",
+        CQTS: "",
+        CQBZ: "",
+        BZJE: "",
+        BFB: "",
+        TS: "",
+        HCFY: "",
+        FCLB: "",
+        FCXB: "",
+        FCJE: "",
+        ZFLB: "",
+        ZFJE: "",
+        CJR: "",
+        CJSJ: "",
+        BJR: "",
+        BJSJ: ""
+      };
+      this.temp.XCList.push(obj);
+    },
+    getList() {
       //   this.listLoading = true;
       //   getTaxOrgList(this.listQuery).then(response => {
       //     if (response.data.code === 2000) {
@@ -507,20 +557,20 @@ export default {
       //   });
     },
 
-      resetTemp() {
+    resetTemp() {
       this.temp = {
-       BXDH: "",
-          SQBM: "",
-          SQSJ: "",
-          CCR: "",
-          CCKSSJ: "",
-          CCJSSJ: "",
-          CCSY: "",
-          CCTS: "",
-          BXJE: "",
-          BXJEDX: "",
-          YJCLF: "",
-          YTBJE: ""
+        BXDH: "",
+        SQBM: "",
+        SQSJ: "",
+        CCR: "",
+        CCKSSJ: "",
+        CCJSSJ: "",
+        CCSY: "",
+        CCTS: "",
+        BXJE: "",
+        BXJEDX: "",
+        YJCLF: "",
+        YTBJE: ""
       };
     },
     tableRowClassName({ row, rowIndex }) {
@@ -532,7 +582,7 @@ export default {
     },
     handleSizeChange() {},
     handleCurrentChange() {},
-       handleCreate() {
+    handleCreate() {
       this.resetTemp();
       this.editVisible = true;
       this.dialogStatus = "create";
@@ -578,38 +628,20 @@ export default {
         })
         .catch(() => {});
     },
-    closetab()
-{
-
-//   window.opener = null;
-// window.open("", "_top").close();
-this.$store.dispatch('delVisitedViews', this.$route);
-  this.$router.go(-1); 
-},
+    closetab() {
+      //   window.opener = null;
+      // window.open("", "_top").close();
+      this.$store.dispatch("delVisitedViews", this.$route);
+      this.$router.go(-1);
+    },
     createData() {
       // 创建
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
-          //   createTaxOrg(this.temp).then(response => {
-          //     var message = response.data.message;
-          var message = "成功";
-          var title = "失败";
-          var type = "error";
-          //     if (response.data.code === 2000) {
-          this.getList();
-          title = "成功";
-          type = "success";
-          // this.list.unshift(this.temp)
-          //     }
-          this.editVisible = false;
-          this.$notify({
-            position: "bottom-right",
-            title: title,
-            message: message,
-            type: type,
-            duration: 3000
+          CreateInfo(this.temp).then(response => {
+            if (response.data.code === 2000) {
+            }
           });
-          //   });
         }
         this.closetab();
       });
@@ -640,9 +672,28 @@ this.$store.dispatch('delVisitedViews', this.$route);
           });
           //   });
         }
-                this.closetab();
+        this.closetab();
       });
     },
+    CapitalChinese(val){
+      const Chinese=["零","壹","贰","叁","肆","伍","陆","柒","捌","玖","拾"];
+      const Unit=["佰","仟","万","亿","圆","角","分"];
+      const num=[0,1,2,3,4,5,6,7,8,9];
+      let ChineseStr=null;
+      val=val.tostring();
+      let Strlen=val.length;
+      let PointIndex=val.findIndex((value, index, arr)=>{
+        return value===".";
+      })
+      if(PointIndex===-1){
+        for(let i=0;i<Strlen;i++){
+
+        }
+      }
+      else{
+
+      }
+    }
   }
 };
 </script>
@@ -651,7 +702,7 @@ this.$store.dispatch('delVisitedViews', this.$route);
 
 <style lang="scss" scoped>
 #SWKC .table-d table {
-    font-size: 16px;
+  font-size: 16px;
   // background: #000;
   min-height: 25px;
   line-height: 25px;
@@ -661,9 +712,10 @@ this.$store.dispatch('delVisitedViews', this.$route);
 #SWKC .table-d table td {
   min-width: 80px;
   min-height: 50px;
-    // background: #fff;
+  // background: #fff;
+  //max-width:300px;
   text-align: right;
-  border:2px solid #a8aeb2;
+  border: 2px solid #a8aeb2;
   padding: 5px 10px;
 }
 </style>
