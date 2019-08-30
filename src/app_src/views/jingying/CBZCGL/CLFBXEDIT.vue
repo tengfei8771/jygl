@@ -402,11 +402,10 @@
             </tr>-->
             <tr>
               <td :colspan="2">总计（大写）</td>
-              <td :colspan="6">
-                {{temp.HJDX}}
-              </td>
+              <td :colspan="6">{{temp.HJDX}}</td>
               <td :colspan="2">￥(小写)</td>
-              <td :colspan="3">{{temp.HJJE}}</td>
+              <!-- <td :colspan="3">{{temp.HJJE}}</td> -->
+              <td :colspan="3"><el-input v-model="temp.HJJE" @change="CapitalChinese(temp.HJJE)"></el-input></td>
               <td :colspan="2">预借差旅费</td>
               <td :colspan="4">
                 <el-input v-model="temp.YJCLF"></el-input>
@@ -419,7 +418,7 @@
               </td>
               <td :colspan="2">刷卡人姓名</td>
               <td :colspan="3">
-                 <el-input v-model="temp.SKRXM"></el-input>
+                <el-input v-model="temp.SKRXM"></el-input>
               </td>
               <td :colspan="2">应交回（补付）金额</td>
               <td :colspan="4">
@@ -493,7 +492,7 @@ export default {
       editVisible: false,
       dialogStatus: "",
       listloading: false,
-      ZE:0,
+      ZE: 0
     };
   },
   methods: {
@@ -700,14 +699,18 @@ export default {
     },
     getTotal() {
       let data = this.temp.XCList;
-      let total=0;
+      let total = 0;
       data.forEach(item => {
-        total+=(parseFloat(item.CQTS)*parseFloat(item.CQBZ)+parseFloat(item.BZJE)+parseFloat(item.HCFY)+parseFloat(item.FCJE)+parseFloat(item.ZFJE));
+        total +=
+          parseFloat(item.CQTS) * parseFloat(item.CQBZ) +
+          parseFloat(item.BZJE) +
+          parseFloat(item.HCFY) +
+          parseFloat(item.FCJE) +
+          parseFloat(item.ZFJE);
         //console.log(parseFloat(item.CQTS)*parseFloat(item.CQBZ)+parseFloat(item.BZJE)+parseFloat(item.HCFY)+parseFloat(item.FCJE)+parseFloat(item.ZFJE))
-        this.temp.HJJE=total;
+        this.temp.HJJE = total;
         this.CapitalChinese(total);
       });
-      
     },
     CapitalChinese(data) {
       const Unit = ["拾", "佰", "仟", "万", "亿", "圆", "角", "分"];
@@ -736,8 +739,8 @@ export default {
       } else {
         intNum = val.substring(0, PointIndex);
         PointNum = val.substring(PointIndex + 1, val.length);
-        console.log(intNum);
-        console.log(PointNum);
+        //console.log(intNum);
+        //console.log(PointNum);
       }
       let Strlen = intNum.length;
       if (Strlen < 6) {
@@ -772,43 +775,50 @@ export default {
         if (heightStr.endsWith("零")) {
           heightStr = heightStr.substring(0, heightStr.length - 1);
         }
-        heightStr += "万";
+        if (heightStr.endsWith("拾")||str2.startsWith("0")) {
+          heightStr += "万零";
+        } else {
+          heightStr += "万";
+        }
+        //console.log(str2);
         for (let i = 0; i < str2.length; i++) {
-          if (str2[i] == "0" && i < str2.length - 1) {
-            if (str2[i + 1] == "0") {
-              continue;
-            }
-          } else {
-            lowStr += map.get(str2[i]);
-            if (str2 - 2 - i >= 0) {
-              if (str2[i] != "0") {
-                lowStr += Unit[str2.length - 2 - i];
-              }
+          if (lowStr[ChineseStr.length - 1] == "零" && str2[i] == "0") {
+            continue;
+          }
+          lowStr += map.get(str2[i]);
+          if (str2.length - 2 - i >= 0) {
+            if (str2[i] != "0") {
+              lowStr += Unit[str2.length - 2 - i];
             }
           }
+          // if (str2[i] == "0" && i < str2.length - 1) {
+          //   if (str2[i + 1] == "0") {
+          //     continue;
+          //   }
+          // } else {
+          //   lowStr += map.get(str2[i]);
+          //   if (str2.length- 2 - i >= 0) {
+          //     if (str2[i] != "0") {
+          //       lowStr += Unit[str2.length - 2 - i];
+          //     }
+          //   }
+          // }
         }
         console.log(lowStr + "qqqq");
         if (lowStr.endsWith("零")) {
           lowStr = lowStr.substring(0, lowStr.length - 1);
         }
-        if (
-          lowStr.startsWith("零") &&
-          !(
-            ChineseStr.endsWith("万") ||
-            ChineseStr.endsWith("仟") ||
-            ChineseStr.endsWith("佰")
-          )
-        ) {
+        if (lowStr.startsWith("零")) {
           lowStr = lowStr.substring(1, lowStr.length);
         }
         ChineseStr = heightStr + lowStr;
-        console.log(ChineseStr);
+        //console.log(ChineseStr);
       }
       if (PointNum != "0") {
         let pointStr = "";
-        
+
         PointNum = PointNum.substring(0, 2);
-        console.log(PointNum);
+        //console.log(PointNum);
         for (let i = 0; i < PointNum.length; i++) {
           if (PointNum[i] != "0") {
             pointStr += map.get(PointNum[i]) + Unit[6 + i];
@@ -816,21 +826,20 @@ export default {
             continue;
           }
         }
-        console.log(pointStr)
+        //console.log(pointStr);
         if (
           ChineseStr.endsWith("万") ||
           ChineseStr.endsWith("仟") ||
           ChineseStr.endsWith("佰")
         ) {
           ChineseStr += "圆零" + pointStr;
-        }
-        else{
+        } else {
           ChineseStr += "圆" + pointStr;
         }
       } else {
         ChineseStr += "圆整";
       }
-      this.temp.HJDX=ChineseStr;
+      this.temp.HJDX = ChineseStr;
     }
   },
   watch: {}
