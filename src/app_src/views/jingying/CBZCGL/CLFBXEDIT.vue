@@ -207,13 +207,13 @@
                 <el-input v-model="item.CCDD"></el-input>
               </td>
               <td>
-                <el-input v-model="item.CQTS"></el-input>
+                <el-input v-model="item.CQTS" @change="getTotal"></el-input>
               </td>
               <td>
-                <el-input v-model="item.CQBZ"></el-input>
+                <el-input v-model="item.CQBZ" @change="getTotal"></el-input>
               </td>
               <td>
-                <el-input v-model="item.BZJE"></el-input>
+                <el-input v-model="item.BZJE" @change="getTotal"></el-input>
               </td>
               <td>
                 <el-input v-model="item.BFB"></el-input>
@@ -222,7 +222,7 @@
                 <el-input v-model="item.TS"></el-input>
               </td>
               <td>
-                <el-input v-model="item.HCFY"></el-input>
+                <el-input v-model="item.HCFY" @change="getTotal"></el-input>
               </td>
               <td>
                 <el-input v-model="item.FCLB"></el-input>
@@ -231,13 +231,13 @@
                 <el-input v-model="item.FCXB"></el-input>
               </td>
               <td>
-                <el-input v-model="item.FCJE"></el-input>
+                <el-input v-model="item.FCJE" @change="getTotal"></el-input>
               </td>
               <td>
                 <el-input v-model="item.ZFLB"></el-input>
               </td>
               <td>
-                <el-input v-model="item.ZFJE"></el-input>
+                <el-input v-model="item.ZFJE" @change="getTotal"></el-input>
               </td>
             </tr>
             <!-- <tr>
@@ -402,7 +402,9 @@
             </tr>-->
             <tr>
               <td :colspan="2">总计（大写）</td>
-              <td :colspan="6"></td>
+              <td :colspan="6">
+                {{temp.HJDX}}
+              </td>
               <td :colspan="2">￥(小写)</td>
               <td :colspan="3">{{temp.HJJE}}</td>
               <td :colspan="2">预借差旅费</td>
@@ -416,7 +418,9 @@
                 <el-input v-model="temp.REMARK"></el-input>
               </td>
               <td :colspan="2">刷卡人姓名</td>
-              <td :colspan="3"></td>
+              <td :colspan="3">
+                 <el-input v-model="temp.SKRXM"></el-input>
+              </td>
               <td :colspan="2">应交回（补付）金额</td>
               <td :colspan="4">
                 <el-input v-model="temp.YTBJE"></el-input>
@@ -468,30 +472,28 @@ export default {
         XCList: [
           {
             CFRQ: "",
+            CFSJ: "",
             DDRQ: "",
             CFDD: "",
             CCDD: "",
-            CQTS: "",
-            CQBZ: "",
-            BZJE: "",
+            CQTS: 0,
+            CQBZ: 0,
+            BZJE: 0,
             BFB: "",
-            TS: "",
-            HCFY: "",
+            TS: 0,
+            HCFY: 0,
             FCLB: "",
             FCXB: "",
-            FCJE: "",
+            FCJE: 0,
             ZFLB: "",
-            ZFJE: "",
-            CJR: "",
-            CJSJ: "",
-            BJR: "",
-            BJSJ: ""
+            ZFJE: 0
           }
         ]
       },
       editVisible: false,
       dialogStatus: "",
-      listloading: false
+      listloading: false,
+      ZE:0,
     };
   },
   methods: {
@@ -519,21 +521,17 @@ export default {
         DDRQ: "",
         CFDD: "",
         CCDD: "",
-        CQTS: "",
-        CQBZ: "",
-        BZJE: "",
+        CQTS: 0,
+        CQBZ: 0,
+        BZJE: 0,
         BFB: "",
-        TS: "",
+        TS: 0,
         HCFY: "",
         FCLB: "",
         FCXB: "",
-        FCJE: "",
+        FCJE: 0,
         ZFLB: "",
-        ZFJE: "",
-        CJR: "",
-        CJSJ: "",
-        BJR: "",
-        BJSJ: ""
+        ZFJE: 0
       };
       this.temp.XCList.push(obj);
     },
@@ -559,18 +557,43 @@ export default {
 
     resetTemp() {
       this.temp = {
-        BXDH: "",
-        SQBM: "",
-        SQSJ: "",
-        CCR: "",
+        DWBM: "",
+        CCXM: "",
+        CCSY: "",
         CCKSSJ: "",
         CCJSSJ: "",
-        CCSY: "",
-        CCTS: "",
-        BXJE: "",
-        BXJEDX: "",
+        CCTS: 0,
+        HJJE: "",
+        HJDX: "",
         YJCLF: "",
-        YTBJE: ""
+        YTBJE: "",
+        REMARK: "",
+        SKRXM: "",
+        CJR: "",
+        CJSJ: "",
+        CJSJ: "",
+        BJSJ: "",
+        userId: this.$store.state.user.userId,
+        XCList: [
+          {
+            CFRQ: "",
+            CFSJ: "",
+            DDRQ: "",
+            CFDD: "",
+            CCDD: "",
+            CQTS: 0,
+            CQBZ: 0,
+            BZJE: 0,
+            BFB: "",
+            TS: 0,
+            HCFY: 0,
+            FCLB: "",
+            FCXB: "",
+            FCJE: 0,
+            ZFLB: "",
+            ZFJE: 0
+          }
+        ]
       };
     },
     tableRowClassName({ row, rowIndex }) {
@@ -675,26 +698,142 @@ export default {
         this.closetab();
       });
     },
-    CapitalChinese(val){
-      const Chinese=["零","壹","贰","叁","肆","伍","陆","柒","捌","玖","拾"];
-      const Unit=["佰","仟","万","亿","圆","角","分"];
-      const num=[0,1,2,3,4,5,6,7,8,9];
-      let ChineseStr=null;
-      val=val.tostring();
-      let Strlen=val.length;
-      let PointIndex=val.findIndex((value, index, arr)=>{
-        return value===".";
-      })
-      if(PointIndex===-1){
-        for(let i=0;i<Strlen;i++){
-
+    getTotal() {
+      let data = this.temp.XCList;
+      let total=0;
+      data.forEach(item => {
+        total+=(parseFloat(item.CQTS)*parseFloat(item.CQBZ)+parseFloat(item.BZJE)+parseFloat(item.HCFY)+parseFloat(item.FCJE)+parseFloat(item.ZFJE));
+        //console.log(parseFloat(item.CQTS)*parseFloat(item.CQBZ)+parseFloat(item.BZJE)+parseFloat(item.HCFY)+parseFloat(item.FCJE)+parseFloat(item.ZFJE))
+        this.temp.HJJE=total;
+        this.CapitalChinese(total);
+      });
+      
+    },
+    CapitalChinese(data) {
+      const Unit = ["拾", "佰", "仟", "万", "亿", "圆", "角", "分"];
+      const map = new Map([
+        ["0", "零"],
+        ["1", "壹"],
+        ["2", "贰"],
+        ["3", "叁"],
+        ["4", "肆"],
+        ["5", "伍"],
+        ["6", "陆"],
+        ["7", "柒"],
+        ["8", "捌"],
+        ["9", "玖"]
+      ]);
+      let ChineseStr = "";
+      let val = data.toString();
+      let arr = [...val];
+      let PointIndex = arr.findIndex((value, index, arr) => {
+        return value === ".";
+      });
+      let intNum = 0;
+      let PointNum = "0";
+      if (PointIndex === -1) {
+        intNum = val;
+      } else {
+        intNum = val.substring(0, PointIndex);
+        PointNum = val.substring(PointIndex + 1, val.length);
+        console.log(intNum);
+        console.log(PointNum);
+      }
+      let Strlen = intNum.length;
+      if (Strlen < 6) {
+        for (let i = 0; i < Strlen; i++) {
+          if (ChineseStr[ChineseStr.length - 1] == "零" && intNum[i] == "0") {
+            continue;
+          }
+          ChineseStr += map.get(intNum[i]);
+          if (Strlen - 2 - i >= 0) {
+            if (intNum[i] != "0") {
+              ChineseStr += Unit[Strlen - 2 - i];
+            }
+          }
+        }
+        if (ChineseStr.endsWith("零")) {
+          ChineseStr = ChineseStr.substring(0, ChineseStr.length - 1);
         }
       }
-      else{
-
+      if (Strlen >= 6) {
+        let str1 = intNum.substring(0, intNum.length - 4);
+        let str2 = intNum.substring(intNum.length - 4, intNum.length);
+        let heightStr = "";
+        let lowStr = "";
+        for (let i = 0; i < str1.length; i++) {
+          heightStr += map.get(str1[i]);
+          if (str1.length - i - 2 >= 0) {
+            if (str1[i] != "0") {
+              heightStr += Unit[str1.length - 2 - i];
+            }
+          }
+        }
+        if (heightStr.endsWith("零")) {
+          heightStr = heightStr.substring(0, heightStr.length - 1);
+        }
+        heightStr += "万";
+        for (let i = 0; i < str2.length; i++) {
+          if (str2[i] == "0" && i < str2.length - 1) {
+            if (str2[i + 1] == "0") {
+              continue;
+            }
+          } else {
+            lowStr += map.get(str2[i]);
+            if (str2 - 2 - i >= 0) {
+              if (str2[i] != "0") {
+                lowStr += Unit[str2.length - 2 - i];
+              }
+            }
+          }
+        }
+        console.log(lowStr + "qqqq");
+        if (lowStr.endsWith("零")) {
+          lowStr = lowStr.substring(0, lowStr.length - 1);
+        }
+        if (
+          lowStr.startsWith("零") &&
+          !(
+            ChineseStr.endsWith("万") ||
+            ChineseStr.endsWith("仟") ||
+            ChineseStr.endsWith("佰")
+          )
+        ) {
+          lowStr = lowStr.substring(1, lowStr.length);
+        }
+        ChineseStr = heightStr + lowStr;
+        console.log(ChineseStr);
       }
+      if (PointNum != "0") {
+        let pointStr = "";
+        
+        PointNum = PointNum.substring(0, 2);
+        console.log(PointNum);
+        for (let i = 0; i < PointNum.length; i++) {
+          if (PointNum[i] != "0") {
+            pointStr += map.get(PointNum[i]) + Unit[6 + i];
+          } else {
+            continue;
+          }
+        }
+        console.log(pointStr)
+        if (
+          ChineseStr.endsWith("万") ||
+          ChineseStr.endsWith("仟") ||
+          ChineseStr.endsWith("佰")
+        ) {
+          ChineseStr += "圆零" + pointStr;
+        }
+        else{
+          ChineseStr += "圆" + pointStr;
+        }
+      } else {
+        ChineseStr += "圆整";
+      }
+      this.temp.HJDX=ChineseStr;
     }
-  }
+  },
+  watch: {}
 };
 </script>
 

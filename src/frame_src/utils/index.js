@@ -63,7 +63,7 @@ export function parseTime1(time, cFormat) {
     }
     return value || 0
   })
-  return time_str.substr(0,time_str.length-3)
+  return time_str.substr(0, time_str.length - 3)
 }
 
 export function formatTime(time, option) {
@@ -135,7 +135,7 @@ export function param(json) {
   return cleanArray(Object.keys(json).map(key => {
     if (json[key] === undefined) return ''
     return encodeURIComponent(key) + '=' +
-            encodeURIComponent(json[key])
+      encodeURIComponent(json[key])
   })).join('&')
 }
 
@@ -246,7 +246,7 @@ export function getTime(type) {
 export function debounce(func, wait, immediate) {
   let timeout, args, context, timestamp, result
 
-  const later = function() {
+  const later = function () {
     // 据上一次触发时间间隔
     const last = +new Date() - timestamp
 
@@ -263,7 +263,7 @@ export function debounce(func, wait, immediate) {
     }
   }
 
-  return function(...args) {
+  return function (...args) {
     context = this
     timestamp = +new Date()
     const callNow = immediate && !timeout
@@ -292,4 +292,125 @@ export function deepClone(source) {
     }
   })
   return targetObj
+}
+
+export function CapitalChinese(data) {
+  const Unit = ["拾", "佰", "仟", "万", "亿", "圆", "角", "分"];
+  const map = new Map([
+    ["0", "零"],
+    ["1", "壹"],
+    ["2", "贰"],
+    ["3", "叁"],
+    ["4", "肆"],
+    ["5", "伍"],
+    ["6", "陆"],
+    ["7", "柒"],
+    ["8", "捌"],
+    ["9", "玖"]
+  ]);
+  let ChineseStr = "";
+  let val = data.toString();
+  let arr = [...val];
+  let PointIndex = arr.findIndex((value, index, arr) => {
+    return value === ".";
+  });
+  let intNum = "0";
+  let PointNum = "0";
+  if (PointIndex === -1) {
+    intNum = val;
+  } else {
+    intNum = val.substring(0, PointIndex);
+    PointNum = val.substring(PointIndex + 1, val.length);
+  }
+  let Strlen = intNum.length;
+  if (Strlen < 6) {
+    for (let i = 0; i < Strlen; i++) {
+      if (ChineseStr[ChineseStr.length - 1] == "零" && intNum[i] == "0") {
+        continue;
+      }
+      ChineseStr += map.get(intNum[i]);
+      if (Strlen - 2 - i >= 0) {
+        if (intNum[i] != "0") {
+          ChineseStr += Unit[Strlen - 2 - i];
+        }
+      }
+    }
+    if (ChineseStr.endsWith("零")) {
+      ChineseStr = ChineseStr.substring(0, ChineseStr.length - 1);
+    }
+  }
+  if (Strlen >= 6) {
+    let str1 = intNum.substring(0, intNum.length - 4);
+    let str2 = intNum.substring(intNum.length - 4, intNum.length);
+    let heightStr = "";
+    let lowStr = "";
+    for (let i = 0; i < str1.length; i++) {
+      heightStr += map.get(str1[i]);
+      if (str1.length - i - 2 >= 0) {
+        if (str1[i] != "0") {
+          heightStr += Unit[str1.length - 2 - i];
+        }
+      }
+    }
+    if (heightStr.endsWith("零")) {
+      heightStr = heightStr.substring(0, heightStr.length - 1);
+    }
+    heightStr += "万";
+    for (let i = 0; i < str2.length; i++) {
+      if (str2[i] == "0" && i < str2.length - 1) {
+        if (str2[i + 1] == "0") {
+          continue;
+        }
+      } else {
+        lowStr += map.get(str2[i]);
+        if (str2 - 2 - i >= 0) {
+          if (str2[i] != "0") {
+            lowStr += Unit[str2.length - 2 - i];
+          }
+        }
+      }
+    }
+    console.log(lowStr + "qqqq");
+    if (lowStr.endsWith("零")) {
+      lowStr = lowStr.substring(0, lowStr.length - 1);
+    }
+    if (
+      lowStr.startsWith("零") &&
+      !(
+        ChineseStr.endsWith("万") ||
+        ChineseStr.endsWith("仟") ||
+        ChineseStr.endsWith("佰")
+      )
+    ) {
+      lowStr = lowStr.substring(1, lowStr.length);
+    }
+    ChineseStr = heightStr + lowStr;
+    console.log(ChineseStr);
+  }
+  if (PointNum != "0") {
+    let pointStr = "";
+    PointNum = PointNum.substring(0, 2);
+    console.log(PointNum);
+    for (let i = 0; i < PointNum.length; i++) {
+      if (PointNum[i] != "0") {
+        pointStr += map.get(PointNum[i]) + Unit[6 + i];
+      } else {
+        continue;
+      }
+    }
+    console.log(pointStr)
+    if (
+      ChineseStr.endsWith("万") ||
+      ChineseStr.endsWith("仟") ||
+      ChineseStr.endsWith("佰")
+    ) {
+      ChineseStr += "圆零" + pointStr;
+    }
+    else {
+      ChineseStr += "圆" + pointStr;
+    }
+  } else {
+    ChineseStr += "圆整";
+  }
+  return ChineseStr;
 }
