@@ -364,7 +364,7 @@ export function CapitalChinese(data) {
     }
     //console.log(str2);
     for (let i = 0; i < str2.length; i++) {
-      if (lowStr[ChineseStr.length - 1] == "零" && str2[i] == "0") {
+      if (lowStr[lowStr.length - 1] == "零" && str2[i] == "0") {
         continue;
       }
       lowStr += map.get(str2[i]);
@@ -421,5 +421,5 @@ export function CapitalChinese(data) {
   } else {
     ChineseStr += "圆整";
   }
-  return ChineseStr;
+  return  ChineseStr;
 }
