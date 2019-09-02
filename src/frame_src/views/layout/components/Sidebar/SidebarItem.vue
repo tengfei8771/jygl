@@ -49,6 +49,7 @@ export default {
       default: false
     }
   },
+
   methods: {
     hasOneShowingChildren(children) {
       const showingChildren = children.filter(item => {

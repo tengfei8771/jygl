@@ -1,7 +1,104 @@
 <template>
   <div id="FYBXEDIT" class="app-container calendar-list-container">
+  
     <el-card class="table-d">
-      <el-form ref="dataForm" :model="temp" label-width="120px" style="width: 99%;">
+
+      <el-form ref="dataForm" id="dataForm" :model="temp" label-width="120px" style="width: 99%;">
+                <form id="form1">
+   <!-- <table border="1" width="300" id="tb01" bgcolor="#CCFFCC" style="border:solid 1px black;border-collapse:collapse"><tr><td width="133" id="mtb001">
+    <font face="黑体" color="#FF0000" size="3"><u> 《表单一》 </u></font></td></tr></table>
+   <table border="1" width="300" height="106" cellspacing="0" bgcolor="#CCFFFF" style="border-collapse:collapse;table-layout:fixed;border:solid 1px black;"><tr>
+    <td width="66" height="16" style="border:solid 1px black"><font color="#0000FF">A</font><font color="#0000FF">等</font></td>
+    <td width="51" height="16" style="border:solid 1px black"><font color="#0000FF">B</font><font color="#0000FF">等</font></td>
+    <td width="51" height="16" style="border:solid 1px black"><font color="#0000FF">C</font><font color="#0000FF">等</font></td></tr>
+    <tr>
+     <td width="66" height="16" style="border:solid 1px black">A<sub>01</sub></td>
+     <td width="80" height="12" style="border:solid 1px black">中-001</td>
+     <td width="51" height="12" style="border:solid 1px black">C1<sup>x</sup></td>
+    </tr>
+    <tr>
+     <td width="66" height="16" style="border:solid 1px black">A<sub>02</sub>Φ</td>
+     <td width="80" height="16" style="border:solid 1px black">日-スの</td>
+     <td width="51" height="16" style="border:solid 1px black"><font face='Vernada'>7㎥</font></td>
+    </tr>
+    <tr><td width="66" height="16" style="border:solid 1px black;overflow:hidden">A<sub>03</sub><nobr>{{temp.BXSY}}</nobr>
+    </td><td width="80" height="16" style="border:solid 1px black;overflow:hidden">韩-안녕</td><td width="51" height="16">C3<sup>x</sup>
+    </td></tr> </table> -->
+      <table width="100%" border="0" cellspacing="1" cellpadding="0">
+          <caption>
+            中国石油大港油田公司
+            <br />费用报销
+          </caption>
+          <tbody>
+            <tr>
+              <td>单位部门</td>
+              <td>
+         
+              </td>
+              <td>费用项目</td>
+              <td>
+                
+              </td>
+            </tr>
+            <tr>
+              <td>报销事由</td>
+              <td :colspan="3">
+                
+              </td>
+            </tr>
+            <tr>
+              <td>报销金额大写</td>
+              <td>
+                
+              </td>
+              <td>报销金额小写</td>
+              <td>
+               
+              </td>
+            </tr>
+            <tr>
+              <td>原借款金额（小写）</td>
+              <td>
+             
+              </td>
+              <td>现付款（收回）金额（小写）</td>
+              <td>
+               {{temp.XFKJE}}
+              </td>
+            </tr>
+            <tr>
+              <td>付款方式</td>
+              <td>
+
+              </td>
+              <td>附件张数</td>
+              <td>
+                {{temp.FJZS}}
+              </td>
+            </tr>
+            <tr>
+              <td>收款单位名称</td>
+              <td>
+               
+              </td>
+              <td>开户行</td>
+              <td>
+                
+              </td>
+            </tr>
+            <tr>
+              <td>账号</td>
+              <td>
+              
+              </td>
+              <td>申请时间</td>
+              <td>
+                
+              </td>
+            </tr>
+          </tbody>
+        </table>
+  </form>
         <table width="100%" border="0" cellspacing="1" cellpadding="0">
           <caption>
             中国石油大港油田公司
@@ -96,6 +193,7 @@
         <el-button v-if="this.$route.query.type=='create'" type="primary" @click="createData">保存</el-button>
         <el-button v-else type="primary" @click="updateData">保存</el-button>
         <el-button type="success">提交</el-button>
+        <el-button  @click="printPdf" type="primary">打印</el-button>
       </div>
     </el-card>
   </div>
@@ -103,6 +201,7 @@
 
 <script>
 import waves from "@/frame_src/directive/waves"; // 水波纹指令
+import { getLodop } from "@/frame_src/utils/LodopFuncs";
 import { getToken } from "@/frame_src/utils/auth";
 import {
   GetInfo,
@@ -153,6 +252,21 @@ export default {
   },
 
   methods: {
+          printPdf() {
+            let LODOP = getLodop();
+            LODOP.PRINT_INIT("费用报销单");
+            LODOP.SET_PRINT_STYLE("FontSize", 18);
+            LODOP.SET_PRINT_STYLE("Bold", 1);
+            // LODOP.ADD_PRINT_TEXT(50, 300, 260, 39, "费用报销单");
+            LODOP.ADD_PRINT_HTM(
+                88,
+                200,
+                350,
+                600,
+                document.getElementById("form1").innerHTML
+            );
+            LODOP.PREVIEW();
+        },
     resetTemp() {
       this.temp = {
         BXDH: "",
