@@ -386,7 +386,7 @@ export function CapitalChinese(data) {
       //   }
       // }
     }
-    console.log(lowStr + "qqqq");
+    //console.log(lowStr + "qqqq");
     if (lowStr.endsWith("零")) {
       lowStr = lowStr.substring(0, lowStr.length - 1);
     }

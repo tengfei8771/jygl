@@ -3,135 +3,6 @@
     <el-card class="table-d">
       <el-form ref="dataForm" :model="temp" label-width="120px" style="width: 99%;">
         <el-button type="primary" size="mini" @click="addRow">增加行程</el-button>
-        <!-- <el-row>
-            <el-col :span="12">
-             <el-form-item label="报销时间" prop="SQSJ">
-              <el-date-picker
-                type="date"
-                placeholder="选择日期"
-                v-model="temp.SQSJ"
-                style="width: 100%;"
-              ></el-date-picker>
-            </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="报销单号" prop="BXDH">
-                <el-input v-model="temp.BXDH"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="申请单位" prop="SQBM">
-                <el-input v-model="temp.SQBM"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="出差人" prop="CCR">
-                <el-input v-model="temp.CCR"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
-                           <el-form-item label="出差开始时间" prop="CCKSSJ">
-              <el-date-picker
-                type="date"
-                placeholder="选择日期"
-                v-model="temp.CCKSSJ"
-                style="width: 100%;"
-              ></el-date-picker>
-            </el-form-item>
-            </el-col>
-            <el-col :span="12">
-            <el-form-item label="出差结束时间" prop="CCJSSJ">
-              <el-date-picker
-                type="date"
-                placeholder="选择日期"
-                v-model="temp.CCJSSJ"
-                style="width: 100%;"
-              ></el-date-picker>
-            </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="报销金额" prop="BXJE">
-                <el-input v-model="temp.BXJE"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="金额大写" prop="BXJEDX">
-                <el-input v-model="temp.BXJEDX"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="24">
-              <el-form-item label="出差事由" prop="BXSY">
-                <el-input v-model="temp.BXSY" type="textarea" :rows="3"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="预借差旅费" prop="YJCLF">
-                <el-input v-model="temp.YJCLF"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="应退补金额" prop="YTBJE">
-                <el-input v-model="temp.YTBJE"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-    <el-row>
-                 <el-col :span="24">
-    <el-form :model="inServForm" ref="inServForm" label-width="130px" size="mini" highlight-current-row border >
-      <el-form-item label="行程明细" prop="servin">
-        <el-button type="primary" @click="addRow(infiledList)">新增</el-button>
-
-        <el-table :data="infiledList" size="mini"  highlight-current-row border  style="width: 100%" >
-          <el-table-column prop="fildna" label="出发地" >
-            <template slot-scope="scope">
-              <el-input size="mini" v-model="scope.row.fildna"></el-input>
-            </template>
-          </el-table-column>
-           <el-table-column prop="fildna" label="目的地" >
-            <template slot-scope="scope">
-              <el-input size="mini" v-model="scope.row.fildnasl"></el-input>
-            </template>
-          </el-table-column>
-          <el-table-column prop="fildtp" label="交通工具">
-            <template slot-scope="scope">
-              <el-select v-model="scope.row.fildtp" clearable>
-                <el-option
-                  v-for="(item,index) in fildtps"
-                  :key="index"
-                  :label="item.text"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </template>
-          </el-table-column>
-          <el-table-column prop="remark" label="行程明细">
-            <template slot-scope="scope">
-              <el-input size="mini" v-model="scope.row.remark"></el-input>
-            </template>
-          </el-table-column>
-          <el-table-column fixed="right" label="操作">
-            <template slot-scope="scope">
-              <el-button type="danger" 
-                @click.native.prevent="deleteRow(scope.$index, infiledList)"
-                size="small"
-              >移除</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-form-item>
-    </el-form>
-          </el-col>
-        </el-row>-->
         <table width="100%" border="0" cellspacing="0.5" cellpadding="0">
           <caption>
             中国石油大港油田公司
@@ -144,7 +15,7 @@
                 <el-input v-model="temp.CCXM"></el-input>
               </td>
               <td :colspan="2">部门</td>
-              <td :colspan="4">
+              <td :colspan="5">
                 <el-select style="width:100%" placeholder="请选择部门" v-model="temp.DWBM"></el-select>
               </td>
               <td :colspan="1">出差原因</td>
@@ -158,7 +29,7 @@
                 <el-date-picker style="width:100%" v-model="temp.CCKSSJ" @change="StarTime"></el-date-picker>
               </td>
               <td :rowspan="1" colspan="2 ">结束日期</td>
-              <td :colspan="4">
+              <td :colspan="5">
                 <el-date-picker
                   style="width:100%"
                   v-model="temp.CCJSSJ"
@@ -177,6 +48,7 @@
               <td :colspan="4">硬座、火车补助</td>
               <td :colspan="2">车船飞机费</td>
               <td :colspan="1">杂费</td>
+              <td :colspan="1" :rowspan="2">操作</td>
             </tr>
             <tr>
               <td :colspan="3">出发日期</td>
@@ -239,173 +111,18 @@
               <td>
                 <el-input v-model="item.ZFJE" @change="getTotal"></el-input>
               </td>
+              <td>
+                <el-button type="primary" size="mini" @click="handleDelete(item)">删除</el-button>
+              </td>
             </tr>
-            <!-- <tr>
-              <td>&nbsp;</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>&nbsp;</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>&nbsp;</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>&nbsp;</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>&nbsp;</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>&nbsp;</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>&nbsp;</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>&nbsp;</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-            -->
-            <!-- <tr>
-              <td :colspan="5"></td>
-              <td>合计</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>-->
             <tr>
               <td :colspan="2">总计（大写）</td>
               <td :colspan="6">{{temp.HJDX}}</td>
               <td :colspan="2">￥(小写)</td>
               <!-- <td :colspan="3">{{temp.HJJE}}</td> -->
-              <td :colspan="3"><el-input v-model="temp.HJJE" @change="CapitalChinese(temp.HJJE)"></el-input></td>
+              <td :colspan="4">
+                <el-input v-model="temp.HJJE" @change="CapitalChinese(temp.HJJE)"></el-input>
+              </td>
               <td :colspan="2">预借差旅费</td>
               <td :colspan="4">
                 <el-input v-model="temp.YJCLF"></el-input>
@@ -417,7 +134,7 @@
                 <el-input v-model="temp.REMARK"></el-input>
               </td>
               <td :colspan="2">刷卡人姓名</td>
-              <td :colspan="3">
+              <td :colspan="4">
                 <el-input v-model="temp.SKRXM"></el-input>
               </td>
               <td :colspan="2">应交回（补付）金额</td>
@@ -430,7 +147,8 @@
       </el-form>
       <div style="text-align:center;margin-top:20px;">
         <el-button @click="closetab">取消</el-button>
-        <el-button type="primary" @click="createData">保存</el-button>
+        <el-button type="primary" @click="createData" v-if="PageFlag===0">保存</el-button>
+        <el-button type="primary" @click="UpdateData" v-if="PageFlag===1">保存</el-button>
         <el-button type="success">提交</el-button>
       </div>
     </el-card>
@@ -438,7 +156,12 @@
 </template>
 
 <script>
-import { GetInfo, CreateInfo } from "@/app_src/api/jygl/CLFBX";
+import {
+  GetInfo,
+  GetCLXCInfo,
+  UpdateInfo,
+  DeleteXCInfo
+} from "@/app_src/api/jygl/CLFBX";
 export default {
   name: "SWKC",
   data() {
@@ -490,7 +213,7 @@ export default {
         ]
       },
       editVisible: false,
-      dialogStatus: "",
+      PageFlag: 0, //页面状态；0代表创建，1代表修改
       listloading: false,
       ZE: 0
     };
@@ -509,9 +232,10 @@ export default {
           return time.getTime() < this.temp.CCKSSJ;
         }
       };
+      this.EndTime();
     },
     EndTime() {
-      this.temp.CCTS = (this.temp.CCJSSJ - this.temp.CCKSSJ) / 86400000;
+      this.temp.CCTS = (this.temp.CCJSSJ - this.temp.CCKSSJ) / 86400000 + 1;
     },
     addRow() {
       let obj = {
@@ -535,25 +259,19 @@ export default {
       this.temp.XCList.push(obj);
     },
     getList() {
-      //   this.listLoading = true;
-      //   getTaxOrgList(this.listQuery).then(response => {
-      //     if (response.data.code === 2000) {
-      //       this.list = response.data.items;
-      this.total = 15;
-      //       this.listLoading = false;
-      //     } else {
-      //       this.listLoading = false;
-      //       this.$notify({
-      //         position: "bottom-right",
-      //         title: "失败",
-      //         message: response.data.message,
-      //         type: "error",
-      //         duration: 2000
-      //       });
-      //     }
-      //   });
+      if (this.$route.query.CLBH != null && this.$route.query.CLBH != "") {
+        this.PageFlag = 1;
+        let temp = {
+          CLBH: this.$route.query.CLBH
+        };
+        GetCLXCInfo(temp).then(response => {
+          if (response.data.code === 2000) {
+            this.temp = response.data.items;
+            this.temp.userId = this.$store.state.user.userId;
+          }
+        });
+      }
     },
-
     resetTemp() {
       this.temp = {
         DWBM: "",
@@ -620,41 +338,68 @@ export default {
         this.$refs["dataForm"].clearValidate();
       });
     },
-    handleDelete(row) {
-      this.$confirm("待实现!", "提示", {
+    handleDelete(data) {
+      this.$confirm("确认删除吗！", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
         .then(() => {
-          //   const query = { S_ID: row.S_Id };
-          //   deleteTaxOrg(query).then(response => {
-          //     this.message = response.data.message;
-          //     this.title = "失败";
-          //     this.type = "error";
-          //     if (response.data.code === 2000) {
-          //       // const index = this.list.indexOf(row)
-          //       // this.list.splice(index, 1)
-          this.getList();
-          this.title = "成功";
-          this.type = "success";
-          //     }
-          this.$notify({
-            position: "bottom-right",
-            title: this.title,
-            message: this.message,
-            type: this.type,
-            duration: 2000
+          let temp = {
+            XCID: data.XCID
+          };
+          console.log(temp);
+          DeleteXCInfo(temp).then(response => {
+            if (response.data.code === 2000) {
+              this.$notify({
+                position: "bottom-right",
+                title: response.data.message,
+                message: "删除行程成功！",
+                type: "success",
+                duration: 3000
+              });
+              this.temp.XCList.splice(
+                this.temp.XCList.find(t => t.XCID === data.XCID),
+                1
+              );
+            } else {
+              this.$notify({
+                position: "bottom-right",
+                title: response.data.message,
+                message: "删除失败！",
+                type: "waring",
+                duration: 3000
+              });
+            }
           });
-          //   });
         })
         .catch(() => {});
     },
     closetab() {
-      //   window.opener = null;
-      // window.open("", "_top").close();
       this.$store.dispatch("delVisitedViews", this.$route);
       this.$router.go(-1);
+    },
+    UpdateData() {
+      UpdateInfo(this.temp).then(response => {
+        if (response.data.code === 2000) {
+          this.$notify({
+            position: "bottom-right",
+            title: response.data.message,
+            message: "操作成功，3秒后返回原界面",
+            type: "success",
+            duration: 3000
+          });
+          setTimeout(this.closetab, 3000);
+        } else {
+          this.$notify({
+            position: "bottom-right",
+            title: response.data.message,
+            message: "操作失败",
+            type: "warning",
+            duration: 3000
+          });
+        }
+      });
     },
     createData() {
       // 创建
@@ -662,39 +407,25 @@ export default {
         if (valid) {
           CreateInfo(this.temp).then(response => {
             if (response.data.code === 2000) {
+              this.$notify({
+                position: "bottom-right",
+                title: response.data.message,
+                message: "操作成功，3秒后返回原界面",
+                type: "success",
+                duration: 3000
+              });
+              setInterval(this.closetab, 3000);
+            } else {
+              this.$notify({
+                position: "bottom-right",
+                title: response.data.message,
+                message: "操作失败",
+                type: "warning",
+                duration: 3000
+              });
             }
           });
         }
-        this.closetab();
-      });
-    },
-    updateData() {
-      this.$refs["dataForm"].validate(valid => {
-        if (valid) {
-          const tempData = Object.assign({}, this.temp); // 这样就不会共用同一个对象
-          //   tempData.S_UpdateBy = this.$store.state.user.userId;
-          //   //tempData.NOTICE_CONTENT=this.content
-          //   updateTaxOrg(tempData).then(response => {
-          //     var message = response.data.message;
-          var message = "成功";
-          var title = "失败";
-          var type = "error";
-          //     if (response.data.code === 2000) {
-          this.getList();
-          title = "成功";
-          type = "success";
-          // }
-          this.editVisible = false;
-          this.$notify({
-            position: "bottom-right",
-            title: title,
-            message: message,
-            type: type,
-            duration: 3000
-          });
-          //   });
-        }
-        this.closetab();
       });
     },
     getTotal() {
@@ -707,9 +438,9 @@ export default {
           parseFloat(item.HCFY) +
           parseFloat(item.FCJE) +
           parseFloat(item.ZFJE);
-        //console.log(parseFloat(item.CQTS)*parseFloat(item.CQBZ)+parseFloat(item.BZJE)+parseFloat(item.HCFY)+parseFloat(item.FCJE)+parseFloat(item.ZFJE))
         this.temp.HJJE = total;
         this.CapitalChinese(total);
+        //console.log(item);
       });
     },
     CapitalChinese(data) {
@@ -775,7 +506,7 @@ export default {
         if (heightStr.endsWith("零")) {
           heightStr = heightStr.substring(0, heightStr.length - 1);
         }
-        if (heightStr.endsWith("拾")||str2.startsWith("0")) {
+        if (heightStr.endsWith("拾") || str2.startsWith("0")) {
           heightStr += "万零";
         } else {
           heightStr += "万";
@@ -804,7 +535,6 @@ export default {
           //   }
           // }
         }
-        console.log(lowStr + "qqqq");
         if (lowStr.endsWith("零")) {
           lowStr = lowStr.substring(0, lowStr.length - 1);
         }
@@ -841,6 +571,9 @@ export default {
       }
       this.temp.HJDX = ChineseStr;
     }
+  },
+  mounted() {
+    this.getList();
   },
   watch: {}
 };
