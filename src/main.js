@@ -28,7 +28,8 @@ import '../static/ueditor/ueditor.parse.js'
 
 import echarts from 'echarts'
 Vue.prototype.$echarts = echarts 
-
+import Print from 'vue-print-nb'
+Vue.use(Print);
 
 Vue.use(Element, {
   size: 'medium', // set element-ui default size

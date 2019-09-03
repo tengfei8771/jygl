@@ -82,14 +82,15 @@
                 <el-date-picker
                   type="date"
                   placeholder="选择日期"
-                  v-model="temp.SQSJ"
+                  v-model="temp.CJSJ"
                   style="width: 100%;"
+                  disabled
                 ></el-date-picker>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="报销单号" prop="BXDH">
-                <el-input v-model="temp.BXDH"></el-input>
+                <el-input v-model="temp.CLBH" disabled></el-input>
               </el-form-item>
               <!-- <el-form-item label="费用项目" prop="FYXM">
                     <el-select size="mini" style="width:100%;" v-model="temp.FYXM">
@@ -106,12 +107,12 @@
           <el-row>
             <el-col :span="12">
               <el-form-item label="申请单位" prop="SQBM">
-                <el-input v-model="temp.SQBM"></el-input>
+                <el-input v-model="temp.DWBM" disabled></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="出差人" prop="CCR">
-                <el-input v-model="temp.CCR"></el-input>
+                <el-input v-model="temp.CCXM" disabled></el-input>
               </el-form-item>
             </el-col>
           </el-row>
@@ -123,6 +124,7 @@
                   placeholder="选择日期"
                   v-model="temp.CCKSSJ"
                   style="width: 100%;"
+                  disabled
                 ></el-date-picker>
               </el-form-item>
             </el-col>
@@ -133,6 +135,7 @@
                   placeholder="选择日期"
                   v-model="temp.CCJSSJ"
                   style="width: 100%;"
+                  disabled
                 ></el-date-picker>
               </el-form-item>
             </el-col>
@@ -140,31 +143,31 @@
           <el-row>
             <el-col :span="12">
               <el-form-item label="报销金额" prop="BXJE">
-                <el-input v-model="temp.BXJE"></el-input>
+                <el-input v-model="temp.HJJE" disabled></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="金额大写" prop="BXJEDX">
-                <el-input v-model="temp.BXJEDX"></el-input>
+                <el-input v-model="temp.HJDX" disabled></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="24">
               <el-form-item label="出差事由" prop="BXSY">
-                <el-input v-model="temp.BXSY" type="textarea" :rows="3"></el-input>
+                <el-input v-model="temp.CCSY" type="textarea" :rows="3" disabled></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="12">
               <el-form-item label="预借差旅费" prop="YJCLF">
-                <el-input v-model="temp.YJCLF"></el-input>
+                <el-input v-model="temp.YJCLF" disabled></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="应退补金额" prop="YTBJE">
-                <el-input v-model="temp.YTBJE"></el-input>
+                <el-input v-model="temp.YTBJE" disabled></el-input>
               </el-form-item>
             </el-col>
           </el-row>

@@ -26,7 +26,7 @@
             <tr>
               <td :rowspan="1" colspan="2">开始日期</td>
               <td :colspan="5">
-                <el-date-picker style="width:100%" v-model="temp.CCKSSJ" @change="StarTime"></el-date-picker>
+                <el-date-picker style="width:100%" v-model="temp.CCKSSJ" @change="StarTime" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
               </td>
               <td :rowspan="1" colspan="2 ">结束日期</td>
               <td :colspan="5">
@@ -35,6 +35,7 @@
                   v-model="temp.CCJSSJ"
                   @change="EndTime"
                   :picker-options="pickerOptions"
+                  value-format="yyyy-MM-dd HH:mm:ss"
                 ></el-date-picker>
               </td>
               <td colspan="1">出差天数</td>
@@ -70,10 +71,10 @@
                 <el-input v-model="item.CFDD"></el-input>
               </td>
               <td :colspan="3">
-                <el-date-picker v-model="item.CFRQ" style="max-width:140px;"></el-date-picker>
+                <el-date-picker v-model="item.CFRQ" style="max-width:140px;" value-format="yyyy-MM-dd HH:mm:ss" type="datetime"></el-date-picker>
               </td>
               <td :colspan="3">
-                <el-date-picker v-model="item.DDRQ" style="max-width:140px;"></el-date-picker>
+                <el-date-picker v-model="item.DDRQ" style="max-width:140px;" value-format="yyyy-MM-dd HH:mm:ss" type="datetime"></el-date-picker>
               </td>
               <td>
                 <el-input v-model="item.CCDD"></el-input>
@@ -416,7 +417,7 @@ export default {
                 type: "success",
                 duration: 3000
               });
-              setInterval(this.closetab, 3000);
+              setTimeout(this.closetab, 3000);
             } else {
               this.$notify({
                 position: "bottom-right",

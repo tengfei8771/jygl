@@ -74,7 +74,11 @@ export const constantRouterMap = [
       meta: { title: '差旅费报销维护', icon: 'home', noCache: true },
       component: _import('app_src/views/jingying/CBZCGL/CLFBXEDIT'), hidden: true
     },
-
+    {
+      path: '/jingying/CBZCGL/CLBXPRINT', name: '差旅费打印',
+      meta: { title: '差旅费打印', icon: 'home', noCache: true },
+      component: _import('app_src/views/jingying/CBZCGL/CLBXPRINT'), hidden: true
+    },
     ]
   }
 ]
