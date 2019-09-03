@@ -112,7 +112,8 @@
                 <el-input v-model="item.ZFJE" @change="getTotal"></el-input>
               </td>
               <td>
-                <el-button type="primary" size="mini" @click="handleDelete(item)">删除</el-button>
+                <!-- <el-button type="primary" size="mini" @click="deleteRow(key,item)">移除</el-button> -->
+                <el-button type="danger" size="mini" @click="handleDelete(item)">删除</el-button>            
               </td>
             </tr>
             <tr>
@@ -160,7 +161,8 @@ import {
   GetInfo,
   GetCLXCInfo,
   UpdateInfo,
-  DeleteXCInfo
+  DeleteXCInfo,
+  CreateInfo
 } from "@/app_src/api/jygl/CLFBX";
 export default {
   name: "SWKC",
@@ -221,7 +223,7 @@ export default {
   methods: {
     deleteRow(index, rows) {
       //删除改行
-      rows.splice(index, 1);
+      this.temp.XCList.splice(index, 1);
     },
     addRow(tableData, event) {
       tableData.push({ fildna: "", fildtp: "", remark: "" });
