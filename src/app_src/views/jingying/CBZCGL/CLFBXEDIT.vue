@@ -26,7 +26,12 @@
             <tr>
               <td :rowspan="1" colspan="2">开始日期</td>
               <td :colspan="5">
-                <el-date-picker style="width:100%" v-model="temp.CCKSSJ" @change="StarTime" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+                <el-date-picker
+                  style="width:100%"
+                  v-model="temp.CCKSSJ"
+                  @change="StarTime"
+                  value-format="yyyy-MM-dd HH:mm:ss"
+                ></el-date-picker>
               </td>
               <td :rowspan="1" colspan="2 ">结束日期</td>
               <td :colspan="5">
@@ -71,10 +76,20 @@
                 <el-input v-model="item.CFDD"></el-input>
               </td>
               <td :colspan="3">
-                <el-date-picker v-model="item.CFRQ" style="max-width:140px;" value-format="yyyy-MM-dd HH:mm:ss" type="datetime"></el-date-picker>
+                <el-date-picker
+                  v-model="item.CFRQ"
+                  style="max-width:140px;"
+                  value-format="yyyy-MM-dd HH:mm:ss"
+                  type="datetime"
+                ></el-date-picker>
               </td>
               <td :colspan="3">
-                <el-date-picker v-model="item.DDRQ" style="max-width:140px;" value-format="yyyy-MM-dd HH:mm:ss" type="datetime"></el-date-picker>
+                <el-date-picker
+                  v-model="item.DDRQ"
+                  style="max-width:140px;"
+                  value-format="yyyy-MM-dd HH:mm:ss"
+                  type="datetime"
+                ></el-date-picker>
               </td>
               <td>
                 <el-input v-model="item.CCDD"></el-input>
@@ -114,7 +129,7 @@
               </td>
               <td>
                 <!-- <el-button type="primary" size="mini" @click="deleteRow(key,item)">移除</el-button> -->
-                <el-button type="danger" size="mini" @click="handleDelete(item)">删除</el-button>            
+                <el-button type="danger" size="mini" @click="handleDelete(item)">删除</el-button>
               </td>
             </tr>
             <tr>
@@ -123,7 +138,7 @@
               <td :colspan="2">￥(小写)</td>
               <!-- <td :colspan="3">{{temp.HJJE}}</td> -->
               <td :colspan="4">
-                <el-input v-model="temp.HJJE" @change="CapitalChinese(temp.HJJE)"></el-input>
+                {{temp.HJJE}}
               </td>
               <td :colspan="2">预借差旅费</td>
               <td :colspan="4">
@@ -165,6 +180,7 @@ import {
   DeleteXCInfo,
   CreateInfo
 } from "@/app_src/api/jygl/CLFBX";
+import {CapitalChinese} from "@/frame_src/utils/index"
 export default {
   name: "SWKC",
   data() {
@@ -434,6 +450,7 @@ export default {
     getTotal() {
       let data = this.temp.XCList;
       let total = 0;
+      let DXJE="";
       data.forEach(item => {
         total +=
           parseFloat(item.CQTS) * parseFloat(item.CQBZ) +
@@ -442,7 +459,8 @@ export default {
           parseFloat(item.FCJE) +
           parseFloat(item.ZFJE);
         this.temp.HJJE = total;
-        this.CapitalChinese(total);
+        this.temp.HJDX=CapitalChinese(total);
+        //this.CapitalChinese(total);
         //console.log(item);
       });
     },
@@ -462,7 +480,9 @@ export default {
       ]);
       let ChineseStr = "";
       let val = data.toString();
-      let arr = [...val];
+      let reg = /^[-|+]?\d+/;
+      if (reg.test(val)) {
+        let arr = [...val];
       let PointIndex = arr.findIndex((value, index, arr) => {
         return value === ".";
       });
@@ -473,8 +493,6 @@ export default {
       } else {
         intNum = val.substring(0, PointIndex);
         PointNum = val.substring(PointIndex + 1, val.length);
-        //console.log(intNum);
-        //console.log(PointNum);
       }
       let Strlen = intNum.length;
       if (Strlen < 6) {
@@ -570,9 +588,16 @@ export default {
           ChineseStr += "圆" + pointStr;
         }
       } else {
-        ChineseStr += "圆整";
+        if(ChineseStr==""){
+          ChineseStr += "零圆整";
+        }
+        else{
+          ChineseStr += "圆整";
+        }
+        
       }
       this.temp.HJDX = ChineseStr;
+      }
     }
   },
   mounted() {

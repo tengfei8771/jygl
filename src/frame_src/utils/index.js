@@ -310,6 +310,10 @@ export function CapitalChinese(data) {
   ]);
   let ChineseStr = "";
   let val = data.toString();
+  let reg = /^[-|+]?\d+/;
+  if (!reg.test(val)) {
+    return ChineseStr;
+  }
   let arr = [...val];
   let PointIndex = arr.findIndex((value, index, arr) => {
     return value === ".";
@@ -321,8 +325,6 @@ export function CapitalChinese(data) {
   } else {
     intNum = val.substring(0, PointIndex);
     PointNum = val.substring(PointIndex + 1, val.length);
-    //console.log(intNum);
-    //console.log(PointNum);
   }
   let Strlen = intNum.length;
   if (Strlen < 6) {
@@ -357,7 +359,7 @@ export function CapitalChinese(data) {
     if (heightStr.endsWith("零")) {
       heightStr = heightStr.substring(0, heightStr.length - 1);
     }
-    if (heightStr.endsWith("拾")||str2.startsWith("0")) {
+    if (heightStr.endsWith("拾") || str2.startsWith("0")) {
       heightStr += "万零";
     } else {
       heightStr += "万";
@@ -419,7 +421,12 @@ export function CapitalChinese(data) {
       ChineseStr += "圆" + pointStr;
     }
   } else {
-    ChineseStr += "圆整";
+    if (ChineseStr == "") {
+      ChineseStr += "零圆整";
+    }
+    else {
+      ChineseStr += "圆整";
+    }
   }
-  return  ChineseStr;
+  return ChineseStr;
 }

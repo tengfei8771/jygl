@@ -100,6 +100,7 @@
 
 
 <script>
+import { GetCLXCInfo } from "@/app_src/api/jygl/CLFBX";
 export default {
   data() {
     return {
@@ -144,21 +145,36 @@ export default {
       }
     };
   },
-  method: {},
-  filters:{
-    GetDate(val){
-      if(val!=""&&val!=null){
-        return val.subString(0,8);
+  method: {
+    getList() {
+      if (this.$route.query.CLBH != null && this.$route.query.CLBH != "") {
+        let temp = {
+          CLBH: this.$route.query.CLBH
+        };
+        GetCLXCInfo(temp).then(response => {
+          if (response.data.code === 2000) {
+            this.temp = response.data.items;
+            this.temp.userId = this.$store.state.user.userId;
+          }
+        });
       }
-      else{
+    }
+  },
+  mounted() {
+    this.getList();
+  },
+  filters: {
+    GetDate(val) {
+      if (val != "" && val != null) {
+        return val.subString(0, 8);
+      } else {
         return "";
       }
     },
-    GetTime(val){
-      if(val!=""&&val!=null){
-        return val.subString(8,val.length);
-      }
-      else{
+    GetTime(val) {
+      if (val != "" && val != null) {
+        return val.subString(8, val.length);
+      } else {
         return "";
       }
     }
@@ -181,7 +197,7 @@ export default {
     min-height: 50px;
     // background: #fff;
     //max-width:300px;
-    text-align: right;
+    text-align: center;
     border: 1px solid #a8aeb2;
     padding: 5px 10px;
   }
