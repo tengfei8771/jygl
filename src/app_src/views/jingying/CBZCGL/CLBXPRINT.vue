@@ -6,7 +6,7 @@
           <table width="100%" border="0" cellspacing="1" cellpadding="0">
             编码：{{temp.CLBH}}
             <br />
-            部门：{{temp.DWBM}}
+            部门：{{temp.DWMC}}
             <caption>
               中国石油大港油田公司
               <br />差旅费报销单
@@ -106,7 +106,7 @@ export default {
   data() {
     return {
       temp: {
-        DWBM: "",
+        DWBM: null,
         CCXM: "",
         CCSY: "",
         CCKSSJ: "",
@@ -122,6 +122,9 @@ export default {
         CJSJ: "",
         CJSJ: "",
         BJSJ: "",
+        XMBH:"",
+        XMMC:"",
+        DWMC:"",
         userId: this.$store.state.user.userId,
         XCList: [
           {
@@ -143,7 +146,7 @@ export default {
             ZFJE: 0
           }
         ]
-      }
+      },
     };
   },
   methods: {

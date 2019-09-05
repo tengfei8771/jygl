@@ -325,6 +325,7 @@ export default {
         BJSJ: "",
         XMBH:"",
         XMMC:"",
+        DWMC:"",
         userId: this.$store.state.user.userId,
         XCList: [
           {
@@ -443,7 +444,7 @@ export default {
       });
     },
     getnode(node, instanceId) {
-      this.temp.DWBM = node.orgName;
+      this.temp.DWMC = node.orgName;
     },
      getXMList() {
       this.listLoading = true;
@@ -484,6 +485,7 @@ export default {
         userId: this.$store.state.user.userId,
         XMBH:"",
         XMMC:"",
+        DWMC:"",
         XCList: [
           {
             CFRQ: "",
