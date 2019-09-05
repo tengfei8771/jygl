@@ -40,7 +40,7 @@
           <el-table-column label="申请单位(部门)" prop="DWBM" fixed="left"></el-table-column>
           <el-table-column label="申请时间" prop="SQSJ" fixed="left">
             <template slot-scope="scope">
-              <span>{{scope.row.SQSJ|parseTime}}</span>
+              <span>{{scope.row.SQSJ|parseDate}}</span>
             </template>
           </el-table-column>
           <el-table-column label="费用项目" prop="FYXM" fixed="left"></el-table-column>
@@ -86,7 +86,7 @@
 <script>
 import waves from "@/frame_src/directive/waves"; // 水波纹指令
 import { getToken } from "@/frame_src/utils/auth";
-import { parseTime, parseDate } from "@/frame_src/utils/index.js";
+import { parseTime, parseDate } from "@/frame_src/utils/index";
 import { GetInfo, DeleteInfo } from "@/app_src/api/jygl/FYBX";
 import { getStep, sendTask } from "@/app_src/api/jygl/WorkFlow";
 export default {
@@ -128,7 +128,10 @@ export default {
       }
     };
   },
+  filters: {
+    parseTime, parseDate
 
+  },
   methods: {
      // 查询数据
     getList() {

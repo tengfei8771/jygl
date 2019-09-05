@@ -32,7 +32,6 @@ export const constantRouterMap = [
   { path: '/authredirect', component: _import('frame_src/views/login/authredirect'), hidden: true },
   { path: '/404', component: _import('frame_src/views/errorPage/404'), hidden: true },
   { path: '/401', component: _import('frame_src/views/errorPage/401'), hidden: true },
-  
   {
     path: '',
     component: Layout,
@@ -79,6 +78,11 @@ export const constantRouterMap = [
       meta: { title: '差旅费打印', icon: 'home', noCache: true },
       component: _import('app_src/views/jingying/CBZCGL/CLBXPRINT'), hidden: true
     },
+    {
+      path: '/jingying/CBZCGL/FYBXPRINT', name: '费用报销打印',
+      meta: { title: '费用报销打印', icon: 'home', noCache: true },
+      component: _import('app_src/views/jingying/CBZCGL/FYBXPRINT'), hidden: true
+    }
     ]
   }
 ]
