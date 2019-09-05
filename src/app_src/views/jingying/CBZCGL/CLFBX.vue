@@ -68,8 +68,9 @@
               <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">修改</el-button>
               <el-button type="danger" size="mini" @click="handleDelete(scope.row)">删除</el-button>
               <el-button type="warning" size="mini" @click="handleCreate2(scope.row)">提交</el-button>
-              <el-button type="success" size="mini" @click="handleProcess(scope.row)">查看流程</el-button>
+              <el-button type="success" size="mini" @click="handleProcess(scope.row)">流程</el-button>
               <el-button type="info" size="mini">撤回</el-button>
+              <el-button type="success" size="mini" @click="Print(scope.row)">打印</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -299,6 +300,17 @@ export default {
     },
     addRow(tableData, event) {
       tableData.push({ fildna: "", fildtp: "", remark: "" });
+    },
+    Print(row){
+      this.temp = Object.assign({}, row); // copy obj
+      this.editVisible = true;
+      let query = {
+        CLBH: this.temp.CLBH
+      };
+      this.$router.push({
+        path: "/jingying/CBZCGL/CLBXPRINT",
+        query: { CLBH: this.temp.CLBH }
+      });
     },
     handleCreate2() {
       this.$router.push({ path: "/jingying/CBZCGL/CLFBXEDIT" });

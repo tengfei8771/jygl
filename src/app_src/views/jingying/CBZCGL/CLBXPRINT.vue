@@ -16,16 +16,16 @@
                 <td :colspan="2">姓名</td>
                 <td :colspan="4">{{temp.CCXM}}</td>
                 <td :colspan="1" :rowspan="2">起止日期</td>
-                <td :colspan="3">自{{CCKSSJ}}</td>
-                <td :colspan="3"></td>
+                <td :colspan="4">自{{temp.CCKSSJ|parseTime}}</td>
+                <td :colspan="2"></td>
                 <td :colspan="1" :rowspan="2">出差天数</td>
                 <td :colspan="3" :rowspan="2">共{{temp.CCTS}}天</td>
               </tr>
               <tr>
                 <td :rowspan="1" :colspan="2">出差事由</td>
-                <td :colspan="4">{{temp.CCKSSJ}}</td>
-                <td :colspan="3">至{{CCJSSJ}}</td>
-                <td :colspan="3"></td>
+                <td :colspan="4">{{temp.CCSY}}</td>
+                <td :colspan="4">至{{temp.CCJSSJ|parseTime}}</td>
+                <td :colspan="2"></td>
               </tr>
               <tr>
                 <td :colspan="4">乘车船、飞机起止时间</td>
@@ -53,22 +53,22 @@
                 <td>金额</td>
               </tr>
               <tr v-for="(item,key) in temp.XCList" :key="key">
-                <td :colspan="1"></td>
-                <td :colspan="1"></td>
-                <td :colspan="1"></td>
-                <td :colspan="1"></td>
-                <td :colspan="2"></td>
-                <td>天数</td>
-                <td>标准</td>
-                <td>金额</td>
-                <td>%</td>
-                <td>天数</td>
-                <td>金额</td>
-                <td>类别</td>
-                <td>席别</td>
-                <td>金额</td>
-                <td>费别</td>
-                <td>金额</td>
+                <td :colspan="1">{{item.CFRQ|GetDate}}</td>
+                <td :colspan="1">{{item.CFRQ|GetTime}}</td>
+                <td :colspan="1">{{item.DDRQ|GetDate}}</td>
+                <td :colspan="1">{{item.DDRQ|GetTime}}</td>
+                <td :colspan="2">{{item.CFDD}}-{{item.CCDD}}</td>
+                <td>{{item.CQTS}}</td>
+                <td>{{item.CQBZ}}</td>
+                <td>{{item.BZJE}}</td>
+                <td>{{item.BFB}}</td>
+                <td>{{item.TS}}</td>
+                <td>{{item.HCFY}}</td>
+                <td>{{item.FCLB}}</td>
+                <td>{{item.FCXB}}</td>
+                <td>{{item.FCJE}}</td>
+                <td>{{item.ZFLB}}</td>
+                <td>{{item.ZFJE}}</td>
               </tr>
               <tr>
                 <td :colspan="2">总计（大写）</td>
@@ -101,6 +101,7 @@
 
 <script>
 import { GetCLXCInfo } from "@/app_src/api/jygl/CLFBX";
+import {parseTime} from "@/frame_src/utils/index"
 export default {
   data() {
     return {
@@ -145,7 +146,7 @@ export default {
       }
     };
   },
-  method: {
+  methods: {
     getList() {
       if (this.$route.query.CLBH != null && this.$route.query.CLBH != "") {
         let temp = {
@@ -164,16 +165,17 @@ export default {
     this.getList();
   },
   filters: {
+    parseTime,
     GetDate(val) {
       if (val != "" && val != null) {
-        return val.subString(0, 8);
+        return val.substring(0, 10);
       } else {
         return "";
       }
     },
     GetTime(val) {
       if (val != "" && val != null) {
-        return val.subString(8, val.length);
+        return val.substring(11, val.length);
       } else {
         return "";
       }

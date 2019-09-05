@@ -16,7 +16,21 @@
               </td>
               <td :colspan="2">部门</td>
               <td :colspan="5">
-                <el-select style="width:100%" placeholder="请选择部门" v-model="temp.DWBM"></el-select>
+                <treeselect
+                  v-model="temp.DWBM"
+                  :multiple="false"
+                  :options="treeData"
+                  :load-options="loadOptions"
+                  placeholder="请选择部门"
+                  :normalizer="normalizer"
+                  :disable-branch-nodes="false"
+                  noResultsText="未搜索到结果"
+                  noChildrenText=" "
+                  style="font-size:14px;width:410px;"
+                  :clearable="true"
+                  @select="getnode"
+                  size="mini"
+                />
               </td>
               <td :colspan="1">出差原因</td>
               <td :colspan="5">
@@ -44,7 +58,10 @@
                 ></el-date-picker>
               </td>
               <td colspan="1">出差天数</td>
-              <td colspan="5">共{{temp.CCTS}}天</td>
+              <td colspan="1">共{{temp.CCTS}}天</td>
+              <td colspan="1">所属项目</td>
+              <td colspan="2">{{temp.XMMC}}</td>
+              <td colspan="1"><el-button type="primary" size="mini" @click="innerVisible=true">项目</el-button></td>
             </tr>
             <tr>
               <td :rowspan="2">出发地点</td>
@@ -129,7 +146,8 @@
               </td>
               <td>
                 <!-- <el-button type="primary" size="mini" @click="deleteRow(key,item)">移除</el-button> -->
-                <el-button type="danger" size="mini" @click="handleDelete(item)">删除</el-button>
+                <el-button type="danger" size="mini" @click="handleDelete(item)" v-if="item.XCID">删除</el-button>
+                <el-button type="warning" size="mini" @click="delRow($index)" v-else-if="!item.XCID">移除</el-button>
               </td>
             </tr>
             <tr>
@@ -137,9 +155,7 @@
               <td :colspan="6">{{temp.HJDX}}</td>
               <td :colspan="2">￥(小写)</td>
               <!-- <td :colspan="3">{{temp.HJJE}}</td> -->
-              <td :colspan="4">
-                {{temp.HJJE}}
-              </td>
+              <td :colspan="4">{{temp.HJJE}}</td>
               <td :colspan="2">预借差旅费</td>
               <td :colspan="4">
                 <el-input v-model="temp.YJCLF"></el-input>
@@ -169,31 +185,129 @@
         <el-button type="success">提交</el-button>
       </div>
     </el-card>
+    <el-dialog width="50%" title="项目信息" :visible.sync="innerVisible" append-to-body>
+       <div class="topSearh" id="topsearch">
+      <el-row>
+        <el-col :xs="5" :sm="5" :md="5" :lg="4" :xl="3">
+          <el-input
+            placeholder="项目编号"
+            style="width:95%;"
+            size="mini"
+            clearable
+            v-model="listQuery.XMBH"
+          ></el-input>
+        </el-col>
+        <el-col :xs="5" :sm="5" :md="5" :lg="4" :xl="3">
+          <el-input
+            placeholder="项目名称"
+            style="width:95%;"
+            size="mini"
+            clearable
+            v-model="listQuery.XMMC"
+          ></el-input>
+        </el-col>
+
+        <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="5">
+          <el-button
+            size="mini"
+            class="filter-item"
+            type="primary"
+            v-waves
+            icon="el-icon-search"
+            @click="getXMList"
+          >搜索</el-button>
+         
+        </el-col>
+      </el-row>
+    </div>
+      <el-table
+          :key="tableKey"
+            @row-click="showRow"
+            :data="list"
+            size="mini"
+            :header-cell-class-name="tableRowClassName"
+            v-loading="listLoading"
+            element-loading-text="给我一点时间"
+            border
+            fit
+            highlight-current-row
+            style="width: 100%;text-align:left;"
+      >
+        <el-table-column align="center" label="选择" width="50px" >
+          <template slot-scope="scope" >
+            <el-radio class="radio" v-model="radio"  :label="scope.$index">&nbsp;</el-radio>
+            <!-- <el-radio :label="scope.row.flagIndex" v-model="scope.row.flagValue" @change.native="getTemplateRow(scope.$index,scope.row)"></el-radio> -->
+          </template>
+        </el-table-column>
+
+            <el-table-column align="center" label="项目编号" width="120px">
+              <template slot-scope="scope">
+                <span>{{scope.row.XMBH}}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column label="项目名称" :show-overflow-tooltip="true" >
+              <template slot-scope="scope">
+                <span>{{scope.row.XMMC}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column width="100px" align="right" prop="XMLB" label="项目类别" ></el-table-column>
+            <el-table-column width="180px" align="right" prop="CBDW" label="承办单位"></el-table-column>
+            <el-table-column width="180px" prop="PC" label="项目批次" align="right"></el-table-column>
+      </el-table>
+        <div class="page">
+            <el-pagination
+              background
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              :current-page="listQuery.page"
+              :page-sizes="[10,20,30, 50]"
+              :page-size="listQuery.limit"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="total"
+            ></el-pagination>
+          </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import {
-  GetInfo,
   GetCLXCInfo,
   UpdateInfo,
   DeleteXCInfo,
   CreateInfo
 } from "@/app_src/api/jygl/CLFBX";
-import {CapitalChinese} from "@/frame_src/utils/index"
+import { CapitalChinese } from "@/frame_src/utils/index";
+import { fetchOrgList } from "@/frame_src/api/org";
+import { GetInfo } from "@/app_src/api/jygl/CBJHSQ";
+import { Treeselect, LOAD_CHILDREN_OPTIONS } from "@riophae/vue-treeselect";
+import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 export default {
   name: "SWKC",
+  components: {
+    Treeselect
+  },
   data() {
     return {
+      list:[],
       infiledList: [],
+      treeData: [],
+      innerVisible:false,
       fildtps: [{ text: "火车", value: "1" }, { text: "汽车", value: "2" }],
       textMap: {
         update: "修改差旅费用报销",
         create: "添加差旅费用报销"
       },
+      listQuery: {
+        limit: 10,
+        page: 1,
+        XMBH: "",
+        XMMC: ""
+      },
       pickerOptions: {},
       temp: {
-        DWBM: "",
+        DWBM: null,
         CCXM: "",
         CCSY: "",
         CCKSSJ: "",
@@ -209,6 +323,8 @@ export default {
         CJSJ: "",
         CJSJ: "",
         BJSJ: "",
+        XMBH:"",
+        XMMC:"",
         userId: this.$store.state.user.userId,
         XCList: [
           {
@@ -230,6 +346,13 @@ export default {
             ZFJE: 0
           }
         ]
+      },
+      normalizer(node) {
+        return {
+          id: node.orgCode,
+          label: node.orgShortName,
+          children: node.children
+        };
       },
       editVisible: false,
       PageFlag: 0, //页面状态；0代表创建，1代表修改
@@ -277,6 +400,17 @@ export default {
       };
       this.temp.XCList.push(obj);
     },
+    delRow(key){
+      this.temp.XCList.splice(key,1)
+    },
+    showRow(row) {
+      //赋值给radio
+      this.radio = this.list.indexOf(row);
+      this.selected = row;
+      this.temp.XMMC = row.XMMC;
+      this.temp.XMBH = row.XMBH;
+      this.innerVisible = false;
+    },
     getList() {
       if (this.$route.query.CLBH != null && this.$route.query.CLBH != "") {
         this.PageFlag = 1;
@@ -290,6 +424,44 @@ export default {
           }
         });
       }
+    },
+    getOrgDate() {
+      // 查询组织结构数据this.treeListQuery
+      fetchOrgList().then(response => {
+        if (response.data.code === 2000) {
+          this.treeData = [];
+          this.treeData = response.data.items;
+        } else {
+          this.$notify({
+            position: "bottom-right",
+            title: "失败",
+            message: response.data.message,
+            type: "error",
+            duration: 2000
+          });
+        }
+      });
+    },
+    getnode(node, instanceId) {
+      this.temp.DWBM = node.orgName;
+    },
+     getXMList() {
+      this.listLoading = true;
+      GetInfo(this.listQuery).then(response => {
+        if (response.data.code === 2000) {
+          this.list = response.data.items;
+          this.total = response.data.total;
+          this.listLoading = false;
+        } else {
+          this.$notify({
+            position: "bottom-right",
+            title: "失败",
+            message: response.data.message,
+            type: "warning",
+            duration: 2000
+          });
+        }
+      });
     },
     resetTemp() {
       this.temp = {
@@ -310,6 +482,8 @@ export default {
         CJSJ: "",
         BJSJ: "",
         userId: this.$store.state.user.userId,
+        XMBH:"",
+        XMMC:"",
         XCList: [
           {
             CFRQ: "",
@@ -450,7 +624,7 @@ export default {
     getTotal() {
       let data = this.temp.XCList;
       let total = 0;
-      let DXJE="";
+      let DXJE = "";
       data.forEach(item => {
         total +=
           parseFloat(item.CQTS) * parseFloat(item.CQBZ) +
@@ -459,7 +633,7 @@ export default {
           parseFloat(item.FCJE) +
           parseFloat(item.ZFJE);
         this.temp.HJJE = total;
-        this.temp.HJDX=CapitalChinese(total);
+        this.temp.HJDX = CapitalChinese(total);
         //this.CapitalChinese(total);
         //console.log(item);
       });
@@ -483,125 +657,122 @@ export default {
       let reg = /^[-|+]?\d+/;
       if (reg.test(val)) {
         let arr = [...val];
-      let PointIndex = arr.findIndex((value, index, arr) => {
-        return value === ".";
-      });
-      let intNum = 0;
-      let PointNum = "0";
-      if (PointIndex === -1) {
-        intNum = val;
-      } else {
-        intNum = val.substring(0, PointIndex);
-        PointNum = val.substring(PointIndex + 1, val.length);
-      }
-      let Strlen = intNum.length;
-      if (Strlen < 6) {
-        for (let i = 0; i < Strlen; i++) {
-          if (ChineseStr[ChineseStr.length - 1] == "零" && intNum[i] == "0") {
-            continue;
-          }
-          ChineseStr += map.get(intNum[i]);
-          if (Strlen - 2 - i >= 0) {
-            if (intNum[i] != "0") {
-              ChineseStr += Unit[Strlen - 2 - i];
-            }
-          }
-        }
-        if (ChineseStr.endsWith("零")) {
-          ChineseStr = ChineseStr.substring(0, ChineseStr.length - 1);
-        }
-      }
-      if (Strlen >= 6) {
-        let str1 = intNum.substring(0, intNum.length - 4);
-        let str2 = intNum.substring(intNum.length - 4, intNum.length);
-        let heightStr = "";
-        let lowStr = "";
-        for (let i = 0; i < str1.length; i++) {
-          heightStr += map.get(str1[i]);
-          if (str1.length - i - 2 >= 0) {
-            if (str1[i] != "0") {
-              heightStr += Unit[str1.length - 2 - i];
-            }
-          }
-        }
-        if (heightStr.endsWith("零")) {
-          heightStr = heightStr.substring(0, heightStr.length - 1);
-        }
-        if (heightStr.endsWith("拾") || str2.startsWith("0")) {
-          heightStr += "万零";
+        let PointIndex = arr.findIndex((value, index, arr) => {
+          return value === ".";
+        });
+        let intNum = 0;
+        let PointNum = "0";
+        if (PointIndex === -1) {
+          intNum = val;
         } else {
-          heightStr += "万";
+          intNum = val.substring(0, PointIndex);
+          PointNum = val.substring(PointIndex + 1, val.length);
         }
-        //console.log(str2);
-        for (let i = 0; i < str2.length; i++) {
-          if (lowStr[lowStr.length - 1] == "零" && str2[i] == "0") {
-            continue;
-          }
-          lowStr += map.get(str2[i]);
-          if (str2.length - 2 - i >= 0) {
-            if (str2[i] != "0") {
-              lowStr += Unit[str2.length - 2 - i];
+        let Strlen = intNum.length;
+        if (Strlen < 6) {
+          for (let i = 0; i < Strlen; i++) {
+            if (ChineseStr[ChineseStr.length - 1] == "零" && intNum[i] == "0") {
+              continue;
+            }
+            ChineseStr += map.get(intNum[i]);
+            if (Strlen - 2 - i >= 0) {
+              if (intNum[i] != "0") {
+                ChineseStr += Unit[Strlen - 2 - i];
+              }
             }
           }
-          // if (str2[i] == "0" && i < str2.length - 1) {
-          //   if (str2[i + 1] == "0") {
-          //     continue;
-          //   }
-          // } else {
-          //   lowStr += map.get(str2[i]);
-          //   if (str2.length- 2 - i >= 0) {
-          //     if (str2[i] != "0") {
-          //       lowStr += Unit[str2.length - 2 - i];
-          //     }
-          //   }
-          // }
+          if (ChineseStr.endsWith("零")) {
+            ChineseStr = ChineseStr.substring(0, ChineseStr.length - 1);
+          }
         }
-        if (lowStr.endsWith("零")) {
-          lowStr = lowStr.substring(0, lowStr.length - 1);
-        }
-        if (lowStr.startsWith("零")) {
-          lowStr = lowStr.substring(1, lowStr.length);
-        }
-        ChineseStr = heightStr + lowStr;
-        //console.log(ChineseStr);
-      }
-      if (PointNum != "0") {
-        let pointStr = "";
-
-        PointNum = PointNum.substring(0, 2);
-        //console.log(PointNum);
-        for (let i = 0; i < PointNum.length; i++) {
-          if (PointNum[i] != "0") {
-            pointStr += map.get(PointNum[i]) + Unit[6 + i];
+        if (Strlen >= 6) {
+          let str1 = intNum.substring(0, intNum.length - 4);
+          let str2 = intNum.substring(intNum.length - 4, intNum.length);
+          let heightStr = "";
+          let lowStr = "";
+          for (let i = 0; i < str1.length; i++) {
+            heightStr += map.get(str1[i]);
+            if (str1.length - i - 2 >= 0) {
+              if (str1[i] != "0") {
+                heightStr += Unit[str1.length - 2 - i];
+              }
+            }
+          }
+          if (heightStr.endsWith("零")) {
+            heightStr = heightStr.substring(0, heightStr.length - 1);
+          }
+          if (heightStr.endsWith("拾") || str2.startsWith("0")) {
+            heightStr += "万零";
           } else {
-            continue;
+            heightStr += "万";
+          }
+          //console.log(str2);
+          for (let i = 0; i < str2.length; i++) {
+            if (lowStr[lowStr.length - 1] == "零" && str2[i] == "0") {
+              continue;
+            }
+            lowStr += map.get(str2[i]);
+            if (str2.length - 2 - i >= 0) {
+              if (str2[i] != "0") {
+                lowStr += Unit[str2.length - 2 - i];
+              }
+            }
+            // if (str2[i] == "0" && i < str2.length - 1) {
+            //   if (str2[i + 1] == "0") {
+            //     continue;
+            //   }
+            // } else {
+            //   lowStr += map.get(str2[i]);
+            //   if (str2.length- 2 - i >= 0) {
+            //     if (str2[i] != "0") {
+            //       lowStr += Unit[str2.length - 2 - i];
+            //     }
+            //   }
+            // }
+          }
+          if (lowStr.endsWith("零")) {
+            lowStr = lowStr.substring(0, lowStr.length - 1);
+          }
+          if (lowStr.startsWith("零")) {
+            lowStr = lowStr.substring(1, lowStr.length);
+          }
+          ChineseStr = heightStr + lowStr;
+        }
+        if (PointNum != "0") {
+          let pointStr = "";
+
+          PointNum = PointNum.substring(0, 2);
+          for (let i = 0; i < PointNum.length; i++) {
+            if (PointNum[i] != "0") {
+              pointStr += map.get(PointNum[i]) + Unit[6 + i];
+            } else {
+              continue;
+            }
+          }
+          if (
+            ChineseStr.endsWith("万") ||
+            ChineseStr.endsWith("仟") ||
+            ChineseStr.endsWith("佰")
+          ) {
+            ChineseStr += "圆零" + pointStr;
+          } else {
+            ChineseStr += "圆" + pointStr;
+          }
+        } else {
+          if (ChineseStr == "") {
+            ChineseStr += "零圆整";
+          } else {
+            ChineseStr += "圆整";
           }
         }
-        //console.log(pointStr);
-        if (
-          ChineseStr.endsWith("万") ||
-          ChineseStr.endsWith("仟") ||
-          ChineseStr.endsWith("佰")
-        ) {
-          ChineseStr += "圆零" + pointStr;
-        } else {
-          ChineseStr += "圆" + pointStr;
-        }
-      } else {
-        if(ChineseStr==""){
-          ChineseStr += "零圆整";
-        }
-        else{
-          ChineseStr += "圆整";
-        }
-        
-      }
-      this.temp.HJDX = ChineseStr;
+        this.temp.HJDX = ChineseStr;
       }
     }
   },
   mounted() {
     this.getList();
+    this.getOrgDate();
+    this.getXMList();
   },
   watch: {}
 };
