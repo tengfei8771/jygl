@@ -619,6 +619,7 @@ handleSizeChange(val) {
     // this.listLoading = false;
     //this.temp = this.$route.query.row;
     this.temp = Object.assign({}, this.$route.query.row); // copy obj
+    console.log(this.temp);
     this.getOrgDate();
     this.GetFKFSOpions();
     this.getXMList();

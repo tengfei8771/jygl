@@ -49,7 +49,7 @@
           <el-table-column label="报销金额(大写)" prop="BXJEDX"></el-table-column>
           <el-table-column label="原借款金额" prop="YJKJE"></el-table-column>
           <el-table-column label="现付款金额" prop="XFKJE"></el-table-column>
-          <el-table-column label="付款方式" prop="FKFS"></el-table-column>
+          <el-table-column label="付款方式" prop="FKFSName"></el-table-column>
           <el-table-column label="附件张数" width="80" prop="FJZS"></el-table-column>
           <el-table-column label="收款单位名称" prop="SKDW" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column label="开户银行" prop="KHH" :show-overflow-tooltip="true"></el-table-column>
@@ -59,8 +59,9 @@
               <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">修改</el-button>
               <el-button type="danger" size="mini" @click="handleDelete(scope.row)">删除</el-button>
               <el-button type="warning" size="mini" @click="handleSubmit(scope.row)">提交</el-button>
-              <el-button type="success" size="mini" @click="handleProcess(scope.row)">查看流程</el-button>
+              <el-button type="success" size="mini" @click="handleProcess(scope.row)">流程</el-button>
               <el-button type="info" size="mini">撤回</el-button>
+              <el-button type="success" size="mini" @click="Print(scope.row)">打印</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -120,6 +121,7 @@ export default {
       listLoading: false,
       tableKey: 0,
       list: [],
+      total:0,
       listQuery: {
         limit: 10,
         page: 1,
@@ -179,8 +181,16 @@ export default {
     handleCreate() {
       this.$router.push({
         path: "/jingying/CBZCGL/FYBXEDIT",
-        query: { type: "create" },
-        row: this.temp
+        query: { type: "create"},
+
+      });
+    },
+    Print(row){
+      console.log(row);
+      this.$router.push({
+        path: "/jingying/CBZCGL/FYBXPRINT",
+        query: { type: "update",row:row },
+
       });
     },
     handleUpdate(row) {
@@ -255,7 +265,7 @@ var newList = []
         })
         .catch(() => {});
     },
-   
+
   },
    created() {
       this.getList();

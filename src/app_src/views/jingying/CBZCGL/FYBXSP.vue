@@ -20,7 +20,7 @@
       <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
         <el-table
           size="mini"
-          :data="goods"
+          :data="list"
           :header-cell-class-name="tableRowClassName"
           v-loading="listloading"
           element-loading-text="给我一点时间"
@@ -29,24 +29,28 @@
           highlight-current-row
           style="width: 100%"
         >
-  <el-table-column label="报销单号" prop="BXDH"></el-table-column>
-          <el-table-column label="申请单位(部门)" width="110" prop="SQBM"  fixed="left"></el-table-column>
-          <el-table-column label="申请时间" prop="SQSJ"  fixed="left"></el-table-column>
-          <el-table-column label="费用项目" prop="FYXM"  fixed="left"></el-table-column>
+    <el-table-column label="报销单号" prop="BXDH" fixed="left"></el-table-column>
+          <el-table-column label="申请单位(部门)" prop="DWBM" fixed="left"></el-table-column>
+          <el-table-column label="申请时间" prop="SQSJ" fixed="left">
+            <template slot-scope="scope">
+              <span>{{scope.row.SQSJ|parseDate}}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="费用项目" prop="FYXM" fixed="left"></el-table-column>
           <el-table-column label="报销事由" prop="BXSY"></el-table-column>
           <el-table-column label="报销金额" prop="BXJE"></el-table-column>
-          <el-table-column label="报销金额(大写)" width="110" prop="BXJEDX"></el-table-column>
+          <el-table-column label="报销金额(大写)" prop="BXJEDX"></el-table-column>
           <el-table-column label="原借款金额" prop="YJKJE"></el-table-column>
           <el-table-column label="现付款金额" prop="XFKJE"></el-table-column>
-          <el-table-column label="付款方式" prop="FKFS"></el-table-column>
+          <el-table-column label="付款方式" prop="FKFSName"></el-table-column>
           <el-table-column label="附件张数" width="80" prop="FJZS"></el-table-column>
-          <el-table-column label="收款单位名称" prop="SKDW"  :show-overflow-tooltip="true"></el-table-column>
-          <el-table-column label="开户银行" prop="KHYH"  :show-overflow-tooltip="true"></el-table-column>
-          <el-table-column label="账户" prop="ZH"  :show-overflow-tooltip="true"></el-table-column>
-           <el-table-column align="center" width="280" label="操作"  fixed="right">
+          <el-table-column label="收款单位名称" prop="SKDW" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="开户银行" prop="KHH" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="账户" prop="YHZH" :show-overflow-tooltip="true"></el-table-column>
+           <el-table-column align="center" width="240" label="操作"  fixed="right">
               <template slot-scope="scope">
                 <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">审批</el-button>
-                <el-button type="danger" size="mini" @click="handleDelete(scope.row)">回退</el-button>
+                <el-button type="danger" size="mini" @click="handleDelete(scope.row)">废弃</el-button>
                  <el-button type="success"  size="mini" @click="handleProcess(scope.row)">查看流程</el-button>
               </template>
             </el-table-column>
@@ -161,7 +165,7 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="账户" prop="ZH">
-                <el-input v-model="temp.ZH"></el-input>
+                <el-input v-model="temp.YHZH"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
@@ -190,8 +194,15 @@
 </template>
 
 <script>
+import waves from "@/frame_src/directive/waves"; // 水波纹指令
+import { getToken } from "@/frame_src/utils/auth";
+import { parseTime, parseDate } from "@/frame_src/utils/index";
+import { GetInfo } from "@/app_src/api/jygl/FYBX";
 export default {
-  name: "JYKC",
+  name: "FYBXSP",
+    directives: {
+    waves
+  },
   data() {
     return {
          textMap: {
@@ -218,99 +229,43 @@ export default {
       },
       editVisible: false,
       dialogStatus: "",
-      listloading: false,
-      goods: [
-        {
-          BXDH: "GY01JL9.11-02",
-          SQBM: "北京项目部",
-          SQSJ: "219-05-31",
-          FYXM:"房屋租赁费",
-          BXSY:"缴纳房租",
-         
-          BXJE: 200,
-          BXJEDX: "贰佰元",
-          YJKJE: 0,
-          XFKJE: 0,
-          FKFS:"电汇",
-          FJZS:2,
-          SKDW:"北京卓进房地产经济有限公司",
-          KHYH:"中国工商银行",
-          ZH:"7893777726500043943094"
-        },
-        {
-                   BXDH: "GY01JL9.11-02",
-          SQBM: "北京项目部",
-          SQSJ: "219-05-31",
-          FYXM:"房屋租赁费",
-          BXSY:"缴纳房租",
-         
-          BXJE: 200,
-          BXJEDX: "贰佰元",
-          YJKJE: 0,
-          XFKJE: 0,
-          FKFS:"电汇",
-          FJZS:2,
-          SKDW:"北京卓进房地产经济有限公司",
-          KHYH:"中国工商银行",
-          ZH:"7893777726500043943094"
-        },
-        {
-                   BXDH: "GY01JL9.11-02",
-          SQBM: "北京项目部",
-          SQSJ: "219-05-31",
-          FYXM:"房屋租赁费",
-          BXSY:"缴纳房租",
-         
-          BXJE: 200,
-          BXJEDX: "贰佰元",
-          YJKJE: 0,
-          XFKJE: 0,
-          FKFS:"电汇",
-          FJZS:2,
-          SKDW:"北京卓进房地产经济有限公司",
-          KHYH:"中国工商银行",
-          ZH:"7893777726500043943094"
-        },
-        {
-                   BXDH: "GY01JL9.11-02",
-          SQBM: "北京项目部",
-          SQSJ: "219-05-31",
-          FYXM:"房屋租赁费",
-          BXSY:"缴纳房租",
-         
-          BXJE: 200,
-          BXJEDX: "贰佰元",
-          YJKJE: 0,
-          XFKJE: 0,
-          FKFS:"电汇",
-          FJZS:2,
-          SKDW:"北京卓进房地产经济有限公司",
-          KHYH:"中国工商银行",
-          ZH:"7893777726500043943094"
-        }
-      ]
+      listLoading: false,
+      tableKey: 0,
+      list: [],
+      total:0,
+      listQuery: {
+        limit: 10,
+        page: 1,
+        BXDH: "",
+        XMMC: ""
+      }
+     
     };
   },
+  filters: {
+    parseTime, parseDate
 
+  },
   methods: {
-     getList() {
-      //   this.listLoading = true;
-      //   getTaxOrgList(this.listQuery).then(response => {
-      //     if (response.data.code === 2000) {
-      //       this.list = response.data.items;
-      this.total = 15;
-      //       this.listLoading = false;
-      //     } else {
-      //       this.listLoading = false;
-      //       this.$notify({
-      //         position: "bottom-right",
-      //         title: "失败",
-      //         message: response.data.message,
-      //         type: "error",
-      //         duration: 2000
-      //       });
-      //     }
-      //   });
+
+      // 查询数据
+    getList() {
+      this.listLoading = true;
+      GetInfo(this.listQuery).then(response => {
+        if (response.data.code === 2000) {
+          this.list = response.data.items;
+          this.total = response.data.total;
+          this.listLoading = false;
+        } else {
+          this.$notify({
+            position: "bottom-right",
+            title: "失败",
+            message: response.data.message,
+            type: "warning",
+            duration: 2000
+          });
+        }
+      });
     },
 
       resetTemp() {
@@ -446,7 +401,11 @@ export default {
         }
       });
     },
-  }
+
+  },
+         created() {
+      this.getList();
+    }
 };
 </script>
 

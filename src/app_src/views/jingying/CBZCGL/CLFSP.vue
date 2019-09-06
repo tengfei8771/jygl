@@ -50,7 +50,7 @@
           <el-table-column align="center" width="300" label="操作" fixed="right">
             <template slot-scope="scope">
               <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">审批</el-button>
-              <el-button type="danger" size="mini" @click="handleDelete(scope.row)">退回</el-button>
+              <el-button type="danger" size="mini" @click="handleDelete(scope.row)">废弃</el-button>
               <el-button type="success" size="mini" @click="handleProcess(scope.row)">查看流程</el-button>
             </template>
           </el-table-column>
