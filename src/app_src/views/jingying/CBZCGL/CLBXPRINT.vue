@@ -171,14 +171,14 @@ export default {
     parseTime,
     GetDate(val) {
       if (val != "" && val != null) {
-        return val.substring(0, 10);
+        return val.substring(5, 10);
       } else {
         return "";
       }
     },
     GetTime(val) {
       if (val != "" && val != null) {
-        return val.substring(11, val.length);
+        return val.substring(11, val.length-3);
       } else {
         return "";
       }
@@ -190,8 +190,9 @@ export default {
 <style lang="scss" scoped>
 #print {
   table {
-    font-size: 16px;
+    font-size: 12px;
     // background: #000;
+    font-family: SimSun;
     min-height: 25px;
     line-height: 25px;
     text-align: center;

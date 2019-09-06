@@ -59,7 +59,7 @@
           >
             <el-table-column align="center" label="项目编号" fixed="left" width="120px">
               <template slot-scope="scope">
-                <span>{{scope.row.XMBH}}</span>
+                <span>{{scope.row.XMCODE}}</span>
               </template>
             </el-table-column>
 
@@ -68,7 +68,7 @@
                 <span>{{scope.row.XMMC}}</span>
               </template>
             </el-table-column>
-            <el-table-column width="100px" align="right" prop="XMLB" label="项目类别" fixed="left"></el-table-column>
+            <el-table-column width="100px" align="right" prop="LB" label="项目类别" fixed="left"></el-table-column>
             <el-table-column width="180px" align="right" prop="CBDW" label="承办单位" fixed="left"></el-table-column>
             <el-table-column width="180px" prop="PC" label="项目批次" align="right"></el-table-column>
             <el-table-column
@@ -149,20 +149,67 @@
         >
           <el-row>
             <el-col :span="12">
-              <el-form-item label="项目编号" prop="XMBH">
-                <el-input v-model="temp.XMBH" disabled placeholder="系统自动生成，无需填写"></el-input>
+              <el-form-item label="项目批次" prop="XMPC">
+                <el-select style="width:100%;" v-model="temp.XMPC" @change="selectChange">
+                  <el-option
+                    v-for="(item,key) in BatchOptions"
+                    :key="key"
+                    :label="item.Name"
+                    :value="item.Code"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="计划年度" prop="JHND">
+                <el-date-picker
+                  v-model="temp.JHND"
+                  type="year"
+                  value-format="yyyy-MM-dd"
+                  placeholder="选择年月"
+                  :clearable="true"
+                  style="width:100%"
+                ></el-date-picker>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="项目编号" prop="XMCODE">
+                <el-input v-model="temp.XMCODE"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="项目名称" prop="XMMC">
-                <el-input v-model="temp.XMMC"></el-input>
+                <el-input v-model="temp.XMMC" v-if="!finallFlag"></el-input>
+                <el-select style="width:100%;" v-model="temp.XMMC" v-else-if="finallFlag">
+                  <el-option
+                    v-for="(item,key) in XMOptions"
+                    :key="key"
+                    :label="item.XMMC+item.XMCODE"
+                    :value="item.XMMC"
+                  ></el-option>
+                </el-select>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="12">
               <el-form-item label="项目类别" prop="XMLB">
-                <el-input v-model="temp.XMLB"></el-input>
+                <treeselect
+                  v-model="temp.XMLB"
+                  :multiple="false"
+                  :options="treeData"
+                  :load-options="loadOptions"
+                  placeholder="请选择项目类别"
+                  :normalizer="normalizer"
+                  :disable-branch-nodes="false"
+                  noResultsText="未搜索到结果"
+                  noChildrenText=" "
+                  style="font-size:14px;"
+                  :clearable="true"
+                  size="mini"
+                />
               </el-form-item>
             </el-col>
             <el-col :span="12">
@@ -185,7 +232,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="历史计划金额" prop="LSJE">
+              <el-form-item label="历史计划金额" >
                 <el-input v-model="temp.LSJE"></el-input>
               </el-form-item>
             </el-col>
@@ -197,27 +244,8 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="未来计划金额" prop="WLJE">
+              <el-form-item label="未来计划金额" >
                 <el-input v-model="temp.WLJE"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="是否存在物资" prop="CZWZ">
-                <el-select  style="width:100%;" v-model="temp.CZWZ">
-                  <el-option
-                    v-for="(item,key) in selectOptions"
-                    :key="key"
-                    :label="item.label"
-                    :value="item.value"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12" v-show="temp.CZWZ==!0">
-              <el-form-item label="物资计划金额" prop="WZJHJE">
-                <el-input v-model="temp.WZJHJE"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
@@ -235,15 +263,34 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="项目批次">
-                <el-select  style="width:100%;" v-model="temp.XMPC">
+              <el-form-item label="是否有收入" prop="HASINCOME">
+                <el-select style="width:100%;" v-model="temp.HASINCOME">
                   <el-option
-                    v-for="(item,key) in BatchOptions"
+                    v-for="(item,key) in selectOptions"
                     :key="key"
-                    :label="item.Name"
-                    :value="item.Code"
+                    :label="item.label"
+                    :value="item.value"
                   ></el-option>
                 </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="是否存在物资" prop="CZWZ">
+                <el-select style="width:100%;" v-model="temp.CZWZ">
+                  <el-option
+                    v-for="(item,key) in selectOptions"
+                    :key="key"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12" v-show="temp.CZWZ==!0">
+              <el-form-item label="物资计划金额" prop="WZJHJE">
+                <el-input v-model="temp.WZJHJE"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
@@ -344,16 +391,20 @@ import {
   DeleteInfo,
   GetDetailInfo,
   DeleteDetailInfo,
-  GetOptions
+  GetOptions,
+  GetTreeOptions,
+  GetYearProject
 } from "@/app_src/api/jygl/CBJHSQ";
+import { Treeselect, LOAD_CHILDREN_OPTIONS } from "@riophae/vue-treeselect";
+import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 export default {
   name: "CBJHSQ",
   directives: {
     waves
   },
-  //   components: {
-  //     Treeselect
-  //   },
+  components: {
+    Treeselect
+  },
   data() {
     const changeNumber = (rule, value, callback) => {
       var str = /^[+|-]?\d+(.\d+)?$/;
@@ -365,9 +416,18 @@ export default {
     };
     return {
       infiledList: [],
+      treeData: [],
+      finallFlag: false,
       fildtps: [{ text: "设备", value: "1" }, { text: "材料", value: "2" }],
       tableKey: 0,
       workFlowVisible: false,
+      normalizer(node) {
+        return {
+          id: node.Code,
+          label: node.Name,
+          children: node.children
+        };
+      },
       selectOptions: [
         {
           value: 0,
@@ -380,13 +440,14 @@ export default {
       ],
       list: [],
       BatchOptions: [],
+      XMOptions:[],
       rules: {
         XMMC: [
           { required: true, message: "请输入项目名称", trigger: "change" }
         ],
-        // XMLB: [
-        //   { required: true, message: "请输入项目类别", trigger: "change" }
-        // ],
+        XMLB: [
+          { required: true, message: "请输入项目类别", trigger: "change" }
+        ],
         CBDW: [
           { required: true, message: "请输入承办单位", trigger: "change" }
         ],
@@ -398,21 +459,30 @@ export default {
           { validator: changeNumber, trigger: "change" }
         ],
         LSJE: [
-          { required: true, message: "请输入计划总金额", trigger: "change" },
+          { required: true, message: "请输入历史金额", trigger: "change" },
           { validator: changeNumber, trigger: "change" }
         ],
         BNJE: [
-          { required: true, message: "请输入计划总金额", trigger: "change" },
+          { required: true, message: "请输入本年金额", trigger: "change" },
           { validator: changeNumber, trigger: "change" }
         ],
         WLJE: [
-          { required: true, message: "请输入计划总金额", trigger: "change" },
+          { required: true, message: "请输入蔚来金额", trigger: "change" },
           { validator: changeNumber, trigger: "change" }
         ],
         CZWZ: [
           { required: true, message: "请选择是否存在物资", trigger: "change" }
         ],
-        SFCW: [{ required: true, message: "请选择是否财务", trigger: "change" }]
+        SFCW: [
+          { required: true, message: "请选择是否财务", trigger: "change" }
+        ],
+        HASINCOME: [
+          { required: true, message: "请选择是否有收入", trigger: "change" }
+        ],
+        XMCODE: [
+          { required: true, message: "请输入项目编号", trigger: "change" }
+        ],
+        JHND: [{ required: true, message: "请选择计划年度", trigger: "change" }]
       },
       total: 0,
       listLoading: false,
@@ -446,7 +516,10 @@ export default {
         IS_DELETE: 0,
         CZWZ: "",
         SFCW: "",
-        XMLE: ""
+        XMLE: "",
+        XMCODE: "",
+        HASINCOME: "",
+        JHND: ""
       },
       inServForm: {},
       textMap: {
@@ -459,6 +532,19 @@ export default {
     };
   },
   methods: {
+    selectChange(val) {
+      if (
+        this.BatchOptions.length - 1 ===
+        this.BatchOptions.findIndex(t => t.Code === val)
+      ) {
+        this.finallFlag = true;
+        GetYearProject().then(response=>{
+          this.XMOptions=response.data.items;
+        })
+      } else {
+        this.finallFlag = false;
+      }
+    },
     deleteRow(index, rows) {
       //删除改行
       rows.splice(index, 1);
@@ -484,11 +570,13 @@ export default {
         IS_DELETE: 0,
         CZWZ: "",
         SFCW: "",
-        XMLE: ""
+        XMLE: "",
+        XMCODE: "",
+        HASINCOME: "",
+        JHND: ""
       };
       this.infiledList = [];
     },
-
     getList() {
       this.listLoading = true;
       GetInfo(this.listQuery).then(response => {
@@ -658,6 +746,14 @@ export default {
         })
         .catch(() => {});
     },
+    loadOptions({ action, parentNode, callback }) {
+      if (action === LOAD_CHILDREN_OPTIONS) {
+        if (parentNode.children == null) {
+          parentNode.children = undefined;
+          callback();
+        }
+      }
+    },
     handleSizeChange(val) {
       this.listQuery.limit = val;
       this.getList();
@@ -680,6 +776,14 @@ export default {
         }
       });
     },
+    GetTreeOptions() {
+      let temp = {
+        code: "XMLB"
+      };
+      GetTreeOptions(temp).then(response => {
+        this.treeData = response.data.items;
+      });
+    },
     tableRowClassName({ row, rowIndex }) {
       if (rowIndex === 0) {
         return "el-button--primary is-active"; // 'warning-row'
@@ -690,6 +794,7 @@ export default {
   created() {
     this.listLoading = false;
     this.GetOpions();
+    this.GetTreeOptions();
     this.getList();
   },
 
@@ -725,23 +830,23 @@ export default {
   .buttom {
     float: right;
   }
-  .vue-treeselect__control {
-    height: 28px !important;
-    width: 100%;
-  }
-  .vue-treeselect__placeholder,
-  .vue-treeselect__single-value {
-    line-height: 28px;
-  }
-}
-.selecttrees {
-  .vue-treeselect--searchable .vue-treeselect__input-container {
-    height: 28px !important;
-    width: 100%;
-  }
-  .el-dialog__body {
-    padding: 0px 10px 10px !important;
-  }
+  //   .vue-treeselect__control {
+  //     height: 28px !important;
+  //     width: 100%;
+  //   }
+  //   .vue-treeselect__placeholder,
+  //   .vue-treeselect__single-value {
+  //     line-height: 28px;
+  //   }
+  // }
+  // .selecttrees {
+  //   .vue-treeselect--searchable .vue-treeselect__input-container {
+  //     height: 28px !important;
+  //     width: 100%;
+  //   }
+  //   .el-dialog__body {
+  //     padding: 0px 10px 10px !important;
+  //   }
 }
 </style>
 

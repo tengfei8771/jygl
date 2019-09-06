@@ -257,8 +257,9 @@ import { getToken } from "@/frame_src/utils/auth";
 import { CapitalChinese } from "@/frame_src/utils/index";
 import { fetchOrgList } from "@/frame_src/api/org";
 import { Treeselect, LOAD_CHILDREN_OPTIONS } from "@riophae/vue-treeselect";
-import { GetInfo } from "@/app_src/api/jygl/CBJHSQ";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import { GetInfo } from "@/app_src/api/jygl/CBJHSQ";
+
 import {
   CreateInfo,
   UpdateInfo,
