@@ -1,219 +1,439 @@
 <template>
-  <div id="SRXM" class="app-container calendar-list-container">
-    <!-- <el-form :model="inServForm" ref="inServForm" label-width="130px" size="mini" highlight-current-row border >
-      <el-form-item label="输入参数列表" prop="servin">
-        <el-button type="primary" @click="addRow(infiledList)">新增</el-button>
+  <div id="CBJHTZ" class="app-container calendar-list-container">
+    <div class="topSearh" id="topsearch">
+      <el-row>
+        <el-col :xs="5" :sm="5" :md="5" :lg="4" :xl="3">
+          <el-input
+            placeholder="项目编号"
+            style="width:95%;"
+            size="mini"
+            clearable
+            v-model="listQuery.XMBH"
+          ></el-input>
+        </el-col>
+        <el-col :xs="5" :sm="5" :md="5" :lg="4" :xl="3">
+          <el-input
+            placeholder="项目名称"
+            style="width:95%;"
+            size="mini"
+            clearable
+            v-model="listQuery.XMMC"
+          ></el-input>
+        </el-col>
 
-        <el-table :data="infiledList" size="mini"  highlight-current-row border  style="width: 100%" >
-          <el-table-column prop="fildna" label="名称" >
-            <template slot-scope="scope">
-              <el-input size="mini" v-model="scope.row.fildna"></el-input>
-            </template>
-          </el-table-column>
-          <el-table-column prop="fildtp" label="类型">
-            <template slot-scope="scope">
-              <el-select v-model="scope.row.fildtp" clearable>
-                <el-option
-                  v-for="(item,index) in fildtps"
-                  :key="index"
-                  :label="item.text"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </template>
-          </el-table-column>
-          <el-table-column prop="remark" label="备注">
-            <template slot-scope="scope">
-              <el-input size="mini" v-model="scope.row.remark"></el-input>
-            </template>
-          </el-table-column>
-          <el-table-column fixed="right" label="操作">
-            <template slot-scope="scope">
-              <el-button
-                @click.native.prevent="deleteRow(scope.$index, infiledList)"
+        <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="5">
+          <el-button
+            size="mini"
+            class="filter-item"
+            type="primary"
+            v-waves
+            icon="el-icon-search"
+            @click="getList"
+          >搜索</el-button>
+          <el-button
+            size="mini"
+            class="filter-item"
+            style="margin-left: 10px;"
+            @click="handleCreate"
+            type="primary"
+            icon="el-icon-edit"
+          >新增调整</el-button>
+        </el-col>
+      </el-row>
+    </div>
+    <el-card>
+      <el-row>
+        <el-col :span="24">
+          <el-table
+            :key="tableKey"
+            :data="list"
+            size="mini"
+            :header-cell-class-name="tableRowClassName"
+            v-loading="listLoading"
+            element-loading-text="给我一点时间"
+            border
+            fit
+            highlight-current-row
+            style="width: 100%;text-align:left;"
+          >
+            <el-table-column align="center" label="项目编号" :show-overflow-tooltip="true">
+              <template slot-scope="scope">
+                <span>{{scope.row.XMBH}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column align="center" label="项目名称" :show-overflow-tooltip="true">
+              <template slot-scope="scope">
+                <span>{{scope.row.XMMC}}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column align="center" label="承办单位" :show-overflow-tooltip="true">
+              <template slot-scope="scope">
+                <span>{{scope.row.CBDW}}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column align="center" label="调整前计划总金额" :show-overflow-tooltip="true">
+              <template slot-scope="scope">
+                <span>{{scope.row.TZQJE}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column align="center" label="调整金额" :show-overflow-tooltip="true">
+              <template slot-scope="scope">
+                <span>{{scope.row.TZJE}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column align="center" label="调整说明" :show-overflow-tooltip="true">
+              <template slot-scope="scope">
+                <span>{{scope.row.TZSM}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column align="center" label="调整日期" :show-overflow-tooltip="true">
+              <template slot-scope="scope">
+                <span>{{scope.row.TZSJ}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column align="center" label="调整人" :show-overflow-tooltip="true">
+              <template slot-scope="scope">
+                <span>{{scope.row.CJRName}}</span>
+              </template>
+            </el-table-column>
+            <!-- <el-table-column align="center" width="200" label="操作">
+              <template slot-scope="scope">
+                <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">修改</el-button>
+                <el-button type="danger" size="mini" @click="handleDelete(scope.row)">删除</el-button>
+              </template>
+            </el-table-column> -->
+          </el-table>
+          <div class="page">
+            <el-pagination
+              background
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              :current-page="listQuery.page"
+              :page-sizes="[10,20,30, 50]"
+              :page-size="listQuery.limit"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="total"
+            ></el-pagination>
+          </div>
+        </el-col>
+      </el-row>
+    </el-card>
+    <el-dialog :visible.sync="editVisible" class="selecttrees" :title="textMap[dialogStatus]" width="700px">
+      <el-card>
+        <el-form
+          :rules="rules"
+          ref="dataForm"
+          :model="temp"
+          label-width="120px"
+          style="width: 99%;"
+        >
+          <el-col :span="24">
+            <el-form-item label="项目名称" prop="XMMC">
+             <el-input v-model="temp.XMMC" disabled style="width:78%;"></el-input>
+                 <el-button
                 size="small"
-              >移除</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-form-item>
-    </el-form> -->
+                type="primary"
+                @click="innerVisible=true"
+                style="width:20%;margin-left:1%;"
+              >选择项目</el-button>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="调整前计划金额" prop="TZQJE">
+              <el-input v-model="temp.TZQJE"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="调整金额" prop="TZJE">
+              <el-input v-model="temp.TZJE"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="调整说明" prop="TZSM">
+              <el-input v-model="temp.TZSM"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="调整时间" prop="TZSJ">
+              <el-date-picker
+                  type="date"
+                  v-model="temp.TZSJ"
+                  placeholder="调整时间"
+                  style="width:100%;"
+                  value-format="yyyy-MM-dd"
+                ></el-date-picker>
+            </el-form-item>
+          </el-col>          
+        </el-form>
+        <div style="text-align:center">
+          <el-button @click="editVisible = false">取消</el-button>
+          <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">保存</el-button>
+          <el-button v-else type="primary" @click="updateData">保存</el-button>
+        </div>
+      </el-card>
+    </el-dialog>
   </div>
 </template>
 
 
 
 <script>
-import waves from "@/frame_src/directive/waves"; // 水波纹指令
-import panel from "@/frame_src/components/TreeList/panel.vue";
-import { getToken } from "@/frame_src/utils/auth";
-import { parseTime1 } from "@/frame_src/utils/index.js";
-import { NumFormat } from "@/frame_src/filters/index.js";
-
+ import { Treeselect, LOAD_CHILDREN_OPTIONS } from "@riophae/vue-treeselect";
+// import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+// import {
+//   getTaxOrgList,
+//   createTaxOrg,
+//   updateTaxOrg,
+//   deleteTaxOrg,
+// } from "@/frame_src/api/taxOrg";
+// import { fetchOrgListByCode } from "@/frame_src/api/org";
+ import waves from "@/frame_src/directive/waves"; // 水波纹指令
+// import { getToken } from "@/frame_src/utils/auth";
 export default {
+  name: "orgConfig",
   directives: {
     waves
   },
-  name: "JYWZ",
+  components: {
+    Treeselect
+  },
   data() {
     return {
-      infiledList: [],
-      fildtps: [{ text: "字符", value: "1" }, { text: "数字", value: "2" }],
-      tableKey: 0,
-      list: [
-        {
-          MATKLNO: "一",
-          MATKL: "六十大类合计",
-          WERKS: "工厂一",
-          HJUO: 4,
-          LBKUMUO: 2,
-          XCKUMUO: 2,
-          HJOT: 0,
-          LBKUMOT: 0,
-          KUMOTNS: 0,
-          XCKUMOT: 0,
-          HJTH: 6,
-          LBKUMTH: 1,
-          KUMTHNS: 2,
-          XCKUMTH: 3,
-          HJUH: 10,
-          LBKUMUH: 0,
-          KUMUHNS: 0,
-          XCKUMUH: 10,
-          ZGZSL: 100
-        },
-        {
-          MATKLNO: "01",
-          MATKL: "冶金原料及铸铁管",
-          WERKS: "工厂一",
-          HJUO: 3,
-          LBKUMUO: 1,
-          XCKUMUO: 2,
-          HJOT: 0,
-          LBKUMOT: 6,
-          KUMOTNS: 6,
-          XCKUMOT: 0,
-          HJTH: 0,
-          LBKUMTH: 0,
-          KUMTHNS: 0,
-          XCKUMTH: 0,
-          HJUH: 20,
-          LBKUMUH: 0,
-          KUMUHNS: 0,
-          XCKUMUH: 20,
-          ZGZSL: 130
-        },
-        {
-          MATKLNO: "02",
-          MATKL: "石油专用管材",
-          WERKS: "工厂一",
-          HJUO: 0,
-          LBKUMUO: 0,
-          XCKUMUO: 0,
-          HJOT: 6,
-          LBKUMOT: 6,
-          KUMOTNS: 0,
-          XCKUMOT: 0,
-          HJTH: 3,
-          LBKUMTH: 0,
-          KUMTHNS: 0,
-          XCKUMTH: 3,
-          HJUH: 32,
-          LBKUMUH: 0,
-          KUMUHNS: 2,
-          XCKUMUH: 30,
-          ZGZSL: 105
-        },
-        {
-          MATKLNO: "03",
-          MATKL: "普通钢材",
-          WERKS: "工厂一",
-          HJUO: 0,
-          LBKUMUO: 0,
-          XCKUMUO: 0,
-          HJOT: 0,
-          LBKUMOT: 9,
-          KUMOTNS: 0,
-          XCKUMOT: 0,
-          HJTH: 7,
-          LBKUMTH: 0,
-          KUMTHNS: 7,
-          XCKUMTH: 0,
-          HJUH: 40,
-          LBKUMUH: 0,
-          KUMUHNS: 5,
-          XCKUMUH: 35,
-          ZGZSL: 54
-        },
-        {
-          MATKLNO: "04",
-          MATKL: "金属丝、金属绳",
-          WERKS: "工厂一",
-          HJUO: 0,
-          LBKUMUO: 0,
-          XCKUMUO: 0,
-          HJOT: 0,
-          LBKUMOT: 0,
-          KUMOTNS: 0,
-          XCKUMOT: 5,
-          HJTH: 0,
-          LBKUMTH: 0,
-          KUMTHNS: 10,
-          XCKUMTH: 0,
-          HJUH: 60,
-          LBKUMUH: 0,
-          KUMUHNS: 0,
-          XCKUMUH: 60,
-          ZGZSL: 100
-        }
-      ],
-      importList: [],
-      total: null,
-      listLoading: true,
-      listQuery: {
-        page: 1,
-        limit: 10,
-        SJD: "",
-        LGNUM: ""
-        // S_OrgCode: this.$store.state.user.orgCode,
-        // S_WorkDate: this.$store.state.user.sysTime
+      normalizer(node) {
+        return {
+          id: node.ORG_CODE,
+          label: node.ORG_SHORT_NAME,
+          children: node.children
+        };
       },
+      tableKey: 0,
+      list: null,
+      total: null,
+      listLoading: false,
+      defaultProps: {
+        children: "children",
+        label: "ORG_SHORT_NAME",
+        id: "id"
+      },
+      
+      listQuery: {
+        limit: 10,
+        page: 1,
+        XMBH: "",
+        XMMC: ""
+      },
+      temp: {
+        S_ID: "",
+        XMBH: "",
+        XMMC:"",
+        TZQJE:"",
+        TZJE:"",
+        TZSM:"",
+        TZSJ:"",
+        CJR: this.$store.state.user.userId,
+      },
+      textMap: {
+        update: "修改组织配置",
+        create: "添加计划调整"
+      },
+      editVisible: false,
+      rules: {
+        // S_OrgCode: [
+        //   { required: true, message: "组织单位不能为空", trigger: "change" }
+        // ],
+        // ImportModel: [
+        //   { required: true, message: "导入模板不能为空", trigger: "change" }
+        // ],
+        // TaxOffice: [
+        //   { required: true, message: "税务机关不能为空", trigger: "change" }
+        // ],
+        // ResponsibilityCenter: [
+        //   { required: true, message: "责任中心不能为空", trigger: "change" }
+        // ],
+        // TaxCode: [
+        //   { required: true, message: "税号不能为空", trigger: "change" }
+        // ],
+        // OrgRegion: [
+        //   { required: true, message: "机关所在地不能为空", trigger: "change" }
+        // ]
+        // PROJECT_AMOUNT: [
+        //   {
+        //     validator: (rule, value, callback) => {
+        //       if (value != "") {
+        //         if (
+        //           /^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/.test(value) == false
+        //         ) {
+        //           callback(new Error("请填写大于0的数字"));
+        //         } else {
+        //           callback();
+        //         }
+        //       } else {
+        //         callback();
+        //       }
+        //     },
+        //     trigger: "change"
+        //   }
+        // ]
+      },
+      dialogStatus: "",
+
       treeData: []
     };
   },
-  filters: {
-    parseTime1,
-    NumFormat
-  },
   methods: {
-    deleteRow(index, rows) {
-      //删除改行
-      rows.splice(index, 1);
+    loadOptions({ action, parentNode, callback }) {
+      if (action === LOAD_CHILDREN_OPTIONS) {
+        if (parentNode.children == null) {
+          parentNode.children = undefined;
+          callback();
+        }
+      }
     },
-    addRow(tableData, event) {
-      tableData.push({ fildna: "", fildtp: "", remark: "" });
+    getnode(node, instanceId) {
+      this.temp.S_OrgName = node.ORG_SHORT_NAME;
+    },
+   
+    resetTemp() {
+      this.temp = {
+        S_ID: "",
+        XMBH: "",
+        XMMC:"",
+        TZQJE:"",
+        TZJE:"",
+        TZSM:"",
+        TZSJ:"",
+        CJR: this.$store.state.user.userId, 
+      };
     },
 
     getList() {
-      //          this.listLoading = true;
-      //   getOneBonusList(this.listQuery).then(response => {
-      //     if (response.data.code === 2000) {
-      //       this.list = response.data.items;
-      this.total = 20;
-      this.listLoading = false;
-      //     } else {
-      //       this.listLoading = false;
-      //       this.$notify({
-      //         position: "bottom-right",
-      //         title: "失败",
-      //         message: response.data.message,
-      //         type: "error",
-      //         duration: 2000
-      //       });
-      //     }
-      //   });
+      this.listLoading = true;
+      getTaxOrgList(this.listQuery).then(response => {
+        if (response.data.code === 2000) {
+          this.list = response.data.items;
+          this.total = response.data.total;
+          this.listLoading = false;
+        } else {
+          this.listLoading = false;
+          this.$notify({
+            position: "bottom-right",
+            title: "失败",
+            message: response.data.message,
+            type: "error",
+            duration: 2000
+          });
+        }
+      });
     },
 
+    loadOrgByCode() {
+      const query = { sysCode: this.$store.state.user.orgCode };
+      fetchOrgListByCode(query).then(response => {
+        this.treeData = JSON.parse(response.data);
+      });
+    },
+
+    handleCreate() {
+      this.resetTemp();
+      this.editVisible = true;
+      this.dialogStatus = "create";
+      if (this.$refs["dataForm"] !== undefined) {
+        this.$refs["dataForm"].resetFields();
+      }
+    },
+    handleUpdate(row) {
+      this.temp = Object.assign({}, row); // copy obj
+      this.editVisible = true;
+      this.dialogStatus = "update";
+      this.$nextTick(() => {
+        this.$refs["dataForm"].clearValidate();
+      });
+    },
+    handleDelete(row) {
+      this.$confirm("确认删除记录吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          const query = { S_ID: row.S_Id };
+          deleteTaxOrg(query).then(response => {
+            this.message = response.data.message;
+            this.title = "失败";
+            this.type = "error";
+            if (response.data.code === 2000) {
+              // const index = this.list.indexOf(row)
+              // this.list.splice(index, 1)
+              this.getList();
+              this.title = "成功";
+              this.type = "success";
+            }
+            this.$notify({
+              position: "bottom-right",
+              title: this.title,
+              message: this.message,
+              type: this.type,
+              duration: 2000
+            });
+          });
+        })
+        .catch(() => {});
+    },
+    createData() {
+      // 创建
+      this.$refs["dataForm"].validate(valid => {
+        if (valid) {
+          createTaxOrg(this.temp).then(response => {
+            var message = response.data.message;
+            var title = "失败";
+            var type = "error";
+            if (response.data.code === 2000) {
+              this.getList();
+              title = "成功";
+              type = "success";
+              // this.list.unshift(this.temp)
+            }
+            this.editVisible = false;
+            this.$notify({
+              position: "bottom-right",
+              title: title,
+              message: message,
+              type: type,
+              duration: 3000
+            });
+          });
+        }
+      });
+    },
+    updateData() {
+      this.$refs["dataForm"].validate(valid => {
+        if (valid) {
+          const tempData = Object.assign({}, this.temp); // 这样就不会共用同一个对象
+          tempData.S_UpdateBy = this.$store.state.user.userId;
+          //tempData.NOTICE_CONTENT=this.content
+          updateTaxOrg(tempData).then(response => {
+            var message = response.data.message;
+            var title = "失败";
+            var type = "error";
+            if (response.data.code === 2000) {
+              this.getList();
+              title = "成功";
+              type = "success";
+            }
+            this.editVisible = false;
+            this.$notify({
+              position: "bottom-right",
+              title: title,
+              message: message,
+              type: type,
+              duration: 3000
+            });
+          });
+        }
+      });
+    },
     handleSizeChange(val) {
       this.listQuery.limit = val;
       this.getList();
@@ -221,13 +441,6 @@ export default {
     handleCurrentChange(val) {
       this.listQuery.page = val;
       this.getList();
-    },
-    formatJson(filterVal, jsonData) {
-      return jsonData.map(v =>
-        filterVal.map(j => {
-          return v[j];
-        })
-      );
     },
     handleFilter() {
       this.listQuery.page = 1;
@@ -238,33 +451,31 @@ export default {
         return "el-button--primary is-active"; // 'warning-row'
       } // 'el-button--primary is-plain'// 'warning-row'
       return "";
-    },
-
-    exportExcelInfo() {
-      import("@/frame_src/vendor/Export2Excel").then(excel => {
-        const tHeader = ["工号", "姓名", "单位", "奖金", "预扣税"];
-        const filterVal = [
-          "S_WorkerCode",
-          "S_WorkerName",
-          "S_OrgName",
-          "OneTimeBonus",
-          "DeductibleTax"
-        ];
-        const data = this.formatJson(filterVal, this.importList);
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename:
-            this.exportComp + this.listQuery.S_WorkDate.substr(0, 7) + "奖金表"
-        });
-      });
     }
   },
   created() {
+    this.listLoading = false;
+    this.loadOrgByCode();
+
     this.getList();
   },
-  activated() {
+    activated() {
+this.listLoading = false;
+    this.loadOrgByCode();
+
     this.getList();
+  },
+  filters: {
+    formatStatus(val) {
+      if (val === 0) {
+        return "否";
+      } else if(val === 1) {
+        return "是";
+      }
+      else{
+        return "";
+      }
+    }
   },
   computed: {
     getRoleLevel() {
@@ -273,38 +484,40 @@ export default {
       } else {
         return false;
       }
-    },
-    headers() {
-      return {
-        "X-Token": getToken()
-      };
     }
   }
 };
 </script>
 
-<style lang="scss" scoped>
-.topSearh {
-  margin-left: 15px;
-  margin-top: 15px;
-  margin-bottom: 15px;
+
+<style lang="scss" >
+#OrgConfig2 {
+  .topSearh {
+    margin-bottom: 15px;
+  }
+  .page {
+    text-align: center;
+  }
+  .buttom {
+    float: right;
+  }
+  .vue-treeselect__control {
+    height: 28px !important;
+    width: 100%;
+  }
+  .vue-treeselect__placeholder,
+  .vue-treeselect__single-value {
+    line-height: 28px;
+  }
 }
-.page {
-  text-align: center;
-}
-.vue-treeselect__control {
-  height: 28px !important;
-  width: 100%;
-}
-.vue-treeselect__placeholder,
-.vue-treeselect__single-value {
-  line-height: 28px;
+.selecttrees{
+.vue-treeselect--searchable .vue-treeselect__input-container {
+    height: 28px !important;
+    width: 100%;
+  }
+  .el-dialog__body{
+    padding:0px 10px 10px !important;
+  }
 }
 </style>
-
-
-
-
-
-
 

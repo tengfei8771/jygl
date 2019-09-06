@@ -67,12 +67,14 @@
             </el-row>
           </div>
           <el-table
+                      :key="tableKey"
             :data="list"
             border
             :header-cell-class-name="tableRowClassName"
             style="width: 100%"
             fit
             size="mini"
+            row-key="S_Id"
           >
             <el-table-column label="序号" width="100px">
               <template slot-scope="scope">{{scope.$index+1}}</template>
@@ -84,7 +86,7 @@
             <el-table-column label="操作" width="180px;">
               <template slot-scope="scope">
                 <el-button type="primary" size="mini" @click="editData(scope.row)">修改</el-button>
-                <el-button type="primary" size="mini" @click="delData(scope.row)">删除</el-button>
+                <el-button type="danger" size="mini" @click="delData(scope.row)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -159,6 +161,7 @@ import {
 export default {
   data() {
     return {
+      tableKey:0,
       leftTreeData: [],
       defaultProps: {
         id: "Code",
@@ -354,7 +357,7 @@ export default {
           this.orgList
         );
        }
-      else if(data.ParentCode===""){
+      else if(data.ParentCode===""||data.ParentCode == null){
         this.list=[],
         this.total=0
       } 

@@ -47,11 +47,11 @@
           <el-table-column label="收款单位名称" prop="SKDW" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column label="开户银行" prop="KHH" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column label="账户" prop="YHZH" :show-overflow-tooltip="true"></el-table-column>
-           <el-table-column align="center" width="240" label="操作"  fixed="right">
+           <el-table-column align="center" width="270" label="操作"  fixed="right">
               <template slot-scope="scope">
+                <el-button type="danger" size="mini" @click="handleDelete(scope.row)">预算调整</el-button>
                 <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">审批</el-button>
-                <el-button type="danger" size="mini" @click="handleDelete(scope.row)">废弃</el-button>
-                 <el-button type="success"  size="mini" @click="handleProcess(scope.row)">查看流程</el-button>
+                <el-button type="success"  size="mini" @click="handleProcess(scope.row)">查看流程</el-button>
               </template>
             </el-table-column>
         </el-table>
