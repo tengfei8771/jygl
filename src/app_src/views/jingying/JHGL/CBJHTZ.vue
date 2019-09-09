@@ -90,7 +90,7 @@
             </el-table-column>
             <el-table-column align="center" label="调整日期" :show-overflow-tooltip="true">
               <template slot-scope="scope">
-                <span>{{scope.row.TZSJ}}</span>
+                <span>{{scope.row.TZSJ|parseDate}}</span>
               </template>
             </el-table-column>
             <el-table-column align="center" label="调整人" :show-overflow-tooltip="true">
@@ -174,6 +174,126 @@
         </div>
       </el-card>
     </el-dialog>
+    <el-dialog width="50%" title="项目信息" :visible.sync="innerVisible" append-to-body>
+       <div class="topSearh" id="topsearch">
+      <el-row>
+        <el-col :xs="5" :sm="5" :md="5" :lg="4" :xl="3">
+          <el-input
+            placeholder="项目编号"
+            style="width:95%;"
+            size="mini"
+            clearable
+            v-model="listQueryXM.XMBH"
+          ></el-input>
+        </el-col>
+        <el-col :xs="5" :sm="5" :md="5" :lg="4" :xl="3">
+          <el-input
+            placeholder="项目名称"
+            style="width:95%;"
+            size="mini"
+            clearable
+            v-model="listQueryXM.XMMC"
+          ></el-input>
+        </el-col>
+
+        <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="5">
+          <el-button
+            size="mini"
+            class="filter-item"
+            type="primary"
+            v-waves
+            icon="el-icon-search"
+            @click="getXMList"
+          >搜索</el-button>
+         
+        </el-col>
+      </el-row>
+    </div>
+      <el-table
+          :key="tableKey"
+            @row-click="showRow"
+            :data="list"
+            size="mini"
+            :header-cell-class-name="tableRowClassName"
+            v-loading="listLoading"
+            element-loading-text="给我一点时间"
+            border
+            fit
+            highlight-current-row
+            style="width: 100%;text-align:left;"
+      >
+        <el-table-column align="center" label="选择" width="50px" >
+          <template slot-scope="scope" >
+            <el-radio class="radio" v-model="radio"  :label="scope.$index">&nbsp;</el-radio>
+            <!-- <el-radio :label="scope.row.flagIndex" v-model="scope.row.flagValue" @change.native="getTemplateRow(scope.$index,scope.row)"></el-radio> -->
+          </template>
+        </el-table-column>
+
+            <el-table-column align="center" label="项目编号" width="120px">
+              <template slot-scope="scope">
+                <span>{{scope.row.XMBH}}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column label="项目名称" :show-overflow-tooltip="true" >
+              <template slot-scope="scope">
+                <span>{{scope.row.XMMC}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column width="100px" align="right" prop="XMLB" label="项目类别" ></el-table-column>
+            <el-table-column width="180px" align="right" prop="CBDW" label="承办单位"></el-table-column>
+            <el-table-column width="180px" prop="PC" label="项目批次" align="right"></el-table-column>
+            <!-- <el-table-column
+              width="280px"
+              align="right"
+              prop="JSNR"
+              label="建设内容"
+              :show-overflow-tooltip="true"
+            ></el-table-column> -->
+            <!-- <el-table-column width="120px" align="right" label="计划总金额">
+              <template slot-scope="scope">
+                <span>{{scope.row.JHZJE |NumFormat}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column width="120px" align="right" label="历史计划总金额">
+              <template slot-scope="scope">
+                <span>{{scope.row.LSJE |NumFormat}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column width="120px" align="right" label="本年计划总金额">
+              <template slot-scope="scope">
+                <span>{{scope.row.BNJE |NumFormat}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column width="120px" align="right" label="未来计划总金额">
+              <template slot-scope="scope">
+                <span>{{scope.row.WLJE |NumFormat}}</span>
+              </template>
+            </el-table-column> -->
+            <!-- <el-table-column width="100px" align="right" label="是否存在物资">
+              <template slot-scope="scope">
+                <span>{{scope.row.CZWZ|ChangeFlag}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column width="100px" align="right" label="是否财务下达">
+              <template slot-scope="scope">
+                <span>{{scope.row.SFCW|ChangeFlag}}</span>
+              </template>
+            </el-table-column> -->
+      </el-table>
+        <div class="page">
+            <el-pagination
+              background
+              @size-change="handleXMSizeChange"
+              @current-change="handleXMCurrentChange"
+              :current-page="listQueryXM.page"
+              :page-sizes="[10,20,30, 50]"
+              :page-size="listQueryXM.limit"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="total"
+            ></el-pagination>
+          </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -182,17 +302,14 @@
 <script>
  import { Treeselect, LOAD_CHILDREN_OPTIONS } from "@riophae/vue-treeselect";
 // import "@riophae/vue-treeselect/dist/vue-treeselect.css";
-// import {
-//   getTaxOrgList,
-//   createTaxOrg,
-//   updateTaxOrg,
-//   deleteTaxOrg,
-// } from "@/frame_src/api/taxOrg";
 // import { fetchOrgListByCode } from "@/frame_src/api/org";
- import waves from "@/frame_src/directive/waves"; // 水波纹指令
+import { GetTZInfo,CreateInfo,UpdateInfo,GetOpions } from "@/app_src/api/jygl/CBJHTZ";
+import { parseTime, parseDate } from "@/frame_src/utils/index";
+import { GetInfo } from "@/app_src/api/jygl/CBJHSQ";
+import waves from "@/frame_src/directive/waves"; // 水波纹指令
 // import { getToken } from "@/frame_src/utils/auth";
 export default {
-  name: "orgConfig",
+  name: "CBJHTZ",
   directives: {
     waves
   },
@@ -212,13 +329,19 @@ export default {
       list: null,
       total: null,
       listLoading: false,
+      innerVisible:false,
       defaultProps: {
         children: "children",
         label: "ORG_SHORT_NAME",
         id: "id"
       },
-      
       listQuery: {
+        limit: 10,
+        page: 1,
+        XMBH: "",
+        XMMC: ""
+      },
+      listQueryXM: {
         limit: 10,
         page: 1,
         XMBH: "",
@@ -235,7 +358,7 @@ export default {
         CJR: this.$store.state.user.userId,
       },
       textMap: {
-        update: "修改组织配置",
+        update: "修改计划调整",
         create: "添加计划调整"
       },
       editVisible: false,
@@ -310,7 +433,7 @@ export default {
 
     getList() {
       this.listLoading = true;
-      getTaxOrgList(this.listQuery).then(response => {
+      GetTZInfo(this.listQuery).then(response => {
         if (response.data.code === 2000) {
           this.list = response.data.items;
           this.total = response.data.total;
@@ -328,12 +451,12 @@ export default {
       });
     },
 
-    loadOrgByCode() {
-      const query = { sysCode: this.$store.state.user.orgCode };
-      fetchOrgListByCode(query).then(response => {
-        this.treeData = JSON.parse(response.data);
-      });
-    },
+    // loadOrgByCode() {
+    //   const query = { sysCode: this.$store.state.user.orgCode };
+    //   fetchOrgListByCode(query).then(response => {
+    //     this.treeData = JSON.parse(response.data);
+    //   });
+    // },
 
     handleCreate() {
       this.resetTemp();
@@ -351,41 +474,42 @@ export default {
         this.$refs["dataForm"].clearValidate();
       });
     },
-    handleDelete(row) {
-      this.$confirm("确认删除记录吗?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          const query = { S_ID: row.S_Id };
-          deleteTaxOrg(query).then(response => {
-            this.message = response.data.message;
-            this.title = "失败";
-            this.type = "error";
-            if (response.data.code === 2000) {
-              // const index = this.list.indexOf(row)
-              // this.list.splice(index, 1)
-              this.getList();
-              this.title = "成功";
-              this.type = "success";
-            }
-            this.$notify({
-              position: "bottom-right",
-              title: this.title,
-              message: this.message,
-              type: this.type,
-              duration: 2000
-            });
-          });
-        })
-        .catch(() => {});
-    },
+    // handleDelete(row) {
+    //   this.$confirm("确认删除记录吗?", "提示", {
+    //     confirmButtonText: "确定",
+    //     cancelButtonText: "取消",
+    //     type: "warning"
+    //   })
+    //     .then(() => {
+    //       const query = { S_ID: row.S_Id };
+    //       deleteTaxOrg(query).then(response => {
+    //         this.message = response.data.message;
+    //         this.title = "失败";
+    //         this.type = "error";
+    //         if (response.data.code === 2000) {
+    //           // const index = this.list.indexOf(row)
+    //           // this.list.splice(index, 1)
+    //           this.getList();
+    //           this.title = "成功";
+    //           this.type = "success";
+    //         }
+    //         this.$notify({
+    //           position: "bottom-right",
+    //           title: this.title,
+    //           message: this.message,
+    //           type: this.type,
+    //           duration: 2000
+    //         });
+    //       });
+    //     })
+    //     .catch(() => {});
+    // },
     createData() {
+      this.temp.CJR=this.$store.state.user.userId
       // 创建
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
-          createTaxOrg(this.temp).then(response => {
+          CreateInfo(this.temp).then(response => {
             var message = response.data.message;
             var title = "失败";
             var type = "error";
@@ -411,9 +535,8 @@ export default {
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
           const tempData = Object.assign({}, this.temp); // 这样就不会共用同一个对象
-          tempData.S_UpdateBy = this.$store.state.user.userId;
           //tempData.NOTICE_CONTENT=this.content
-          updateTaxOrg(tempData).then(response => {
+          UpdateInfo(tempData).then(response => {
             var message = response.data.message;
             var title = "失败";
             var type = "error";
@@ -451,21 +574,60 @@ export default {
         return "el-button--primary is-active"; // 'warning-row'
       } // 'el-button--primary is-plain'// 'warning-row'
       return "";
-    }
+    },
+    getXMList() {
+      this.listLoading = true;
+      GetInfo(this.listQuery).then(response => {
+        if (response.data.code === 2000) {
+          this.list = response.data.items;
+          this.total = response.data.total;
+          this.listLoading = false;
+        } else {
+          this.$notify({
+            position: "bottom-right",
+            title: "失败",
+            message: response.data.message,
+            type: "warning",
+            duration: 2000
+          });
+        }
+      });
+    },
+        showRow(row) {
+      //赋值给radio
+      this.radio = this.list.indexOf(row);
+      this.temp.XMMC = row.XMMC;
+      this.temp.XMBH = row.XMBH;
+      this.temp.TZQJE =row.TZHJHZJE;
+      this.innerVisible = false;
+    },
+handleXMSizeChange(val) {
+      this.listQueryXM.limit = val;
+      this.getXMList();
+    },
+    handleXMCurrentChange(val) {
+      this.listQueryXM.page = val;
+      this.getXMList();
+    },
+    handleXMFilter() {
+      this.listQueryXM.page = 1;
+      this.getXMList();
+    },
   },
   created() {
     this.listLoading = false;
-    this.loadOrgByCode();
-
+    //this.loadOrgByCode();
+    this.getXMList();
     this.getList();
   },
     activated() {
 this.listLoading = false;
-    this.loadOrgByCode();
+    //this.loadOrgByCode();
 
     this.getList();
   },
   filters: {
+        parseTime, parseDate,
     formatStatus(val) {
       if (val === 0) {
         return "否";
@@ -491,7 +653,7 @@ this.listLoading = false;
 
 
 <style lang="scss" >
-#OrgConfig2 {
+#CBJHTZ {
   .topSearh {
     margin-bottom: 15px;
   }
