@@ -30,10 +30,10 @@
               <tr>
                 <td :colspan="4">乘车船、飞机起止时间</td>
                 <td :rowspan="2" colspan="2">起止地点</td>
-                <td :colspan="4">出勤补助</td>
-                <td :colspan="4">硬座、火车补助</td>
-                <td :colspan="2">车船飞机费</td>
-                <td :colspan="1">杂费</td>
+                <td :colspan="3">出勤补助</td>
+                <td :colspan="3">硬座、火车补助</td>
+                <td :colspan="3">车船飞机费</td>
+                <td :colspan="2">杂费</td>
               </tr>
               <tr>
                 <td :colspan="1">月日</td>
@@ -69,6 +69,20 @@
                 <td>{{item.FCJE}}</td>
                 <td>{{item.ZFLB}}</td>
                 <td>{{item.ZFJE}}</td>
+              </tr>
+              <tr>
+                <td :colspan="6">小计</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
               </tr>
               <tr>
                 <td :colspan="2">总计（大写）</td>

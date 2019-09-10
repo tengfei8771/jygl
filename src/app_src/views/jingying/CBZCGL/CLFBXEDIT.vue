@@ -67,10 +67,10 @@
               <td :rowspan="2">出发地点</td>
               <td :colspan="6">乘车船、飞机起止时间</td>
               <td :rowspan="2">到达地点</td>
-              <td :colspan="4">出勤补助</td>
-              <td :colspan="4">硬座、火车补助</td>
-              <td :colspan="2">车船飞机费</td>
-              <td :colspan="1">杂费</td>
+              <td :colspan="3">出勤补助</td>
+              <td :colspan="3">硬座、火车补助</td>
+              <td :colspan="3">车船飞机费</td>
+              <td :colspan="2">杂费</td>
               <td :colspan="1" :rowspan="2">操作</td>
             </tr>
             <tr>

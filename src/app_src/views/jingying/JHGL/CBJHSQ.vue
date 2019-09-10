@@ -186,7 +186,7 @@
                   <el-option
                     v-for="(item,key) in XMOptions"
                     :key="key"
-                    :label="item.XMMC+item.XMCODE"
+                    :label="item.XMCODE+'-'+item.XMMC"
                     :value="item.XMMC"
                   ></el-option>
                 </el-select>
