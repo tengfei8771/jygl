@@ -324,7 +324,7 @@
       title="查看流程"
       width="1000px"
     >
-      <img src="../../../img/workflow.png" style="width:980px;">
+      <img src="../../img/workflow3.png" style="width:980px;">
         </el-dialog>
   </div>
 </template>

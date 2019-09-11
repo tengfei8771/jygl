@@ -1,36 +1,25 @@
 
 <template>
-  <div id="CBJHSP" class="app-container calendar-list-container">
+  <div id="CBJHSQ" class="app-container calendar-list-container">
     <div class="topSearh" id="topsearch">
       <el-row>
         <el-col :xs="5" :sm="5" :md="5" :lg="4" :xl="3">
-          <el-input
-            placeholder="项目编号"
-            style="width:95%;"
-            size="mini"
-            clearable
-            v-model="listQuery.XMBH"
-          ></el-input>
+          <el-input placeholder="流程名称" style="width:95%;" size="mini" clearable></el-input>
         </el-col>
         <el-col :xs="5" :sm="5" :md="5" :lg="4" :xl="3">
-          <el-input
-            placeholder="项目名称"
-            style="width:95%;"
-            size="mini"
-            clearable
-            v-model="listQuery.XMMC"
-          ></el-input>
+          <el-input placeholder="标题" style="width:95%;" size="mini" clearable></el-input>
         </el-col>
 
         <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="5">
-          <el-button
+          <el-button size="mini" class="filter-item" type="primary" v-waves icon="el-icon-search">搜索</el-button>
+          <!-- <el-button
             size="mini"
             class="filter-item"
+            style="margin-left: 10px;"
+            @click="handleCreate"
             type="primary"
-            v-waves
-            icon="el-icon-search"
-            @click="getList"
-          >搜索</el-button>
+            icon="el-icon-edit"
+          >新增</el-button>-->
         </el-col>
       </el-row>
     </div>
@@ -49,57 +38,68 @@
             highlight-current-row
             style="width: 100%;text-align:left;"
           >
-            <el-table-column align="center" label="项目编号" fixed="left" width="120px">
+            <el-table-column align="center" label="标题">
               <template slot-scope="scope">
-                <span>{{scope.row.XMBH}}</span>
+                <span>{{scope.row.BT}}</span>
               </template>
             </el-table-column>
 
-            <el-table-column label="项目名称" :show-overflow-tooltip="true" fixed="left">
+            <el-table-column label="流程" :show-overflow-tooltip="true">
               <template slot-scope="scope">
-                <span>{{scope.row.XMMC}}</span>
+                <span>{{scope.row.LC}}</span>
               </template>
             </el-table-column>
-            <el-table-column width="100px" align="right" prop="XMLB" label="项目类别" fixed="left"></el-table-column>
-            <el-table-column width="180px" align="right" prop="CBDW" label="承办单位" fixed="left"></el-table-column>
-            <el-table-column width="180px" prop="PC" label="项目批次" align="right"></el-table-column>
-            <el-table-column
+            <el-table-column width="100px" align="right" prop="MSEG" label="步骤">
+              <template slot-scope="scope">
+                <span>{{scope.row.BZ}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column width="180px" align="right" prop="CBDW" label="发送人">
+              <template slot-scope="scope">
+                <span>{{scope.row.FSR}}</span>
+              </template>
+            </el-table-column>
+            <!-- <el-table-column
               width="280px"
               align="right"
-              prop="JSNR"
+              prop="MSEG"
               label="建设内容"
               :show-overflow-tooltip="true"
-            ></el-table-column>
-            <el-table-column width="120px" align="right" label="计划总金额">
+            >
               <template slot-scope="scope">
-                <span>{{scope.row.JHZJE |NumFormat}}</span>
+                <span>{{scope.row.JSNR }}</span>
+              </template>
+            </el-table-column> -->
+            <el-table-column width="120px" align="right" prop="ZGZSL" label="接收时间">
+              <template slot-scope="scope">
+                <span>{{scope.row.JSSJ}}</span>
               </template>
             </el-table-column>
-            <el-table-column width="120px" align="right" label="历史计划总金额">
+            <el-table-column width="120px" align="right" prop="ZGZSL" label="状态">
               <template slot-scope="scope">
-                <span>{{scope.row.LSJE |NumFormat}}</span>
-              </template> 
-            </el-table-column>
-            <el-table-column width="120px" align="right" label="本年计划总金额">
-              <template slot-scope="scope">
-                <span>{{scope.row.BNJE |NumFormat}}</span>
+                <span>{{scope.row.ZT }}</span>
               </template>
             </el-table-column>
-            <el-table-column width="120px" align="right" label="未来计划总金额">
+            <el-table-column width="120px" align="right" prop="ZGZSL" label="备注">
               <template slot-scope="scope">
-                <span>{{scope.row.WLJE |NumFormat}}</span>
+                <span>{{scope.row.REMARK}}</span>
               </template>
             </el-table-column>
-            <el-table-column width="100px" align="right" label="是否存在物资">
+            <!-- <el-table-column width="120px" align="right" prop="ZGZSL" label="未来计划总金额">
               <template slot-scope="scope">
-                <span>{{scope.row.CZWZ|ChangeFlag}}</span>
+                <span>{{scope.row.WLJHZJE |NumFormat}}</span>
               </template>
             </el-table-column>
-            <el-table-column align="center" width="300" label="操作" fixed="right">
+            <el-table-column width="100px" align="right" prop="ZGZSL" label="是否存在物资">
               <template slot-scope="scope">
-                <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">审批</el-button>
-                <el-button type="danger" size="mini" @click="handleDelete(scope.row)">退回</el-button>
+                <span>{{scope.row.SFCZWZ}}</span>
+              </template>
+            </el-table-column> -->
+            <el-table-column align="center" width="300" label="操作">
+              <template slot-scope="scope">
+                <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">处理</el-button>
                 <el-button type="success" size="mini" @click="handleProcess()">查看流程</el-button>
+                <el-button type="danger" size="mini" @click="handleDelete(scope.row)">作废</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -172,7 +172,7 @@
             <el-col :span="12">
               <el-form-item label="历史计划金额" prop="LSJHZJE">
                 <!-- <el-input v-model="temp.LSJHZJE"></el-input> -->
-                <span>{{temp.LSJE}}</span>
+                                <span>{{temp.LSJHZJE}}</span>
               </el-form-item>
             </el-col>
           </el-row>
@@ -180,47 +180,44 @@
             <el-col :span="12">
               <el-form-item label="本年计划金额" prop="BNJHZJE">
                 <!-- <el-input v-model="temp.XMBH"></el-input> -->
-                <span>{{temp.BNJE}}</span>
+                  <span>{{temp.BNJHZJE}}</span>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="未来计划金额" prop="WLJHZJE">
                 <!-- <el-input v-model="temp.WLJHZJE"></el-input> -->
-                <span>{{temp.WLJE}}</span>
+                  <span>{{temp.WLJHZJE}}</span>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="12">
-              <el-form-item label="是否存在物资" prop="CZWZ">
-                <el-select size="mini" style="width:100%;" v-model="temp.CZWZ" disabled>
+              <el-form-item label="是否存在物资" prop="SFCZWZ">
+                <span>否</span>
+                <!-- <el-select size="mini" style="width:100%;" v-model="temp.SFCZWZ">
                   <el-option
                     v-for="(item,key) in selectOptions"
                     :key="key"
                     :label="item.label"
                     :value="item.value"
                   ></el-option>
-                </el-select>
+                </el-select> -->
               </el-form-item>
             </el-col>
           </el-row>
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="是否财务下达">
-                <el-radio-group v-model="temp.SFCW" disabled>
-                  <el-radio :label="1">是</el-radio>
-                  <el-radio :label="0">否</el-radio>
-                </el-radio-group>
-              </el-form-item>
+ <el-row>
+            <el-col :span="24">
+               <el-form-item label="是否财务下达">
+    <el-radio-group v-model="temp.resource">
+      <el-radio label="是"></el-radio>
+      <el-radio label="否"></el-radio>
+    </el-radio-group>
+  </el-form-item>
             </el-col>
-            <el-col :span="12">
-              <el-form-item label="项目批次" >
-                {{temp.PC}}
-              </el-form-item>
-            </el-col>
+          
           </el-row>
           <el-row>
-            <el-col :span="24" v-show="temp.CZWZ==!0">
+            <el-col :span="24" v-show="temp.SFCZWZ==!0">
               <el-form
                 :model="inServForm"
                 ref="inServForm"
@@ -230,27 +227,28 @@
                 border
               >
                 <el-form-item label="物资明细" prop="servin">
+                  <el-button type="primary" @click="addRow(infiledList)">新增</el-button>
+
                   <el-table
                     :data="infiledList"
                     size="mini"
                     highlight-current-row
                     border
                     style="width: 100%"
-                    :header-cell-class-name="tableRowClassName"
                   >
                     <el-table-column prop="fildna" label="物资名称">
                       <template slot-scope="scope">
-                        <el-input size="mini" v-model="scope.row.WZMC" disabled></el-input>
+                        <el-input size="mini" v-model="scope.row.fildna"></el-input>
                       </template>
                     </el-table-column>
                     <el-table-column prop="fildna" label="物资数量">
                       <template slot-scope="scope">
-                        <el-input size="mini" v-model="scope.row.WZSL" disabled></el-input>
+                        <el-input size="mini" v-model="scope.row.fildnasl"></el-input>
                       </template>
                     </el-table-column>
                     <el-table-column prop="fildtp" label="类型">
                       <template slot-scope="scope">
-                        <el-select v-model="scope.row.WZLX" clearable disabled>
+                        <el-select v-model="scope.row.fildtp" clearable>
                           <el-option
                             v-for="(item,index) in fildtps"
                             :key="index"
@@ -262,7 +260,16 @@
                     </el-table-column>
                     <el-table-column prop="remark" label="物资说明">
                       <template slot-scope="scope">
-                        <el-input size="mini" v-model="scope.row.WZSM" disabled></el-input>
+                        <el-input size="mini" v-model="scope.row.remark"></el-input>
+                      </template>
+                    </el-table-column>
+                    <el-table-column fixed="right" label="操作">
+                      <template slot-scope="scope">
+                        <el-button
+                          type="danger"
+                          @click.native.prevent="deleteRow(scope.$index, infiledList)"
+                          size="small"
+                        >移除</el-button>
                       </template>
                     </el-table-column>
                   </el-table>
@@ -270,16 +277,55 @@
               </el-form>
             </el-col>
           </el-row>
+          <!-- <el-col :span="24">
+            <el-form-item label="入库时间" prop="RKSJ">
+              <el-date-picker
+                type="date"
+                placeholder="选择日期"
+                v-model="temp.RKSJ"
+                style="width: 100%;"
+              ></el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="数量" prop="SL">
+              <el-input v-model="temp.SL"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="金额" prop="JE">
+              <el-input v-model="temp.JE"></el-input>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="24">
+            <el-form-item label="仓库号" prop="CKH">
+              <el-input v-model="temp.CKH"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="库存地点" prop="KCDD">
+              <el-input v-model="temp.KCDD"></el-input>
+            </el-form-item>
+          </el-col>-->
         </el-form>
         <div style="text-align:center">
-          <el-button type="success" @click="editVisible = false">通过</el-button>
+          <el-button type="success" @click="editVisible = false" >通过</el-button>
           <el-button @click="editVisible = false" type="danger">退回</el-button>
+          <!-- <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">保存</el-button>
+          <el-button v-else type="primary" @click="updateData">保存</el-button> -->
+
         </div>
       </el-card>
     </el-dialog>
-    <el-dialog :visible.sync="workFlowVisible" class="selecttrees" title="查看流程" width="1000px">
-      <img src="../../../img/workflow.png" style="width:980px;" />
-    </el-dialog>
+        <el-dialog
+      :visible.sync="workFlowVisible"
+      class="selecttrees"
+      title="查看流程"
+      width="1000px"
+    >
+      <img src="../../img/workflow.png" style="width:980px;">
+        </el-dialog>
   </div>
 </template>
 
@@ -291,9 +337,8 @@
 
 import waves from "@/frame_src/directive/waves"; // 水波纹指令
 import { getToken } from "@/frame_src/utils/auth";
-import { GetInfo, GetDetailInfo } from "@/app_src/api/jygl/CBJHSP";
 export default {
-  name: "CBJHSQP",
+  name: "CBJHSQ",
   directives: {
     waves
   },
@@ -315,10 +360,73 @@ export default {
           label: "是"
         }
       ],
-      list: [],
+      list: [
+        {
+          BT: "IP资源及交换机管理系统软件开发二期建设申请",
+          LC: "成本计划申请流程",
+          BZ: "主管",
+          FSR: "张三",
+          JSSJ:
+            "2019-06-24",
+          ZT: "正常",
+          REMARK: "",
+        },
+       
+        {
+
+          BT: "无线基站光缆租用申请",
+          LC: "成本计划申请流程",
+          BZ: "部门负责人",
+          FSR: "管控中心",
+          JSSJ:
+            "2019-06-20",
+          ZT: "正常",
+          REMARK: "",
+        },
+        {
+          BT: "移动办公无线网核心交换机维保申请",
+          LC: "成本计划申请流程",
+          BZ: "部门负责人",
+          FSR: "网络技术部",
+          JSSJ:
+            "2019-06-20",
+          ZT: "正常",
+          REMARK: "",
+        },
+        {
+          BT: "桌面云维保技术服务申请",
+          LC: "成本计划申请流程",
+          BZ: "经理",
+          FSR: "云计算技术部",
+          JSSJ:
+            "2019-06-20",
+          ZT: "正常",
+          REMARK: "",
+        },
+        {
+          BT: "大港油田A8视频会议系统维保申请",
+          LC: "成本计划申请流程",
+          BZ: "经理",
+          FSR: "云计算技术部",
+          JSSJ:
+            "2019-06-20",
+          ZT: "正常",
+          REMARK: "",
+        },
+        {
+          BT: "IP资源及交换机管理系统软件开发二期建设",
+          LC: "成本计划申请流程",
+          BZ: "经理",
+          FSR: "网络技术部",
+          JSSJ:
+            "2019-06-20",
+          ZT: "正常",
+          REMARK: "",
+        },
+      
+      ],
       total: 15,
       listLoading: false,
-      workFlowVisible: false,
       importmodeloptions: [
         {
           value: "样表一",
@@ -329,18 +437,40 @@ export default {
           label: "样表二"
         }
       ],
+      taxofficeoptions: [], //税务机关
+      orgregionoptions: [], //机关所在地
+      taxcodeoptions: [], //税号
+      responsibilityoptions: [], //责任中心
       listQuery: {
         limit: 10,
         page: 1,
-        XMBH: "",
-        XMMC: ""
+        S_OrgCode: null,
+        ResponsibilityCenter: "",
+        TaxOffice: "",
+        ImportModel: "",
+        TaxNumber: "",
+        OrgRegion: ""
       },
-      temp: {},
+      temp: {
+        XMBH: "201802210987",
+        XMMC: "大港油田车辆卫星定位系统维保",
+        CBDW: "社区信息化部",
+        XMLB: "运行维护",
+        JSNR:
+          "操作系统维护、业务处理系统维护、WEB系统维护、终端接入系统维护、地图升级、货运车辆公共监督与服务平台数据通信异常等系统故障处理",
+        JHZJE: 90,
+        LSJHZJE: 5,
+        BNJHZJE: 45,
+        WLJHZJE: 30,
+        SFCZWZ: "否",
+        resource:""
+      },
       textMap: {
         update: "审批计划信息",
         create: "添加计划信息"
       },
       editVisible: false,
+      workFlowVisible:false,
       dialogStatus: "",
 
       treeData: []
@@ -367,29 +497,28 @@ export default {
         BNJHZJE: "",
         WLJHZJE: "",
         SFCZWZ: "",
-        resource: ""
+                resource:""
       };
     },
-    handleProcess() {
-      this.workFlowVisible = true;
-    },
+
     getList() {
-      this.listLoading = true;
-      GetInfo(this.listQuery).then(response => {
-        if (response.data.code === 2000) {
-          this.list = response.data.items;
-          this.total = response.data.total;
-          this.listLoading = false;
-        } else {
-          this.$notify({
-            position: "bottom-right",
-            title: "失败",
-            message: response.data.message,
-            type: "warning",
-            duration: 2000
-          });
-        }
-      });
+      //   this.listLoading = true;
+      //   getTaxOrgList(this.listQuery).then(response => {
+      //     if (response.data.code === 2000) {
+      //       this.list = response.data.items;
+      this.total = 15;
+      //       this.listLoading = false;
+      //     } else {
+      //       this.listLoading = false;
+      //       this.$notify({
+      //         position: "bottom-right",
+      //         title: "失败",
+      //         message: response.data.message,
+      //         type: "error",
+      //         duration: 2000
+      //       });
+      //     }
+      //   });
     },
 
     handleCreate() {
@@ -400,26 +529,33 @@ export default {
         this.$refs["dataForm"].resetFields();
       }
     },
-    handleUpdate(row) {
-      this.temp = Object.assign({}, row); // copy obj
+    handleUpdate() {
+       
+      this.temp = Object.assign({}, {
+          XMBH: "201802210987",
+          XMMC: "桌面云维保技术服务",
+          CBDW: "云计算技术部",
+          XMLB: "运行维护",
+          JSNR:
+            "负责数据库的定期运行检查；负责专业数据库运行优化配置；负责数据库故障处理技术支持",
+          JHZJE: 290,
+          LSJHZJE: 25,
+          BNJHZJE: 45,
+          WLJHZJE: 30,
+          SFCZWZ: "否"
+        }); // copy obj
       this.editVisible = true;
       this.dialogStatus = "update";
       this.$nextTick(() => {
         this.$refs["dataForm"].clearValidate();
       });
-      if (this.temp.CZWZ === 1) {
-        let temp = {
-          XMBH: this.temp.XMBH
-        };
-        GetDetailInfo(temp).then(response => {
-          if (response.data.code === 2000) {
-            this.infiledList = response.data.items;
-          }
-        });
-      }
+    },
+    handleProcess()
+    {
+ this.workFlowVisible = true;
     },
     handleDelete(row) {
-      this.$confirm("确认删除记录吗?", "提示", {
+      this.$confirm("确认作废记录吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
@@ -524,23 +660,16 @@ export default {
   },
   created() {
     this.listLoading = false;
+
     this.getList();
   },
+
   computed: {
     getRoleLevel() {
       if (this.$store.state.user.roleLevel === "admin") {
         return true;
       } else {
         return false;
-      }
-    }
-  },
-  filters: {
-    ChangeFlag(val) {
-      if (val === 1) {
-        return "是";
-      } else {
-        return "否";
       }
     }
   }
