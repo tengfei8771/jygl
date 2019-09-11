@@ -382,6 +382,7 @@
 // import { Treeselect, LOAD_CHILDREN_OPTIONS } from "@riophae/vue-treeselect";
 // import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import {flowSend} from '@/app_src/api/workflow/common.js' //注意路径
+import  test1 from '@/app_src/api/workflow/test1.js' 
 import waves from "@/frame_src/directive/waves"; // 水波纹指令
 import { getToken } from "@/frame_src/utils/auth";
 import {
