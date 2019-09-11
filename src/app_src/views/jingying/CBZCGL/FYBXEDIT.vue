@@ -252,7 +252,7 @@
 
 <script>
 import waves from "@/frame_src/directive/waves"; // 水波纹指令
-import { getLodop } from "@/frame_src/utils/LodopFuncs";
+// import { getLodop } from "@/frame_src/utils/LodopFuncs";
 import { getToken } from "@/frame_src/utils/auth";
 import { CapitalChinese } from "@/frame_src/utils/index";
 import { fetchOrgList } from "@/frame_src/api/org";

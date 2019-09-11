@@ -24,12 +24,13 @@ import '../static/ueditor/ueditor.config.js'
 import '../static/ueditor/ueditor.all.js'
 import '../static/ueditor/lang/zh-cn/zh-cn.js'
 import '../static/ueditor/ueditor.parse.js'
-
-
+import './app_src/api/workflow/common.js'
+import './app_src/api/workflow/roadui.core.js'
+import './app_src/api/workflow/roadui.window.js'
 import echarts from 'echarts'
-Vue.prototype.$echarts = echarts 
+Vue.prototype.$echarts = echarts
 import Print from 'vue-print-nb'
-Vue.use(Print);
+Vue.use(Print)
 
 Vue.use(Element, {
   size: 'medium', // set element-ui default size
