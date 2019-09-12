@@ -1,8 +1,5 @@
 ﻿import $ from 'jquery'
-//import  {Window}  from '@/app_src/api/workflow/roadui.window.js' // 注意路径
-//import  RoadUI from '@/app_src/api/workflow/roadui.window.js'
-let RoadUI=require('./roadui.core')
-//import  {RoadUI} from '@/app_src/api/workflow/roadui.window.js'
+// import { RoadUI } from '@/app_src/api/workflow/roadui.window.js' // 注意路径
 function execute(script) {
   if (!script || $.trim(script).length == 0) {
     return false
@@ -40,22 +37,20 @@ function setSign() {
 }
 
 function flowSend(isSubmit) {
-  var mainDialog = new RoadUI.Window()
+  if (!validateForm() || !checkSign()) {
+    return false
+    }
+  if (!isSubmit && isSystemDetermine) {
+    saveData('flowSend')
+    } else {
+    var mainDialog = new RoadUI.Window()
         mainDialog.open({
-      url: '/RoadFlowCore/FlowRun/FlowSend?' + "query" + '&instanceid1=' + ($('#form_instanceid').val() || ''),
+      url: '/RoadFlowCore/FlowRun/FlowSend?' + query + '&instanceid1=' + ($('#form_instanceid').val() || ''),
       openerid: iframeid,
       width: isMobile ? 350 : 550,
       height: 370,
       title: '发送'
     })
-  if (!validateForm() || !checkSign()) {
-    return false;
-
-    }
-  if (!isSubmit && isSystemDetermine) {
-    saveData('flowSend')
-    } else {
-    
     }
 }
 
@@ -122,29 +117,29 @@ function flowSaveIframe(flag, isSend) {
         if (contentWin.CKEDITOR) {
       CKEDITOR = contentWin.CKEDITOR
         }
-    // if (new RoadUI.Validate().validateForm(f)) {
-    //   var o = RoadUI.Core.serializeForm($(f))
-    //         $("[model='html']", contentWin.document).each(function() {
-    //     htmlId = $(this).attr('id')
-    //             htmlName = $(this).attr('name')
-    //             eval('o.' + htmlName + '=CKEDITOR.instances.' + htmlId + '.getData()')
-    //         })
-    //         $.ajax({
-    //     url: action + (action.indexOf('?') >= 0 ? query : '?' + query), data: o, type: 'POST', async: false, cache: false, dataType: 'json', success: function(json) {
-    //       if (json.success == 1) {
-    //         $('#instanceid').val(json.instanceid)
-    //                     $('#customformtitle').val(json.title)
-    //                     if (isSend) {
-    //           flowSaveAndSendIframe(true)
-    //         } else {
-    //           flowSaveIframe(true)
-    //                     }
-    //       } else {
-    //         alert(json.message)
-    //                 }
-    //     }
-    //   })
-    //     }
+    if (new RoadUI.Validate().validateForm(f)) {
+      var o = RoadUI.Core.serializeForm($(f))
+            $("[model='html']", contentWin.document).each(function() {
+        htmlId = $(this).attr('id')
+                htmlName = $(this).attr('name')
+                eval('o.' + htmlName + '=CKEDITOR.instances.' + htmlId + '.getData()')
+            })
+            $.ajax({
+        url: action + (action.indexOf('?') >= 0 ? query : '?' + query), data: o, type: 'POST', async: false, cache: false, dataType: 'json', success: function(json) {
+          if (json.success == 1) {
+            $('#instanceid').val(json.instanceid)
+                        $('#customformtitle').val(json.title)
+                        if (isSend) {
+              flowSaveAndSendIframe(true)
+            } else {
+              flowSaveIframe(true)
+                        }
+          } else {
+            alert(json.message)
+                    }
+        }
+      })
+        }
   }
 }
 
@@ -213,7 +208,7 @@ function saveData(opation) {
 function validateForm() {
   // 验证提示类型 0-弹出 1-图标加提示信息 2-图标
   var validateAlertType = $('#Form_ValidateAlertType').size() > 0 && !isNaN($('#Form_ValidateAlertType').val()) ? parseInt($('#Form_ValidateAlertType').val()) : 1
-    // return new RoadUI.Validate().validateForm(document.forms[0], validateAlertType)
+    return new RoadUI.Validate().validateForm(document.forms[0], validateAlertType)
 }
 
 function showProcessing(type) {

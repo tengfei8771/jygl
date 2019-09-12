@@ -49,20 +49,40 @@ export const constantRouterMap = [
       hidden: true
     },
     {
-      path: '/WorkFlow/DBSX', name: '待办事项',
+      path: '/jingying/WorkFlow/DBSX', name: '待办事项',
       meta: { title: '待办事项', icon: 'home', noCache: true },
-      component: _import('app_src/views/WorkFlow/DBSX'), hidden: true
+      component: _import('app_src/views/jingying/WorkFlow/DBSX'), hidden: true
     },
     {
-      path: '/WorkFlow/ZBSX', name: '在办事项',
+      path: '/jingying/WorkFlow/ZBSX', name: '在办事项',
       meta: { title: '在办事项', icon: 'home', noCache: true },
-      component: _import('app_src/views/WorkFlow/ZBSX'), hidden: true
+      component: _import('app_src/views/jingying/WorkFlow/ZBSX'), hidden: true
     },
     {
-      path: '/WorkFlow/BJSX', name: '办结事项',
+      path: '/jingying/WorkFlow/BJSX', name: '办结事项',
       meta: { title: '办结事项', icon: 'home', noCache: true },
-      component: _import('app_src/views/WorkFlow/BJSX'), hidden: true
+      component: _import('app_src/views/jingying/WorkFlow/BJSX'), hidden: true
     },
+    {
+      path: '/jingying/CBZCGL/FYBXEDIT', name: '费用报销维护',
+      meta: { title: '费用报销维护', icon: 'home', noCache: true },
+      component: _import('app_src/views/jingying/CBZCGL/FYBXEDIT'), hidden: true
+    },
+    {
+      path: '/jingying/CBZCGL/CLFBXEDIT', name: '差旅费报销维护',
+      meta: { title: '差旅费报销维护', icon: 'home', noCache: true },
+      component: _import('app_src/views/jingying/CBZCGL/CLFBXEDIT'), hidden: true
+    },
+    {
+      path: '/jingying/CBZCGL/CLBXPRINT', name: '差旅费打印',
+      meta: { title: '差旅费打印', icon: 'home', noCache: true },
+      component: _import('app_src/views/jingying/CBZCGL/CLBXPRINT'), hidden: true
+    },
+    {
+      path: '/jingying/CBZCGL/FYBXPRINT', name: '费用报销打印',
+      meta: { title: '费用报销打印', icon: 'home', noCache: true },
+      component: _import('app_src/views/jingying/CBZCGL/FYBXPRINT'), hidden: true
+    }
     ]
   }
 ]
