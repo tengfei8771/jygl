@@ -13,7 +13,8 @@ import {
   removeLoginType
 } from '@/frame_src/utils/loginTypeCookies'
 import {
-  GetColor
+  GetColor,
+  SetSeesion
 } from '@/frame_src/api/title'
 
 import { parseTime } from '@/frame_src/utils'
@@ -172,8 +173,8 @@ const user = {
     }, orgName) {
       commit('SET_ORGNAME', orgName)
     },
-    setLoginType({commit},loginType){
-      commit('SET_LOGINTYPE',loginType)
+    setLoginType({ commit }, loginType) {
+      commit('SET_LOGINTYPE', loginType)
     },
     // 用户名登录
     LoginByUsername({
@@ -191,6 +192,8 @@ const user = {
             commit('SET_TOKEN', data.token)
             setToken(response.data.token)
             setLoginType(userInfo.userDomain)
+            //SetRoleFlowSession();
+
             resolve(response)
           } else {
             reject(response.data.message)
@@ -200,6 +203,18 @@ const user = {
         })
       })
     },
+    SetRoleFlowSession({
+      commit
+    },userid) {
+      return new Promise((resolve, reject) => {
+        let temp = {
+          userid: userid
+        };
+        console.log(temp);
+        SetSeesion()
+      })
+    },
+
 
     GetColor({
       commit
@@ -225,7 +240,7 @@ const user = {
       state
     }) {
       return new Promise((resolve, reject) => {
-        getUserInfo(state.token,state.userId,state.loginType).then(response => {
+        getUserInfo(state.token, state.userId, state.loginType).then(response => {
           if (!response.data) { // 由于mockjs 不支持自定义状态码只能这样hack
             reject('error')
           }
