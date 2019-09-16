@@ -211,7 +211,7 @@ const user = {
           userid: userid
         };
         console.log(temp);
-        SetSeesion()
+        SetSeesion(temp)
       })
     },
 
