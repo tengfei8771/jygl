@@ -18,10 +18,10 @@ export function GetColor(query) { //查询配置颜色
   })
 }
 
-export function SetSeesion(data) { //查询配置颜色
-  return request({
-    url: 'RoadFlowCore/Organize/SetSession?',
-    method: 'get',
-    params:data
-  })
-}
+// export function SetSeesion(data) { //查询配置颜色
+//   return request({
+//     url: 'RoadFlowCore/Organize/SetSession?',
+//     method: 'get',
+//     params:data
+//   })
+// }

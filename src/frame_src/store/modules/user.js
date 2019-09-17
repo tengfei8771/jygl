@@ -14,7 +14,7 @@ import {
 } from '@/frame_src/utils/loginTypeCookies'
 import {
   GetColor,
-  SetSeesion
+  // SetSeesion
 } from '@/frame_src/api/title'
 
 import { parseTime } from '@/frame_src/utils'
@@ -203,17 +203,17 @@ const user = {
         })
       })
     },
-    SetRoleFlowSession({
-      commit
-    },userid) {
-      return new Promise((resolve, reject) => {
-        let temp = {
-          userid: userid
-        };
-        console.log(temp);
-        SetSeesion(temp)
-      })
-    },
+    // SetRoleFlowSession({
+    //   commit
+    // },userid) {
+    //   return new Promise((resolve, reject) => {
+    //     let temp = {
+    //       userid: userid
+    //     };
+    //     console.log(temp);
+    //     SetSeesion(temp)
+    //   })
+    // },
 
 
     GetColor({

@@ -202,7 +202,7 @@ export default {
                                         "setUserId",
                                         userList[0].USER_ID
                                     );
-                                    this.$store.dispatch("SetRoleFlowSession",userList[0].USER_ID);
+                                    // this.$store.dispatch("SetRoleFlowSession",userList[0].USER_ID);
                                     this.updateShowDialog("");
                                 } else {
                                     this.showDialog = true;
