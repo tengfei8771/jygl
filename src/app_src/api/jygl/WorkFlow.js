@@ -21,3 +21,10 @@ export function sendTask(data) {
     data
   })
 }
+export function sendFlow(data) {
+  return request({
+    url: '/WorkFlow/sendFlow',
+    method: 'post',
+    data
+  })
+}

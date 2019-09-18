@@ -112,7 +112,7 @@
               <template slot-scope="scope">
                 <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">修改</el-button>
                 <el-button type="danger" size="mini" @click="handleDelete(scope.row)">删除</el-button>
-                <el-button type="warning" size="mini" @click="handleUpdate(scope.row)">提交</el-button>
+                <el-button type="warning" size="mini" @click="handleSubmit(scope.row)">提交</el-button>
                 <el-button type="success" size="mini" @click="handleProcess()">流程</el-button>
                 <el-button type="info" size="mini">撤回</el-button>
               </template>
@@ -381,9 +381,10 @@
 <script>
 // import { Treeselect, LOAD_CHILDREN_OPTIONS } from "@riophae/vue-treeselect";
 // import "@riophae/vue-treeselect/dist/vue-treeselect.css";
-import {flowSend} from '@/app_src/api/workflow/common.js' //注意路径
+// import {flowSend} from '@/app_src/api/workflow/common.js' //注意路径
 import waves from "@/frame_src/directive/waves"; // 水波纹指令
 import { getToken } from "@/frame_src/utils/auth";
+import { sendFlow } from "@/app_src/api/jygl/WorkFlow";
 import {
   GetInfo,
   CreateInfo,
@@ -532,6 +533,30 @@ export default {
     };
   },
   methods: {
+    handleSubmit(row)
+{
+
+  
+
+      let fd = new FormData();
+            fd.append("systemcode", "localhost");
+            fd.append("stepid","")
+            fd.append("flowid", "0273b9ef-9903-4c29-8f1c-e3cf04a00fb7"); 
+            fd.append("taskid", ""); 
+            fd.append("instanceid", row.S_ID); 
+            fd.append("senderid", this.$store.state.user.userId); 
+            fd.append("tasktitle",row.XMBH+"成本计划报销审批");
+            fd.append("comment","");
+            fd.append("type","submit");
+            fd.append("isFreeSend",false);
+            console.log(fd);
+      sendFlow(fd).then(repon=>{
+           
+            console.log(repon);
+      })
+ 
+
+},
     selectChange(val) {
       if (
         this.BatchOptions.length - 1 ===
@@ -796,7 +821,7 @@ export default {
     this.GetOpions();
     this.GetTreeOptions();
     this.getList();
-    flowSend();
+    // flowSend();
   },
 
   computed: {
