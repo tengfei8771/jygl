@@ -10,7 +10,7 @@ export default {
  data() {
     return {
         baseUrl:process.env.BASE_API,
-        frameUrl:"/RoadFlowCore/FlowRun/Index?flowid=4447d595-3a2a-4641-8447-c4f012791bae"
+        frameUrl:"/RoadFlowCore/Applibrary/Index"
     };
   },
     mounted(){
