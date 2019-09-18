@@ -292,7 +292,7 @@
             </div>
 
             <!--表单form-->
-            <el-dialog :title="textMap[dialogStatus]" width="40%" :visible.sync="dialogFormVisible">
+            <el-dialog :title="textMap[dialogStatus]" width="50%" :visible.sync="dialogFormVisible">
               <el-form
                 :rules="rules"
                 ref="dataForm"
@@ -373,6 +373,15 @@
                         @select="getNode"
                       />
                     </el-form-item>
+                                        <el-form-item :label="$t('userTable.REMARK')+'：'">
+                      <el-input
+                        type="textarea"
+                        :autosize="{ minRows: 2, maxRows: 4}"
+                        placeholder="备注"
+                        v-model="temp.REMARK"
+                        size="mini"
+                      ></el-input>
+                    </el-form-item>
                   </el-col>
                   <el-col :span="1">
                   </el-col>
@@ -434,14 +443,10 @@
                         ></el-option>
                       </el-select>
                     </el-form-item>
-                    <el-form-item :label="$t('userTable.REMARK')+'：'">
-                      <el-input
-                        type="textarea"
-                        :autosize="{ minRows: 2, maxRows: 4}"
-                        placeholder="备注"
-                        v-model="temp.REMARK"
-                        size="mini"
-                      ></el-input>
+                    <el-form-item label="岗位类型：" prop="LEADER_TYPE" >
+                      <el-radio v-model="temp.LEADER_TYPE" :label="0">无</el-radio>
+                      <el-radio v-model="temp.LEADER_TYPE" :label="1">部门领导</el-radio>
+                      <el-radio v-model="temp.LEADER_TYPE" :label="2">分管领导</el-radio>
                     </el-form-item>
                   </el-col>
                 </el-row>
@@ -758,7 +763,8 @@ export default {
         ASSOCIATED_ACCOUNT: "",
         USER_SEX: undefined,
         orgName: "",
-        orgId: null
+        orgId: null,
+        LEADER_TYPE:0
       },
       dialogFormVisible: false,
       dialogStatus: "",
