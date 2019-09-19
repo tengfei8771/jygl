@@ -56,10 +56,10 @@
           <el-table-column label="账户" prop="YHZH" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column align="center" width="230" label="操作" fixed="right">
             <template slot-scope="scope">
-              <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">修改</el-button>
-              <el-button type="danger" size="mini" @click="handleDelete(scope.row)">删除</el-button>
-              <el-button type="warning" size="mini" @click="handleSubmit(scope.row)">提交</el-button>
-              <el-button type="success" size="mini" @click="handleProcess(scope.row)">流程</el-button>
+              <el-button type="primary" size="mini" @click="handleUpdate(scope.row)" v-if="scope.row.PROCESS_STATE===0">修改</el-button>
+              <el-button type="danger" size="mini" @click="handleDelete(scope.row)" v-if="scope.row.PROCESS_STATE===0">删除</el-button>
+              <el-button type="warning" size="mini" @click="handleSubmit(scope.row)" v-if="scope.row.PROCESS_STATE===0">提交</el-button>
+              <el-button type="success" size="mini" @click="handleProcess(scope.row)" v-if="scope.row.PROCESS_STATE!=0">流程</el-button>
               <el-button type="info" size="mini">撤回</el-button>
               <el-button type="success" size="mini" @click="Print(scope.row)">打印</el-button>
             </template>

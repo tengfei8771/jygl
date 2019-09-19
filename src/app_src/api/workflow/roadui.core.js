@@ -150,12 +150,9 @@ RoadUI.Core = {
         } catch (e)
         {
         }
-        with (Math)
-        {
-            r1 = Number(arg1.toString().replace(".", ""))
-            r2 = Number(arg2.toString().replace(".", ""))
+        r1 =Math.Number(arg1.toString().replace(".", ""))
+            r2 =Math.Number(arg2.toString().replace(".", ""))
             return (r1 / r2) * pow(10, t2 - t1);
-        }
     },
     accMul: function (arg1, arg2)//返回值：arg1乘以 arg2的精确结果
     {
@@ -879,3 +876,4 @@ function banBackSpace(e)
 document.onkeypress = banBackSpace;
 //禁止后退键  作用于IE、Chrome
 document.onkeydown = banBackSpace;
+//module.exports=RoadUI;

@@ -110,10 +110,10 @@
             </el-table-column>
             <el-table-column align="center" width="230" label="操作" fixed="right">
               <template slot-scope="scope">
-                <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">修改</el-button>
-                <el-button type="danger" size="mini" @click="handleDelete(scope.row)">删除</el-button>
-                <el-button type="warning" size="mini" @click="handleSubmit(scope.row)">提交</el-button>
-                <el-button type="success" size="mini" @click="handleProcess()">流程</el-button>
+                <el-button type="primary" size="mini" @click="handleUpdate(scope.row)" v-if="scope.row.PROCESS_STATE===0">修改</el-button>
+                <el-button type="danger" size="mini" @click="handleDelete(scope.row)" v-if="scope.row.PROCESS_STATE===0">删除</el-button>
+                <el-button type="warning" size="mini" @click="handleSubmit(scope.row)" v-if="scope.row.PROCESS_STATE===0">提交</el-button>
+                <el-button type="success" size="mini" @click="handleProcess()" v-if="scope.row.PROCESS_STATE!=0">流程</el-button>
                 <el-button type="info" size="mini">撤回</el-button>
               </template>
             </el-table-column>
@@ -232,7 +232,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="历史计划金额" >
+              <el-form-item label="历史计划金额">
                 <el-input v-model="temp.LSJE"></el-input>
               </el-form-item>
             </el-col>
@@ -244,13 +244,13 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="未来计划金额" >
+              <el-form-item label="未来计划金额">
                 <el-input v-model="temp.WLJE"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
-            <el-col :span="12">
+            <!-- <el-col :span="12">
               <el-form-item label="是否财务下达" prop="SFCW">
                 <el-select style="width:100%;" v-model="temp.SFCW">
                   <el-option
@@ -261,7 +261,7 @@
                   ></el-option>
                 </el-select>
               </el-form-item>
-            </el-col>
+            </el-col> -->
             <el-col :span="12">
               <el-form-item label="是否有收入" prop="HASINCOME">
                 <el-select style="width:100%;" v-model="temp.HASINCOME">
@@ -441,7 +441,7 @@ export default {
       ],
       list: [],
       BatchOptions: [],
-      XMOptions:[],
+      XMOptions: [],
       rules: {
         XMMC: [
           { required: true, message: "请输入项目名称", trigger: "change" }
@@ -501,7 +501,8 @@ export default {
         limit: 10,
         page: 1,
         XMBH: "",
-        XMMC: ""
+        XMMC: "",
+        userid: this.$store.state.user.userId
       },
       temp: {
         XMBH: "",
@@ -533,39 +534,41 @@ export default {
     };
   },
   methods: {
-    handleSubmit(row)
-{
-
-  
-
+    handleSubmit(row) {
       let fd = new FormData();
-            fd.append("systemcode", "localhost");
-            fd.append("stepid","")
-            fd.append("flowid", "0273b9ef-9903-4c29-8f1c-e3cf04a00fb7"); 
-            fd.append("taskid", ""); 
-            fd.append("instanceid", row.S_ID); 
-            fd.append("senderid", this.$store.state.user.userId); 
-            fd.append("tasktitle",row.XMBH+"成本计划报销审批");
-            fd.append("comment","");
-            fd.append("type","submit");
-            fd.append("isFreeSend",false);
-            console.log(fd);
-      sendFlow(fd).then(repon=>{
-           
-            console.log(repon);
-      })
- 
-
-},
+      fd.append("systemcode", "localhost");
+      fd.append("stepid", "");
+      fd.append("flowid", "0273b9ef-9903-4c29-8f1c-e3cf04a00fb7");
+      fd.append("taskid", "");
+      fd.append("instanceid", row.XMBH);
+      fd.append("senderid", this.$store.state.user.userId);
+      fd.append("tasktitle", row.XMBH + "成本计划报销审批");
+      fd.append("comment", "");
+      fd.append("type", "submit");
+      fd.append("isFreeSend", false);
+      fd.append("formtype",0);
+      sendFlow(fd).then(repon => {
+        if(repon.data.code===2000){
+          this.$notify({
+            position: "bottom-right",
+            title: "成功！",
+            message: "发起流程成功",
+            type: "success",
+            duration: 2000
+          });
+        }
+      });
+      this.getList();
+    },
     selectChange(val) {
       if (
         this.BatchOptions.length - 1 ===
         this.BatchOptions.findIndex(t => t.Code === val)
       ) {
         this.finallFlag = true;
-        GetYearProject().then(response=>{
-          this.XMOptions=response.data.items;
-        })
+        GetYearProject().then(response => {
+          this.XMOptions = response.data.items;
+        });
       } else {
         this.finallFlag = false;
       }

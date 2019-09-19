@@ -1,4 +1,4 @@
-﻿import  RoadUI  from '@/app_src/api/workflow/roadui.core.js'
+﻿//import  RoadUI  from '@/app_src/api/workflow/roadui.core.js'
 RoadUI.Validate = function () {
     var instance = this;
     this.bind = function ($elements) {

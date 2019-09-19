@@ -1,5 +1,5 @@
 ﻿import $ from 'jquery'
-// import { RoadUI } from '@/app_src/api/workflow/roadui.window.js' // 注意路径
+//import '@/app_src/api/workflow/roadui.window.js' // 注意路径
 function execute(script) {
   if (!script || $.trim(script).length == 0) {
     return false
