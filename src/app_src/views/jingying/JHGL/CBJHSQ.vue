@@ -110,10 +110,30 @@
             </el-table-column>
             <el-table-column align="center" width="230" label="操作" fixed="right">
               <template slot-scope="scope">
-                <el-button type="primary" size="mini" @click="handleUpdate(scope.row)" v-if="scope.row.PROCESS_STATE===0">修改</el-button>
-                <el-button type="danger" size="mini" @click="handleDelete(scope.row)" v-if="scope.row.PROCESS_STATE===0">删除</el-button>
-                <el-button type="warning" size="mini" @click="handleSubmit(scope.row)" v-if="scope.row.PROCESS_STATE===0">提交</el-button>
-                <el-button type="success" size="mini" @click="handleProcess()" v-if="scope.row.PROCESS_STATE!=0">流程</el-button>
+                <el-button
+                  type="primary"
+                  size="mini"
+                  @click="handleUpdate(scope.row)"
+                  v-if="scope.row.PROCESS_STATE===0"
+                >修改</el-button>
+                <el-button
+                  type="danger"
+                  size="mini"
+                  @click="handleDelete(scope.row)"
+                  v-if="scope.row.PROCESS_STATE===0"
+                >删除</el-button>
+                <el-button
+                  type="warning"
+                  size="mini"
+                  @click="handleSubmit(scope.row)"
+                  v-if="scope.row.PROCESS_STATE===0"
+                >提交</el-button>
+                <el-button
+                  type="success"
+                  size="mini"
+                  @click="handleProcess()"
+                  v-if="scope.row.PROCESS_STATE!=0"
+                >流程</el-button>
                 <el-button type="info" size="mini">撤回</el-button>
               </template>
             </el-table-column>
@@ -214,7 +234,21 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="承办单位" prop="CBDW">
-                <el-input v-model="temp.CBDW"></el-input>
+                <treeselect
+                  v-model="temp.CBDW"
+                  :multiple="false"
+                  :options="treeData1"
+                  :load-options="loadOptions"
+                  placeholder="请选择部门"
+                  :normalizer="normalizer1"
+                  :disable-branch-nodes="false"
+                  noResultsText="未搜索到结果"
+                  noChildrenText=" "
+                  style="font-size:14px;"
+                  :clearable="true"
+                  @select="getnode"
+                  size="mini"
+                />
               </el-form-item>
             </el-col>
           </el-row>
@@ -261,7 +295,7 @@
                   ></el-option>
                 </el-select>
               </el-form-item>
-            </el-col> -->
+            </el-col>-->
             <el-col :span="12">
               <el-form-item label="是否有收入" prop="HASINCOME">
                 <el-select style="width:100%;" v-model="temp.HASINCOME">
@@ -397,6 +431,7 @@ import {
   GetYearProject
 } from "@/app_src/api/jygl/CBJHSQ";
 import { Treeselect, LOAD_CHILDREN_OPTIONS } from "@riophae/vue-treeselect";
+import { fetchOrgList } from "@/frame_src/api/org";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 export default {
   name: "CBJHSQ",
@@ -418,6 +453,7 @@ export default {
     return {
       infiledList: [],
       treeData: [],
+      treeData1: [],
       finallFlag: false,
       fildtps: [{ text: "设备", value: "1" }, { text: "材料", value: "2" }],
       tableKey: 0,
@@ -426,6 +462,13 @@ export default {
         return {
           id: node.Code,
           label: node.Name,
+          children: node.children
+        };
+      },
+      normalizer1(node) {
+        return {
+          id: node.orgCode,
+          label: node.orgShortName,
           children: node.children
         };
       },
@@ -502,7 +545,8 @@ export default {
         page: 1,
         XMBH: "",
         XMMC: "",
-        userid: this.$store.state.user.userId
+        userid: this.$store.state.user.userId,
+        type:0,
       },
       temp: {
         XMBH: "",
@@ -546,9 +590,9 @@ export default {
       fd.append("comment", "");
       fd.append("type", "submit");
       fd.append("isFreeSend", false);
-      fd.append("formtype",0);
+      fd.append("formtype", 0);
       sendFlow(fd).then(repon => {
-        if(repon.data.code===2000){
+        if (repon.data.code === 2000) {
           this.$notify({
             position: "bottom-right",
             title: "成功！",
@@ -556,9 +600,26 @@ export default {
             type: "success",
             duration: 2000
           });
+          this.getList();
         }
       });
-      this.getList();
+    },
+    getOrgDate() {
+      // 查询组织结构数据this.treeListQuery
+      fetchOrgList().then(response => {
+        if (response.data.code === 2000) {
+          this.treeData1 = [];
+          this.treeData1 = response.data.items;
+        } else {
+          this.$notify({
+            position: "bottom-right",
+            title: "失败",
+            message: response.data.message,
+            type: "error",
+            duration: 2000
+          });
+        }
+      });
     },
     selectChange(val) {
       if (
@@ -824,6 +885,7 @@ export default {
     this.GetOpions();
     this.GetTreeOptions();
     this.getList();
+    this.getOrgDate();
     // flowSend();
   },
 

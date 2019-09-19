@@ -302,7 +302,9 @@ export default {
         limit: 10,
         page: 1,
         XMBH: "",
-        XMMC: ""
+        XMMC: "",
+        type:1,
+        userid:"",
       },
       list: [],
       innerVisible:false,

@@ -56,10 +56,30 @@
           <el-table-column label="账户" prop="YHZH" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column align="center" width="230" label="操作" fixed="right">
             <template slot-scope="scope">
-              <el-button type="primary" size="mini" @click="handleUpdate(scope.row)" v-if="scope.row.PROCESS_STATE===0">修改</el-button>
-              <el-button type="danger" size="mini" @click="handleDelete(scope.row)" v-if="scope.row.PROCESS_STATE===0">删除</el-button>
-              <el-button type="warning" size="mini" @click="handleSubmit(scope.row)" v-if="scope.row.PROCESS_STATE===0">提交</el-button>
-              <el-button type="success" size="mini" @click="handleProcess(scope.row)" v-if="scope.row.PROCESS_STATE!=0">流程</el-button>
+              <el-button
+                type="primary"
+                size="mini"
+                @click="handleUpdate(scope.row)"
+                v-if="scope.row.PROCESS_STATE===0"
+              >修改</el-button>
+              <el-button
+                type="danger"
+                size="mini"
+                @click="handleDelete(scope.row)"
+                v-if="scope.row.PROCESS_STATE===0"
+              >删除</el-button>
+              <el-button
+                type="warning"
+                size="mini"
+                @click="handleSubmit(scope.row)"
+                v-if="scope.row.PROCESS_STATE===0"
+              >提交</el-button>
+              <el-button
+                type="success"
+                size="mini"
+                @click="handleProcess(scope.row)"
+                v-if="scope.row.PROCESS_STATE!=0"
+              >流程</el-button>
               <el-button type="info" size="mini">撤回</el-button>
               <el-button type="success" size="mini" @click="Print(scope.row)">打印</el-button>
             </template>
@@ -89,7 +109,8 @@ import waves from "@/frame_src/directive/waves"; // 水波纹指令
 import { getToken } from "@/frame_src/utils/auth";
 import { parseTime, parseDate } from "@/frame_src/utils/index";
 import { GetInfo, DeleteInfo } from "@/app_src/api/jygl/FYBX";
-import { getStep, sendTask } from "@/app_src/api/jygl/WorkFlow";
+import { getStep, sendTask, sendFlow } from "@/app_src/api/jygl/WorkFlow";
+
 export default {
   name: "FYBX",
   directives: {
@@ -121,21 +142,22 @@ export default {
       listLoading: false,
       tableKey: 0,
       list: [],
-      total:0,
+      total: 0,
       listQuery: {
         limit: 10,
         page: 1,
         BXDH: "",
-        XMMC: ""
+        XMMC: "",
+        userid: this.$store.state.user.userId
       }
     };
   },
   filters: {
-    parseTime, parseDate
-
+    parseTime,
+    parseDate
   },
   methods: {
-     // 查询数据
+    // 查询数据
     getList() {
       this.listLoading = true;
       GetInfo(this.listQuery).then(response => {
@@ -181,16 +203,14 @@ export default {
     handleCreate() {
       this.$router.push({
         path: "/jingying/CBZCGL/FYBXEDIT",
-        query: { type: "create"},
-
+        query: { type: "create" }
       });
     },
-    Print(row){
+    Print(row) {
       console.log(row);
       this.$router.push({
         path: "/jingying/CBZCGL/FYBXPRINT",
-        query: { type: "update",row:row },
-
+        query: { type: "update", row: row }
       });
     },
     handleUpdate(row) {
@@ -199,42 +219,32 @@ export default {
         query: { type: "update", row: row }
       });
     },
-handleSubmit(row)
-{
-getStep().then(response => {
-  var rep=JSON.parse(response.data);
-  
-   if(rep.errcode==0)
-   {
-var newList = []
-    JSON.parse(response.data).data.forEach(item =>{
-     var obj={
-      id:item.id,
-      users:item.users,
-      completedtime:""
-     }
-      newList.push(obj)
-    })
+    handleSubmit(row) {
       let fd = new FormData();
-            fd.append("systemcode", "localhost");
-            fd.append("flowid", "4447d595-3a2a-4641-8447-c4f012791bae"); 
-            fd.append("taskid", ""); 
-            fd.append("instanceid", row.S_ID); 
-            fd.append("senderid", "EB03262C-AB60-4BC6-A4C0-96E66A4229FE"); 
-            fd.append("tasktitle","费用报销");
-            fd.append("comment","");
-            fd.append("type","submit");
-            fd.append("steps",JSON.stringify(newList));
-            console.log(fd);
-      sendTask(fd).then(repon=>{
-           
-            console.log(repon);
-      })
-   }
-
-
-})
-},
+      fd.append("systemcode", "localhost");
+      fd.append("stepid", "");
+      fd.append("flowid", "0273b9ef-9903-4c29-8f1c-e3cf04a00fb7");
+      fd.append("taskid", "");
+      fd.append("instanceid", row.S_ID);
+      fd.append("senderid", this.$store.state.user.userId);
+      fd.append("tasktitle", row.S_ID + "费用报销审批");
+      fd.append("comment", "");
+      fd.append("type", "submit");
+      fd.append("isFreeSend", false);
+      fd.append("formtype", 0);
+      sendFlow(fd).then(repon => {
+        if (repon.data.code === 2000) {
+          this.$notify({
+            position: "bottom-right",
+            title: "成功！",
+            message: "发起流程成功",
+            type: "success",
+            duration: 2000
+          });
+          this.getList();
+        }
+      });
+    },
     handleDelete(row) {
       this.$confirm("确认删除吗！", "提示", {
         confirmButtonText: "确定",
@@ -264,12 +274,11 @@ var newList = []
           });
         })
         .catch(() => {});
-    },
-
-  },
-   created() {
-      this.getList();
     }
+  },
+  created() {
+    this.getList();
+  }
 };
 </script>
 
