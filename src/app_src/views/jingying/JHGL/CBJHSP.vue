@@ -78,7 +78,7 @@
             <el-table-column width="120px" align="right" label="历史计划总金额">
               <template slot-scope="scope">
                 <span>{{scope.row.LSJE |NumFormat}}</span>
-              </template> 
+              </template>
             </el-table-column>
             <el-table-column width="120px" align="right" label="本年计划总金额">
               <template slot-scope="scope">
@@ -125,7 +125,13 @@
       width="1000px"
     >
       <el-card>
-        <el-form ref="dataForm" :model="temp" label-width="120px" style="width: 99%;">
+        <el-form
+          ref="dataForm"
+          :model="temp"
+          label-width="120px"
+          style="width: 99%;"
+          :rules="rules"
+        >
           <el-row>
             <el-col :span="12">
               <el-form-item label="项目编号" prop="XMBH">
@@ -205,18 +211,20 @@
             </el-col>
           </el-row>
           <el-row>
-            <el-col :span="12">
-              <el-form-item label="是否财务下达">
+            <el-col
+              :span="12"
+              v-if="temp.StepId.toUpperCase()==='457F9912-9002-4DDC-914A-B141698FAECC'"
+            >
+              <el-form-item label="是否财务下达" prop="SFCW">
                 <el-radio-group v-model="temp.SFCW">
                   <el-radio :label="1">是</el-radio>
                   <el-radio :label="0">否</el-radio>
                 </el-radio-group>
               </el-form-item>
             </el-col>
+
             <el-col :span="12">
-              <el-form-item label="项目批次" >
-                {{temp.PC}}
-              </el-form-item>
+              <el-form-item label="项目批次">{{temp.PC}}</el-form-item>
             </el-col>
           </el-row>
           <el-row>
@@ -291,8 +299,8 @@
 
 import waves from "@/frame_src/directive/waves"; // 水波纹指令
 import { getToken } from "@/frame_src/utils/auth";
-import { GetInfo, GetDetailInfo } from "@/app_src/api/jygl/CBJHSP";
-import { executeFlow,sendFlow,backFlow } from "@/app_src/api/jygl/WorkFlow";
+import { GetInfo, GetDetailInfo, UpdateSFCW } from "@/app_src/api/jygl/CBJHSP";
+import { executeFlow, sendFlow, backFlow } from "@/app_src/api/jygl/WorkFlow";
 export default {
   name: "CBJHSQP",
   directives: {
@@ -303,6 +311,10 @@ export default {
   //   },
   data() {
     return {
+      rules: {
+        SFCW: [{ required: true, message: "请选择类型", trigger: "change" }]
+      },
+      inServForm: {},
       infiledList: [],
       fildtps: [{ text: "设备", value: "1" }, { text: "材料", value: "2" }],
       tableKey: 0,
@@ -337,7 +349,7 @@ export default {
         XMBH: "",
         XMMC: ""
       },
-      temp: {},
+      temp: {StepId:""},
       textMap: {
         update: "审批计划信息",
         create: "添加计划信息"
@@ -349,8 +361,7 @@ export default {
     };
   },
   methods: {
-    
-     handleBack(temp) {
+    handleBack(temp) {
       let fd = new FormData();
       fd.append("systemcode", "localhost");
       fd.append("flowid", "0273b9ef-9903-4c29-8f1c-e3cf04a00fb7");
@@ -369,13 +380,26 @@ export default {
             type: "success",
             duration: 2000
           });
-          this.editVisible=false;
+          this.editVisible = false;
           this.getList();
+        } else {
+          this.$notify({
+            position: "bottom-right",
+            title: "失败!",
+            message: repon.data.message,
+            type: "error",
+            duration: 2000
+          });
         }
+        this.editVisible = false;
+        this.getList();
       });
     },
-     handleSubmit(temp) {
-      let fd = new FormData();
+    handleSubmit(temp) {
+      //  if (temp.StepId === "457F9912-9002-4DDC-914A-B141698FAECC") {
+       this.$refs["dataForm"].validate(valid => {
+        if (valid) {
+         let fd = new FormData();
       fd.append("systemcode", "localhost");
       fd.append("stepid", temp.StepId);
       fd.append("flowid", "0273b9ef-9903-4c29-8f1c-e3cf04a00fb7");
@@ -389,17 +413,59 @@ export default {
       fd.append("formtype", 0);
       sendFlow(fd).then(repon => {
         if (repon.data.code === 2000) {
+          if (temp.StepId.toUpperCase() === "457F9912-9002-4DDC-914A-B141698FAECC") {
+            let updateData = {
+              XMBH: temp.XMBH,
+              sfcw: temp.SFCW
+            };
+            UpdateSFCW(updateData).then(response => {
+              if (response.data.code === 2000) {
+                this.$notify({
+                  position: "bottom-right",
+                  title: "成功！",
+                  message: "处理成功",
+                  type: "success",
+                  duration: 2000
+                });
+                this.editVisible = false;
+                this.getList();
+              } else {
+                this.$notify({
+                  position: "bottom-right",
+                  title: "失败",
+                  message: response.data.message,
+                  type: "warning",
+                  duration: 2000
+                });
+              }
+            });
+          } else {
+            this.$notify({
+              position: "bottom-right",
+              title: "成功！",
+              message: "处理成功",
+              type: "success",
+              duration: 2000
+            });
+            this.editVisible = false;
+            this.getList();
+          }
+        } else {
           this.$notify({
             position: "bottom-right",
-            title: "成功！",
-            message: "处理成功",
-            type: "success",
+            title: "失败!",
+            message: repon.data.message,
+            type: "error",
             duration: 2000
           });
-          this.editVisible=false;
-          this.getList();
         }
+        this.editVisible = false;
+        this.getList();
       });
+        }
+       });
+       //}
+      
     },
     deleteRow(index, rows) {
       //删除改行

@@ -595,6 +595,15 @@ export default {
           });
           this.getList();
         }
+        else{
+            this.$notify({
+            position: "bottom-right",
+            title: "失败!",
+            message: repon.data.message,
+            type: "error",
+            duration: 2000
+          });
+        }
       });
     },
     handleSubmit(row) {
@@ -620,6 +629,15 @@ export default {
             duration: 2000
           });
           this.getList();
+        }
+        else{
+            this.$notify({
+            position: "bottom-right",
+            title: "失败!",
+            message: repon.data.message,
+            type: "error",
+            duration: 2000
+          });
         }
       });
     },
