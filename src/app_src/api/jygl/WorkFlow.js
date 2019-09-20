@@ -44,3 +44,11 @@ export function backFlow(data) {
     data
   })
 }
+
+export function revokeFlow(data) {
+  return request({
+    url: '/WorkFlow/revokeFlow',
+    method: 'post',
+    data
+  })
+}

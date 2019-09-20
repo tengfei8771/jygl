@@ -95,10 +95,10 @@
                 <span>{{scope.row.CZWZ|ChangeFlag}}</span>
               </template>
             </el-table-column>
-            <el-table-column align="center" width="300" label="操作" fixed="right">
+            <el-table-column align="center" width="200" label="操作" fixed="right">
               <template slot-scope="scope">
                 <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">审批</el-button>
-                <el-button type="danger" size="mini" @click="handleDelete(scope.row)">退回</el-button>
+                <!-- <el-button type="danger" size="mini" @click="handleDelete(scope.row)">退回</el-button> -->
                 <el-button type="success" size="mini" @click="handleProcess()">查看流程</el-button>
               </template>
             </el-table-column>
@@ -207,7 +207,7 @@
           <el-row>
             <el-col :span="12">
               <el-form-item label="是否财务下达">
-                <el-radio-group v-model="temp.SFCW" disabled>
+                <el-radio-group v-model="temp.SFCW">
                   <el-radio :label="1">是</el-radio>
                   <el-radio :label="0">否</el-radio>
                 </el-radio-group>
@@ -272,8 +272,8 @@
           </el-row>
         </el-form>
         <div style="text-align:center">
-          <el-button type="success" @click="handleSubmit(temp)">通过</el-button>
-          <el-button @click="handleBack(temp)" type="danger">退回</el-button>
+          <el-button type="success" @click="handleSubmit(temp)">同意</el-button>
+          <el-button @click="handleBack(temp)" type="danger">不同意</el-button>
         </div>
       </el-card>
     </el-dialog>
@@ -354,6 +354,7 @@ export default {
       let fd = new FormData();
       fd.append("systemcode", "localhost");
       fd.append("flowid", "0273b9ef-9903-4c29-8f1c-e3cf04a00fb7");
+      fd.append("taskid", temp.Id);
       fd.append("instanceid", temp.XMBH);
       fd.append("senderid", this.$store.state.user.userId);
       fd.append("tasktitle", temp.XMBH + "成本计划报销审批");
@@ -601,7 +602,7 @@ export default {
 </script>
 
 <style lang="scss" >
-#CBJHSQ {
+#CBJHSP {
   .topSearh {
     margin-bottom: 15px;
   }

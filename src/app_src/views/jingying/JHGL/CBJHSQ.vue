@@ -108,13 +108,13 @@
                 <span>{{scope.row.SFCW|ChangeFlag}}</span>
               </template>
             </el-table-column>
-            <el-table-column align="center" width="230" label="操作" fixed="right">
+            <el-table-column align="center" width="280" label="操作" fixed="right">
               <template slot-scope="scope">
                 <el-button
                   type="primary"
                   size="mini"
                   @click="handleUpdate(scope.row)"
-                  v-if="scope.row.PROCESS_STATE===0"
+                  v-if="scope.row.PROCESS_STATE===0||scope.row.PROCESS_STATE===3"
                 >修改</el-button>
                 <el-button
                   type="danger"
@@ -126,7 +126,7 @@
                   type="warning"
                   size="mini"
                   @click="handleSubmit(scope.row)"
-                  v-if="scope.row.PROCESS_STATE===0"
+                  v-if="scope.row.PROCESS_STATE===0||scope.row.PROCESS_STATE===3"
                 >提交</el-button>
                 <el-button
                   type="success"
@@ -134,7 +134,7 @@
                   @click="handleProcess()"
                   v-if="scope.row.PROCESS_STATE!=0"
                 >流程</el-button>
-                <el-button type="info" size="mini" v-if="scope.row.PROCESS_STATE!=2&&scope.row.PROCESS_STATE!=0">撤回</el-button>
+                <el-button type="info" size="mini" @click="revokeSubmit(scope.row)" v-if="scope.row.PROCESS_STATE===1">撤回</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -419,7 +419,7 @@
 // import {flowSend} from '@/app_src/api/workflow/common.js' //注意路径
 import waves from "@/frame_src/directive/waves"; // 水波纹指令
 import { getToken } from "@/frame_src/utils/auth";
-import { sendFlow } from "@/app_src/api/jygl/WorkFlow";
+import { sendFlow,revokeFlow } from "@/app_src/api/jygl/WorkFlow";
 import {
   GetInfo,
   CreateInfo,
@@ -579,6 +579,24 @@ export default {
     };
   },
   methods: {
+    revokeSubmit(row){
+  let fd = new FormData();
+      fd.append("instanceid", row.XMBH);
+      fd.append("senderid", this.$store.state.user.userId);
+      fd.append("formtype", 0);
+      revokeFlow(fd).then(repon => {
+        if (repon.data.code === 2000) {
+          this.$notify({
+            position: "bottom-right",
+            title: "成功！",
+            message: "流程撤回成功！",
+            type: "success",
+            duration: 2000
+          });
+          this.getList();
+        }
+      });
+    },
     handleSubmit(row) {
       let fd = new FormData();
       fd.append("systemcode", "localhost");
