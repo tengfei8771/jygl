@@ -28,3 +28,19 @@ export function sendFlow(data) {
     data
   })
 }
+
+export function executeFlow(data) {
+  return request({
+    url: '/WorkFlow/executeFlow',
+    method: 'post',
+    data
+  })
+}
+
+export function backFlow(data) {
+  return request({
+    url: '/WorkFlow/backFlow',
+    method: 'post',
+    data
+  })
+}

@@ -272,8 +272,8 @@
           </el-row>
         </el-form>
         <div style="text-align:center">
-          <el-button type="success" @click="editVisible = false">通过</el-button>
-          <el-button @click="editVisible = false" type="danger">退回</el-button>
+          <el-button type="success" @click="handleSubmit(temp)">通过</el-button>
+          <el-button @click="handleBack(temp)" type="danger">退回</el-button>
         </div>
       </el-card>
     </el-dialog>
@@ -292,6 +292,7 @@
 import waves from "@/frame_src/directive/waves"; // 水波纹指令
 import { getToken } from "@/frame_src/utils/auth";
 import { GetInfo, GetDetailInfo } from "@/app_src/api/jygl/CBJHSP";
+import { executeFlow,sendFlow,backFlow } from "@/app_src/api/jygl/WorkFlow";
 export default {
   name: "CBJHSQP",
   directives: {
@@ -332,6 +333,7 @@ export default {
       listQuery: {
         limit: 10,
         page: 1,
+        userid: this.$store.state.user.userId,
         XMBH: "",
         XMMC: ""
       },
@@ -347,6 +349,57 @@ export default {
     };
   },
   methods: {
+    
+     handleBack(temp) {
+      let fd = new FormData();
+      fd.append("systemcode", "localhost");
+      fd.append("flowid", "0273b9ef-9903-4c29-8f1c-e3cf04a00fb7");
+      fd.append("instanceid", temp.XMBH);
+      fd.append("senderid", this.$store.state.user.userId);
+      fd.append("tasktitle", temp.XMBH + "成本计划报销审批");
+      fd.append("comment", "");
+      fd.append("formtype", 0);
+      backFlow(fd).then(repon => {
+        if (repon.data.code === 2000) {
+          this.$notify({
+            position: "bottom-right",
+            title: "成功！",
+            message: "处理成功",
+            type: "success",
+            duration: 2000
+          });
+          this.editVisible=false;
+          this.getList();
+        }
+      });
+    },
+     handleSubmit(temp) {
+      let fd = new FormData();
+      fd.append("systemcode", "localhost");
+      fd.append("stepid", temp.StepId);
+      fd.append("flowid", "0273b9ef-9903-4c29-8f1c-e3cf04a00fb7");
+      fd.append("taskid", temp.Id);
+      fd.append("instanceid", temp.XMBH);
+      fd.append("senderid", this.$store.state.user.userId);
+      fd.append("tasktitle", temp.XMBH + "成本计划报销审批");
+      fd.append("comment", "");
+      fd.append("type", "submit");
+      fd.append("isFreeSend", false);
+      fd.append("formtype", 0);
+      sendFlow(fd).then(repon => {
+        if (repon.data.code === 2000) {
+          this.$notify({
+            position: "bottom-right",
+            title: "成功！",
+            message: "处理成功",
+            type: "success",
+            duration: 2000
+          });
+          this.editVisible=false;
+          this.getList();
+        }
+      });
+    },
     deleteRow(index, rows) {
       //删除改行
       rows.splice(index, 1);

@@ -1,7 +1,7 @@
 import request from '@/frame_src/utils/request'
 export function GetInfo(query) { 
     return request({
-      url: '/CBJHSQ/GetInfo',
+      url: '/CBWZSP/GetInfo',
       method: 'get',
       params: query
     })
