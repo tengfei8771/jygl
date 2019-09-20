@@ -35,3 +35,10 @@ export function GetOpions(query) {
     params: query
   })
 }
+export function GetFYSPInfo(query) { 
+  return request({
+    url: '/FYBX/GetFYSPInfo',
+    method: 'get',
+    params: query
+  })
+}

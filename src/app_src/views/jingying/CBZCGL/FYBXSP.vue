@@ -5,15 +5,16 @@
         <el-input placeholder="报销单号" style="width:95%;" size="mini" clearable></el-input>
       </el-col>
       <el-col :xs="5" :sm="5" :md="5" :lg="4" :xl="3">
-        <el-button type="primary" icon="el-icon-search" size="mini">查询</el-button>
-                  <!-- <el-button
+          <el-input
+            placeholder="项目名称"
+            style="width:95%;"
             size="mini"
-            class="filter-item"
-            style="margin-left: 10px;"
-            @click="handleCreate"
-            type="primary"
-            icon="el-icon-edit"
-          >新增</el-button> -->
+            clearable
+            v-model="listQuery.XMMC"
+          ></el-input>
+        </el-col>
+      <el-col :xs="5" :sm="5" :md="5" :lg="4" :xl="3">
+        <el-button type="primary" icon="el-icon-search" @click="getList" size="mini">查询</el-button>
       </el-col>
     </el-row>
     <el-row>
@@ -27,11 +28,12 @@
           border
           fit
           highlight-current-row
-          style="width: 100%"
+          style="width: 100%; border-collapse:separate;"
+          
         >
-    <el-table-column label="报销单号" prop="BXDH" fixed="left"></el-table-column>
-          <el-table-column label="申请单位(部门)" prop="DWBM" fixed="left"></el-table-column>
-          <el-table-column label="申请时间" prop="SQSJ" fixed="left">
+    <el-table-column label="报销单号" prop="BXDH" fixed="left" width="160"></el-table-column>
+          <el-table-column label="申请单位(部门)" prop="DWBM" fixed="left" width="160"></el-table-column>
+          <el-table-column label="申请时间" prop="SQSJ" fixed="left" width="120">
             <template slot-scope="scope">
               <span>{{scope.row.SQSJ|parseDate}}</span>
             </template>
@@ -39,14 +41,14 @@
           <el-table-column label="费用项目" prop="FYXM" fixed="left"></el-table-column>
           <el-table-column label="报销事由" prop="BXSY"></el-table-column>
           <el-table-column label="报销金额" prop="BXJE"></el-table-column>
-          <el-table-column label="报销金额(大写)" prop="BXJEDX"></el-table-column>
-          <el-table-column label="原借款金额" prop="YJKJE"></el-table-column>
-          <el-table-column label="现付款金额" prop="XFKJE"></el-table-column>
-          <el-table-column label="付款方式" prop="FKFSName"></el-table-column>
-          <el-table-column label="附件张数" width="80" prop="FJZS"></el-table-column>
-          <el-table-column label="收款单位名称" prop="SKDW" :show-overflow-tooltip="true"></el-table-column>
-          <el-table-column label="开户银行" prop="KHH" :show-overflow-tooltip="true"></el-table-column>
-          <el-table-column label="账户" prop="YHZH" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="报销金额(大写)" prop="BXJEDX" width="120"></el-table-column>
+          <el-table-column label="原借款金额" prop="YJKJE" width="120"></el-table-column>
+          <el-table-column label="现付款金额" prop="XFKJE" width="120"></el-table-column>
+          <el-table-column label="付款方式" prop="FKFSName" width="120"></el-table-column>
+          <el-table-column label="附件张数" width="80" prop="FJZS" ></el-table-column>
+          <el-table-column label="收款单位名称" prop="SKDW" width="120" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="开户银行" prop="KHH"  width="120":show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="账户" prop="YHZH" width="120" :show-overflow-tooltip="true"></el-table-column>
            <el-table-column align="center" width="270" label="操作"  fixed="right">
               <template slot-scope="scope">
                 <el-button type="danger" size="mini" @click="handleDelete(scope.row)">预算调整</el-button>
@@ -85,18 +87,20 @@
                 placeholder="选择日期"
                 v-model="temp.SQSJ"
                 style="width: 100%;"
+                disabled
               ></el-date-picker>
             </el-form-item>
             </el-col>
             <el-col :span="12">
 
             <el-form-item label="费用项目" prop="FYXM">
-                    <el-select size="mini" style="width:100%;" v-model="temp.FYXM">
+                    <el-select size="mini" style="width:100%;" disabled v-model="temp.FYXM">
                       <el-option
                         v-for="(item,key) in selectOptions"
                         :key="key"
                         :label="item.label"
                         :value="item.value"
+                        enabled="enabled"
                       ></el-option>
                     </el-select>
                   </el-form-item>
@@ -105,67 +109,67 @@
           <el-row>
             <el-col :span="12">
               <el-form-item label="申请单位" prop="SQBM">
-                <el-input v-model="temp.SQBM"></el-input>
+                <el-input v-model="temp.DWBM" disabled></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="附件张数" prop="FJZS">
-                <el-input v-model="temp.FJZS"></el-input>
+                <el-input v-model="temp.FJZS" disabled> </el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="12">
               <el-form-item label="报销金额" prop="BXJE">
-                <el-input v-model="temp.BXJE"></el-input>
+                <el-input v-model="temp.BXJE" disabled></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="金额大写" prop="BXJEDX">
-                <el-input v-model="temp.BXJEDX"></el-input>
+                <el-input v-model="temp.BXJEDX" disabled></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="24">
               <el-form-item label="报销事由" prop="BXSY">
-                <el-input v-model="temp.BXSY" type="textarea" :rows="3"></el-input>
+                <el-input v-model="temp.BXSY" type="textarea" disabled :rows="3"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="12">
               <el-form-item label="原借款金额" prop="YJKJE">
-                <el-input v-model="temp.YJKJE"></el-input>
+                <el-input v-model="temp.YJKJE" disabled></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="现付款金额" prop="XFKJE">
-                <el-input v-model="temp.XFKJE"></el-input>
+                <el-input v-model="temp.XFKJE" disabled></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="12">
               <el-form-item label="付款方式" prop="FKFS">
-                <el-input v-model="temp.FKFS"></el-input>
+                <el-input v-model="temp.FKFS" disabled></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="收款单位" prop="SKDW">
-                <el-input v-model="temp.SKDW"></el-input>
+                <el-input v-model="temp.SKDW" disabled></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
              <el-col :span="12">
               <el-form-item label="开户银行" prop="KHYH">
-                <el-input v-model="temp.KHYH"></el-input>
+                <el-input v-model="temp.KHH" disabled></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="账户" prop="ZH">
-                <el-input v-model="temp.YHZH"></el-input>
+                <el-input v-model="temp.YHZH" disabled></el-input>
               </el-form-item>
             </el-col>
           </el-row>
@@ -174,11 +178,11 @@
         
         </el-form>
         <div style="text-align:center">
-          <el-button @click="editVisible = false">取消</el-button>
+          <!-- <el-button @click="editVisible = false">取消</el-button> -->
           <!-- <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">保存</el-button>
           <el-button v-else type="primary" @click="updateData">保存</el-button> -->
-          <el-button type="success">审核通过</el-button>
-                    <el-button type="danger">不通过</el-button>
+          <el-button type="success">同意</el-button>
+           <el-button type="danger">不同意</el-button>
         </div>
       </el-card>
     </el-dialog>
@@ -197,7 +201,7 @@
 import waves from "@/frame_src/directive/waves"; // 水波纹指令
 import { getToken } from "@/frame_src/utils/auth";
 import { parseTime, parseDate } from "@/frame_src/utils/index";
-import { GetInfo } from "@/app_src/api/jygl/FYBX";
+import { GetFYSPInfo } from "@/app_src/api/jygl/FYBX";
 export default {
   name: "FYBXSP",
     directives: {
@@ -237,6 +241,7 @@ export default {
         limit: 10,
         page: 1,
         BXDH: "",
+        userid: this.$store.state.user.userId,
         XMMC: ""
       }
      
@@ -251,7 +256,7 @@ export default {
       // 查询数据
     getList() {
       this.listLoading = true;
-      GetInfo(this.listQuery).then(response => {
+      GetFYSPInfo(this.listQuery).then(response => {
         if (response.data.code === 2000) {
           this.list = response.data.items;
           this.total = response.data.total;
