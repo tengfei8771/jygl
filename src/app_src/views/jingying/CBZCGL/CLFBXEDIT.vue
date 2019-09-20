@@ -279,6 +279,7 @@ import {
   CreateInfo
 } from "@/app_src/api/jygl/CLFBX";
 import { CapitalChinese } from "@/frame_src/utils/index";
+import { sendFlow } from "@/app_src/api/jygl/WorkFlow";
 import { fetchOrgList } from "@/frame_src/api/org";
 import { GetInfo } from "@/app_src/api/jygl/CBJHSQ";
 import { Treeselect, LOAD_CHILDREN_OPTIONS } from "@riophae/vue-treeselect";
@@ -303,7 +304,8 @@ export default {
         limit: 10,
         page: 1,
         XMBH: "",
-        XMMC: ""
+        XMMC: "",
+        userid:this.$store.state.user.userId,
       },
       pickerOptions: {},
       temp: {

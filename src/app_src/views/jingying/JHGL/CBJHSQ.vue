@@ -134,7 +134,7 @@
                   @click="handleProcess()"
                   v-if="scope.row.PROCESS_STATE!=0"
                 >流程</el-button>
-                <el-button type="info" size="mini">撤回</el-button>
+                <el-button type="info" size="mini" v-if="scope.row.PROCESS_STATE!=2&&scope.row.PROCESS_STATE!=0">撤回</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -229,6 +229,7 @@
                   style="font-size:14px;"
                   :clearable="true"
                   size="mini"
+                  :show-count="true"
                 />
               </el-form-item>
             </el-col>
@@ -246,8 +247,8 @@
                   noChildrenText=" "
                   style="font-size:14px;"
                   :clearable="true"
-                  @select="getnode"
                   size="mini"
+                  :show-count="true"
                 />
               </el-form-item>
             </el-col>
@@ -400,7 +401,7 @@
           <el-button @click="editVisible = false">取消</el-button>
           <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">保存</el-button>
           <el-button v-else type="primary" @click="updateData">保存</el-button>
-          <el-button type="success">提交</el-button>
+          <el-button type="success" @click="saveAndSend">提交</el-button>
         </div>
       </el-card>
     </el-dialog>
@@ -546,12 +547,12 @@ export default {
         XMBH: "",
         XMMC: "",
         userid: this.$store.state.user.userId,
-        type:0,
+        type: 0
       },
       temp: {
         XMBH: "",
         XMMC: "",
-        CBDW: "",
+        CBDW: null,
         JSNR: "",
         JHZJE: "",
         LSJE: "",
@@ -604,6 +605,63 @@ export default {
         }
       });
     },
+    saveAndSend() {
+      this.$refs["dataForm"].validate(valid => {
+        if (valid) {
+          let arr = [...this.infiledList];
+          arr.push(this.temp);
+          //arr.push(this.temp);
+          //console.log(arr);
+          CreateInfo(arr).then(response => {
+            if (response.data.code === 2000) {
+              let XMBH = response.data.XMBH;
+              let fd = new FormData();
+              fd.append("systemcode", "localhost");
+              fd.append("stepid", "");
+              fd.append("flowid", "0273b9ef-9903-4c29-8f1c-e3cf04a00fb7");
+              fd.append("taskid", "");
+              fd.append("instanceid", XMBH);
+              fd.append("senderid", this.$store.state.user.userId);
+              fd.append("tasktitle", XMBH + "成本计划报销审批");
+              fd.append("comment", "");
+              fd.append("type", "submit");
+              fd.append("isFreeSend", false);
+              fd.append("formtype", 0);
+              sendFlow(fd).then(repon => {
+                if (repon.data.code === 2000) {
+                  this.$notify({
+                    position: "bottom-right",
+                    title: "成功！",
+                    message: "发起流程成功",
+                    type: "success",
+                    duration: 2000
+                  });
+                  this.getList();
+                  this.editVisible=false;
+                }
+                else{
+                   this.$notify({
+                    position: "bottom-right",
+                    title: "失败！",
+                    message: "发起流程失败！",
+                    type: "warning",
+                    duration: 2000
+                  });
+                }
+              });
+            } else {
+              this.$notify({
+                position: "bottom-right",
+                title: "保存流程失败",
+                message: response.data.message,
+                type: "warning",
+                duration: 3000
+              });
+            }
+          });
+        }
+      });
+    },
     getOrgDate() {
       // 查询组织结构数据this.treeListQuery
       fetchOrgList().then(response => {
@@ -648,7 +706,7 @@ export default {
       this.temp = {
         XMBH: "",
         XMMC: "",
-        CBDW: "",
+        CBDW: undefined,
         JSNR: "",
         JHZJE: "",
         LSJE: "",
@@ -836,7 +894,9 @@ export default {
         .catch(() => {});
     },
     loadOptions({ action, parentNode, callback }) {
+      console.log(action);
       if (action === LOAD_CHILDREN_OPTIONS) {
+        console.log(parentNode);
         if (parentNode.children == null) {
           parentNode.children = undefined;
           callback();

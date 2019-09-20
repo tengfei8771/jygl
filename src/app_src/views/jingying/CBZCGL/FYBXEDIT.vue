@@ -11,21 +11,21 @@
             <tr>
               <td>单位部门</td>
               <td width="25%">
-                   <treeselect
-                      v-model="temp.S_OrgCode"
-                      :multiple="false"
-                      :options="treeData"
-                      :load-options="loadOptions"
-                      placeholder="请选择部门"
-                      :normalizer="normalizer"
-                      :disable-branch-nodes="false"
-                      noResultsText="未搜索到结果"
-                      noChildrenText=" "
-                      style="font-size:14px;"
-                      :clearable="true"
-                      @select="getnode"
-                      size="mini" 
-                    />
+                <treeselect
+                  v-model="temp.S_OrgCode"
+                  :multiple="false"
+                  :options="treeData"
+                  :load-options="loadOptions"
+                  placeholder="请选择部门"
+                  :normalizer="normalizer"
+                  :disable-branch-nodes="false"
+                  noResultsText="未搜索到结果"
+                  noChildrenText=" "
+                  style="font-size:14px;"
+                  :clearable="true"
+                  @select="getnode"
+                  size="mini"
+                />
               </td>
               <td>费用项目</td>
               <td>
@@ -36,14 +36,14 @@
                     :label="item.label"
                     :value="item.value"
                   ></el-option>
-                </el-select> -->
+                </el-select>-->
                 <el-input v-model="temp.FYXM" disabled style="width:78%;"></el-input>
-                 <el-button
-                size="small"
-                type="primary"
-                @click="innerVisible=true"
-                style="width:20%;margin-left:1%;"
-              >选择项目</el-button>
+                <el-button
+                  size="small"
+                  type="primary"
+                  @click="innerVisible=true"
+                  style="width:20%;margin-left:1%;"
+                >选择项目</el-button>
               </td>
             </tr>
             <tr>
@@ -56,7 +56,7 @@
               <td>报销金额小写</td>
               <td>
                 <!-- <el-input v-model.number="temp.BXJE" @change="CapitalChinese(temp.BXJE)"></el-input> -->
-                <el-input  @input="oninput(temp.BXJE)" placeholder="" v-model="temp.BXJE" ></el-input>
+                <el-input @input="oninput(temp.BXJE)" placeholder v-model="temp.BXJE"></el-input>
               </td>
               <td>报销金额大写</td>
               <td>
@@ -66,7 +66,7 @@
             <tr>
               <td>原借款金额（小写）</td>
               <td>
-                <el-input v-model="temp.YJKJE"  @input="validataYJK(temp.YJKJE)" ></el-input>
+                <el-input v-model="temp.YJKJE" @input="validataYJK(temp.YJKJE)"></el-input>
               </td>
               <td>现付款（收回）金额（小写）</td>
               <td>
@@ -76,7 +76,7 @@
             <tr>
               <td>付款方式</td>
               <td>
-                 <el-select  style="width:100%;" v-model="temp.FKFS">
+                <el-select style="width:100%;" v-model="temp.FKFS">
                   <el-option
                     v-for="(item,key) in FKFSOptions"
                     :key="key"
@@ -123,87 +123,86 @@
         <el-button @click="closetab">取消</el-button>
         <el-button v-if="this.$route.query.type=='create'" type="primary" @click="createData">保存</el-button>
         <el-button v-else type="primary" @click="updateData">保存</el-button>
-        <el-button type="success">提交</el-button>
+        <el-button type="success" @click="saveAndSend">提交</el-button>
         <!-- <el-button @click="printPdf" type="primary">打印</el-button> -->
       </div>
     </el-card>
     <el-dialog width="50%" title="项目信息" :visible.sync="innerVisible" append-to-body>
-       <div class="topSearh" id="topsearch">
-      <el-row>
-        <el-col :xs="5" :sm="5" :md="5" :lg="4" :xl="3">
-          <el-input
-            placeholder="项目编号"
-            style="width:95%;"
-            size="mini"
-            clearable
-            v-model="listQuery.XMBH"
-          ></el-input>
-        </el-col>
-        <el-col :xs="5" :sm="5" :md="5" :lg="4" :xl="3">
-          <el-input
-            placeholder="项目名称"
-            style="width:95%;"
-            size="mini"
-            clearable
-            v-model="listQuery.XMMC"
-          ></el-input>
-        </el-col>
+      <div class="topSearh" id="topsearch">
+        <el-row>
+          <el-col :xs="5" :sm="5" :md="5" :lg="4" :xl="3">
+            <el-input
+              placeholder="项目编号"
+              style="width:95%;"
+              size="mini"
+              clearable
+              v-model="listQuery.XMBH"
+            ></el-input>
+          </el-col>
+          <el-col :xs="5" :sm="5" :md="5" :lg="4" :xl="3">
+            <el-input
+              placeholder="项目名称"
+              style="width:95%;"
+              size="mini"
+              clearable
+              v-model="listQuery.XMMC"
+            ></el-input>
+          </el-col>
 
-        <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="5">
-          <el-button
-            size="mini"
-            class="filter-item"
-            type="primary"
-            v-waves
-            icon="el-icon-search"
-            @click="getXMList"
-          >搜索</el-button>
-         
-        </el-col>
-      </el-row>
-    </div>
+          <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="5">
+            <el-button
+              size="mini"
+              class="filter-item"
+              type="primary"
+              v-waves
+              icon="el-icon-search"
+              @click="getXMList"
+            >搜索</el-button>
+          </el-col>
+        </el-row>
+      </div>
       <el-table
-          :key="tableKey"
-            @row-click="showRow"
-            :data="list"
-            size="mini"
-            :header-cell-class-name="tableRowClassName"
-            v-loading="listLoading"
-            element-loading-text="给我一点时间"
-            border
-            fit
-            highlight-current-row
-            style="width: 100%;text-align:left;"
+        :key="tableKey"
+        @row-click="showRow"
+        :data="list"
+        size="mini"
+        :header-cell-class-name="tableRowClassName"
+        v-loading="listLoading"
+        element-loading-text="给我一点时间"
+        border
+        fit
+        highlight-current-row
+        style="width: 100%;text-align:left;"
       >
-        <el-table-column align="center" label="选择" width="50px" >
-          <template slot-scope="scope" >
-            <el-radio class="radio" v-model="radio"  :label="scope.$index">&nbsp;</el-radio>
+        <el-table-column align="center" label="选择" width="50px">
+          <template slot-scope="scope">
+            <el-radio class="radio" v-model="radio" :label="scope.$index">&nbsp;</el-radio>
             <!-- <el-radio :label="scope.row.flagIndex" v-model="scope.row.flagValue" @change.native="getTemplateRow(scope.$index,scope.row)"></el-radio> -->
           </template>
         </el-table-column>
 
-            <el-table-column align="center" label="项目编号" width="120px">
-              <template slot-scope="scope">
-                <span>{{scope.row.XMBH}}</span>
-              </template>
-            </el-table-column>
+        <el-table-column align="center" label="项目编号" width="120px">
+          <template slot-scope="scope">
+            <span>{{scope.row.XMBH}}</span>
+          </template>
+        </el-table-column>
 
-            <el-table-column label="项目名称" :show-overflow-tooltip="true" >
-              <template slot-scope="scope">
-                <span>{{scope.row.XMMC}}</span>
-              </template>
-            </el-table-column>
-            <el-table-column width="100px" align="right" prop="XMLB" label="项目类别" ></el-table-column>
-            <el-table-column width="180px" align="right" prop="CBDW" label="承办单位"></el-table-column>
-            <el-table-column width="180px" prop="PC" label="项目批次" align="right"></el-table-column>
-            <!-- <el-table-column
+        <el-table-column label="项目名称" :show-overflow-tooltip="true">
+          <template slot-scope="scope">
+            <span>{{scope.row.XMMC}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column width="100px" align="right" prop="XMLB" label="项目类别"></el-table-column>
+        <el-table-column width="180px" align="right" prop="CBDW" label="承办单位"></el-table-column>
+        <el-table-column width="180px" prop="PC" label="项目批次" align="right"></el-table-column>
+        <!-- <el-table-column
               width="280px"
               align="right"
               prop="JSNR"
               label="建设内容"
               :show-overflow-tooltip="true"
-            ></el-table-column> -->
-            <!-- <el-table-column width="120px" align="right" label="计划总金额">
+        ></el-table-column>-->
+        <!-- <el-table-column width="120px" align="right" label="计划总金额">
               <template slot-scope="scope">
                 <span>{{scope.row.JHZJE |NumFormat}}</span>
               </template>
@@ -222,8 +221,8 @@
               <template slot-scope="scope">
                 <span>{{scope.row.WLJE |NumFormat}}</span>
               </template>
-            </el-table-column> -->
-            <!-- <el-table-column width="100px" align="right" label="是否存在物资">
+        </el-table-column>-->
+        <!-- <el-table-column width="100px" align="right" label="是否存在物资">
               <template slot-scope="scope">
                 <span>{{scope.row.CZWZ|ChangeFlag}}</span>
               </template>
@@ -232,20 +231,20 @@
               <template slot-scope="scope">
                 <span>{{scope.row.SFCW|ChangeFlag}}</span>
               </template>
-            </el-table-column> -->
+        </el-table-column>-->
       </el-table>
-        <div class="page">
-            <el-pagination
-              background
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
-              :current-page="listQuery.page"
-              :page-sizes="[10,20,30, 50]"
-              :page-size="listQuery.limit"
-              layout="total, sizes, prev, pager, next, jumper"
-              :total="total"
-            ></el-pagination>
-          </div>
+      <div class="page">
+        <el-pagination
+          background
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="listQuery.page"
+          :page-sizes="[10,20,30, 50]"
+          :page-size="listQuery.limit"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+        ></el-pagination>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -256,6 +255,7 @@ import waves from "@/frame_src/directive/waves"; // 水波纹指令
 import { getToken } from "@/frame_src/utils/auth";
 import { CapitalChinese } from "@/frame_src/utils/index";
 import { fetchOrgList } from "@/frame_src/api/org";
+import { sendFlow } from "@/app_src/api/jygl/WorkFlow";
 import { Treeselect, LOAD_CHILDREN_OPTIONS } from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import { GetInfo } from "@/app_src/api/jygl/CBJHSQ";
@@ -268,46 +268,46 @@ import {
 } from "@/app_src/api/jygl/FYBX";
 export default {
   name: "FYBXEDIT",
-   components: {
+  components: {
     Treeselect
   },
-   directives: {
+  directives: {
     waves
   },
-// filters: {
-//   },
+  // filters: {
+  //   },
   data() {
     return {
       tableKey: 0,
       FKFSOptions: [],
-      temp: { 
-         BXDH:"",
-          SQSJ: "",
-          DWBM:"",
-          FYXM:"",
-          BXSY:"",
-          BXJEDX: "",
-          BXJE:"",
-          YJKJE:"",
-          XFKJE:"",
-          FKFS:"",
-          FJZS:"",
-          SKDW:"",
-          KHH:"",
-          YHZH:"",
+      temp: {
+        BXDH: "",
+        SQSJ: "",
+        DWBM: "",
+        FYXM: "",
+        BXSY: "",
+        BXJEDX: "",
+        BXJE: "",
+        YJKJE: "",
+        XFKJE: "",
+        FKFS: "",
+        FJZS: "",
+        SKDW: "",
+        KHH: "",
+        YHZH: "",
         CJR: this.$store.state.user.userId
-         },
-      treeData:[],
+      },
+      treeData: [],
       listQuery: {
         limit: 10,
         page: 1,
         XMBH: "",
         XMMC: "",
-        type:1,
-        userid:"",
+        type: 1,
+        userid: ""
       },
       list: [],
-      innerVisible:false,
+      innerVisible: false,
       normalizer(node) {
         return {
           id: node.orgCode,
@@ -329,12 +329,12 @@ export default {
           label: "差旅费报销"
         }
       ],
-            radio: "",
+      radio: "",
       selected: {},
       editVisible: false,
       dialogStatus: "",
-       total: 0,
-      listLoading: false,
+      total: 0,
+      listLoading: false
     };
   },
 
@@ -354,29 +354,27 @@ export default {
     //   );
     //   LODOP.PREVIEW();
     // },
-     oninput(e) {
-        // 通过正则过滤小数点后两位
-         if(!/^(([0-9]*)|(([0]\.\d{0,2}|[1-9][0-9]*\.\d{0,2})))$/.test(e)){
-            this.temp.BXJE = "";
-        }
-        else{this.temp.BXJEDX=CapitalChinese(e);}
-
-
+    oninput(e) {
+      // 通过正则过滤小数点后两位
+      if (!/^(([0-9]*)|(([0]\.\d{0,2}|[1-9][0-9]*\.\d{0,2})))$/.test(e)) {
+        this.temp.BXJE = "";
+      } else {
+        this.temp.BXJEDX = CapitalChinese(e);
+      }
     },
     validataYJK(e) {
-        // 通过正则过滤小数点后两位
-         if(!/^(([0-9]*)|(([0]\.\d{0,2}|[1-9][0-9]*\.\d{0,2})))$/.test(e)){
-            this.temp.YJKJE= "";
-        }
-
+      // 通过正则过滤小数点后两位
+      if (!/^(([0-9]*)|(([0]\.\d{0,2}|[1-9][0-9]*\.\d{0,2})))$/.test(e)) {
+        this.temp.YJKJE = "";
+      }
     },
     validataXFK(e) {
-        // 通过正则过滤小数点后两位
-         if(!/^(([0-9]*)|(([0]\.\d{0,2}|[1-9][0-9]*\.\d{0,2})))$/.test(e)){
-            this.temp.XFKJE= "";
-        }
+      // 通过正则过滤小数点后两位
+      if (!/^(([0-9]*)|(([0]\.\d{0,2}|[1-9][0-9]*\.\d{0,2})))$/.test(e)) {
+        this.temp.XFKJE = "";
+      }
     },
-        GetFKFSOpions() {
+    GetFKFSOpions() {
       let temp = {
         ParentCode: "FKFS"
       };
@@ -397,7 +395,7 @@ export default {
     getnode(node, instanceId) {
       this.temp.DWBM = node.orgName;
     },
-     getOrgDate() {
+    getOrgDate() {
       // 查询组织结构数据this.treeListQuery
       fetchOrgList().then(response => {
         if (response.data.code === 2000) {
@@ -424,21 +422,21 @@ export default {
     },
     resetTemp() {
       this.temp = {
-        BXDH:"",
-          SQSJ: "",
-          DWBM:"",
-          FYXM:"",
-          BXSY:"",
-          BXJEDX: "",
-          BXJE:"",
-          YJKJE:"",
-          XFKJE:"",
-          FKFS:"",
-          FJZS:"",
-          SKDW:"",
-          KHH:"",
-          YHZH:"",
-          CJR: this.$store.state.user.userId
+        BXDH: "",
+        SQSJ: "",
+        DWBM: "",
+        FYXM: "",
+        BXSY: "",
+        BXJEDX: "",
+        BXJE: "",
+        YJKJE: "",
+        XFKJE: "",
+        FKFS: "",
+        FJZS: "",
+        SKDW: "",
+        KHH: "",
+        YHZH: "",
+        CJR: this.$store.state.user.userId
       };
     },
     closetab() {
@@ -447,7 +445,7 @@ export default {
       this.$store.dispatch("delVisitedViews", this.$route);
       this.$router.go(-1);
     },
-    
+
     tableRowClassName({ row, rowIndex }) {
       // 表头行的 className 的回调方法，也可以使用字符串为所有表头行设置一个固定的 className。
       if (rowIndex === 0) {
@@ -473,7 +471,7 @@ export default {
         }
       });
     },
-handleSizeChange(val) {
+    handleSizeChange(val) {
       this.listQuery.limit = val;
       this.getXMList();
     },
@@ -501,7 +499,9 @@ handleSizeChange(val) {
         this.$refs["dataForm"].clearValidate();
       });
     },
-    handleJE(e){e.target.value = (e.target.value.match(/^\d*(\.?\d{0,1})/g)[0]) || null},
+    handleJE(e) {
+      e.target.value = e.target.value.match(/^\d*(\.?\d{0,1})/g)[0] || null;
+    },
     createData() {
       // // 创建
       // this.$refs["dataForm"].validate(valid => {
@@ -531,11 +531,7 @@ handleSizeChange(val) {
       // });
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
-          // let arr = [...this.infiledList];
-          // arr.push(this.temp);
-          // //arr.push(this.temp);
-          // //console.log(arr);
-          this.temp.CJR=this.$store.state.user.userId
+          this.temp.CJR = this.$store.state.user.userId;
           CreateInfo(this.temp).then(response => {
             if (response.data.code === 2000) {
               this.$notify({
@@ -609,14 +605,74 @@ handleSizeChange(val) {
           this.closetab();
         }
       });
+    },
+    saveAndSend() {
+      this.$refs["dataForm"].validate(valid => {
+        if (valid) {
+          this.temp.CJR = this.$store.state.user.userId;
+          CreateInfo(this.temp).then(response => {
+            if (response.data.code === 2000) {
+              if (response.data.code === 2000) {
+                let BXDH = response.data.BXDH;
+                let fd = new FormData();
+                fd.append("systemcode", "localhost");
+                fd.append("stepid", "");
+                fd.append("flowid", "0273B9EF-9903-4C29-8F1C-E3CF04A00FB7");
+                fd.append("taskid", "");
+                fd.append("instanceid", BXDH);
+                fd.append("senderid", this.$store.state.user.userId);
+                fd.append("tasktitle", BXDH + "费用报销审批");
+                fd.append("comment", "");
+                fd.append("type", "submit");
+                fd.append("isFreeSend", false);
+                fd.append("formtype", 1);
+                sendFlow(fd).then(repon => {
+                  if (repon.data.code === 2000) {
+                    this.$notify({
+                      position: "bottom-right",
+                      title: "成功！",
+                      message: "发起流程成功",
+                      type: "success",
+                      duration: 2000
+                    });
+                    this.closetab();
+                  } else {
+                    this.$notify({
+                      position: "bottom-right",
+                      title: "失败！",
+                      message: "发起流程失败！",
+                      type: "warning",
+                      duration: 2000
+                    });
+                  }
+                });
+              } else {
+                this.$notify({
+                  position: "bottom-right",
+                  title: "保存流程失败",
+                  message: response.data.message,
+                  type: "warning",
+                  duration: 3000
+                });
+              }
+            } else {
+              this.$notify({
+                position: "bottom-right",
+                title: "失败",
+                message: response.data.message,
+                type: "warning",
+                duration: 3000
+              });
+              this.closetab();
+            }
+          });
+        }
+      });
     }
-  
   },
   mounted() {
-
-     //console.log(this.$refs.jizhun.offsetWidth);
+    //console.log(this.$refs.jizhun.offsetWidth);
     //  console.log(this.$refs.orgtree.offsetWidth);
-
   },
   created() {
     // this.listLoading = false;
@@ -634,23 +690,23 @@ handleSizeChange(val) {
 
 <style lang="scss">
 .topSearh {
-    margin-bottom: 15px;
-  }
-  .page {
-    text-align: center;
-  }
-  .vue-treeselect__control {
-    height: 28px !important;
-    width: 100%;
-  }
-  .vue-treeselect__placeholder,
-  .vue-treeselect__single-value {
-    line-height: 28px;
-  }
-  .vue-treeselect--single .vue-treeselect__input-container {
-    height: 28px;
-    width: 100%;
-  }
+  margin-bottom: 15px;
+}
+.page {
+  text-align: center;
+}
+.vue-treeselect__control {
+  height: 28px !important;
+  width: 100%;
+}
+.vue-treeselect__placeholder,
+.vue-treeselect__single-value {
+  line-height: 28px;
+}
+.vue-treeselect--single .vue-treeselect__input-container {
+  height: 28px;
+  width: 100%;
+}
 #FYBXEDIT .table-d table {
   font-size: 16px;
   // background: #000;

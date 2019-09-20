@@ -80,8 +80,8 @@
                 @click="handleProcess(scope.row)"
                 v-if="scope.row.PROCESS_STATE!=0"
               >流程</el-button>
-              <el-button type="info" size="mini">撤回</el-button>
-              <el-button type="success" size="mini" @click="Print(scope.row)">打印</el-button>
+              <el-button type="info" size="mini" v-if="scope.row.PROCESS_STATE!=2&&scope.row.PROCESS_STATE!=0">撤回</el-button>
+              <el-button type="success" size="mini" @click="Print(scope.row)" v-if="scope.row.PROCESS_STATE===2">打印</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -223,15 +223,15 @@ export default {
       let fd = new FormData();
       fd.append("systemcode", "localhost");
       fd.append("stepid", "");
-      fd.append("flowid", "0273b9ef-9903-4c29-8f1c-e3cf04a00fb7");
+      fd.append("flowid", "0273B9EF-9903-4C29-8F1C-E3CF04A00FB7");
       fd.append("taskid", "");
-      fd.append("instanceid", row.S_ID);
+      fd.append("instanceid", row.BXDH);
       fd.append("senderid", this.$store.state.user.userId);
-      fd.append("tasktitle", row.S_ID + "费用报销审批");
+      fd.append("tasktitle", row.BXDH + "费用报销审批");
       fd.append("comment", "");
       fd.append("type", "submit");
       fd.append("isFreeSend", false);
-      fd.append("formtype", 0);
+      fd.append("formtype", 1);
       sendFlow(fd).then(repon => {
         if (repon.data.code === 2000) {
           this.$notify({

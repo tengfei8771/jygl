@@ -65,12 +65,12 @@
             <template slot-scope="scope">
               <!-- <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">修改</el-button>
               <el-button type="danger" size="mini" @click="handleDelete(scope.row)">删除</el-button>-->
-              <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">修改</el-button>
-              <el-button type="danger" size="mini" @click="handleDelete(scope.row)">删除</el-button>
-              <el-button type="warning" size="mini" @click="handleCreate2(scope.row)">提交</el-button>
-              <el-button type="success" size="mini" @click="handleProcess(scope.row)">流程</el-button>
-              <el-button type="info" size="mini">撤回</el-button>
-              <el-button type="success" size="mini" @click="Print(scope.row)">打印</el-button>
+              <el-button type="primary" size="mini" @click="handleUpdate(scope.row)" v-if="scope.row.PROCESS_STATE===0">修改</el-button>
+              <el-button type="danger" size="mini" @click="handleDelete(scope.row)" v-if="scope.row.PROCESS_STATE===0">删除</el-button>
+              <el-button type="warning" size="mini" @click="handleCreate2(scope.row)" v-if="scope.row.PROCESS_STATE===0">提交</el-button>
+              <el-button type="success" size="mini" @click="handleProcess(scope.row)" v-if="scope.row.PROCESS_STATE!=0">流程</el-button>
+              <el-button type="info" size="mini" v-if="scope.row.PROCESS_STATE!=2&&scope.row.PROCESS_STATE!=0">撤回</el-button>
+              <el-button type="success" size="mini" @click="Print(scope.row)" v-if="scope.row.PROCESS_STATE===2">打印</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -277,7 +277,8 @@ export default {
       listQuery: {
         CLBH: "",
         limit: 10,
-        page: 1
+        page: 1,
+        userid:this.$store.state.user.userId
       },
       workFlowVisible: false,
       inServForm: [],
