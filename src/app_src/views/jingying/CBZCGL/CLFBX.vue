@@ -2,7 +2,13 @@
   <div id="SWKC" class="app-container calendar-list-container">
     <el-row style="margin-bottom:10px;">
       <el-col :xs="5" :sm="5" :md="5" :lg="4" :xl="3">
-        <el-input placeholder="报销单号" style="width:95%;" size="mini" clearable v-model="listQuery.CLBH"></el-input>
+        <el-input
+          placeholder="报销单号"
+          style="width:95%;"
+          size="mini"
+          clearable
+          v-model="listQuery.CLBH"
+        ></el-input>
       </el-col>
       <el-col :xs="5" :sm="5" :md="5" :lg="4" :xl="3">
         <el-button type="primary" icon="el-icon-search" size="mini" @click="getList">查询</el-button>
@@ -39,22 +45,16 @@
         >
           <el-table-column label="报销单号" prop="CLBH" fixed="left"></el-table-column>
           <el-table-column label="申请单位(部门)" prop="DWBM" fixed="left"></el-table-column>
-          <el-table-column label="申请时间"  fixed="left">
-            <template slot-scope="scope">
-              {{scope.row.CJSJ|parseTime}}
-            </template>
+          <el-table-column label="申请时间" fixed="left">
+            <template slot-scope="scope">{{scope.row.CJSJ|parseTime}}</template>
           </el-table-column>
           <el-table-column label="出差人" prop="CCXM" fixed="left"></el-table-column>
           <el-table-column label="出差事由" prop="CCSY"></el-table-column>
-          <el-table-column label="出差开始时间" >
-            <template slot-scope="scope">
-              {{scope.row.CCKSSJ|parseTime}}
-            </template>
+          <el-table-column label="出差开始时间">
+            <template slot-scope="scope">{{scope.row.CCKSSJ|parseTime}}</template>
           </el-table-column>
           <el-table-column label="出差结束时间">
-            <template slot-scope="scope">
-              {{scope.row.CCJSSJ|parseTime}}
-            </template>
+            <template slot-scope="scope">{{scope.row.CCJSSJ|parseTime}}</template>
           </el-table-column>
           <el-table-column label="出差天数" prop="CCTS"></el-table-column>
           <el-table-column label="报销金额" prop="HJJE"></el-table-column>
@@ -65,12 +65,41 @@
             <template slot-scope="scope">
               <!-- <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">修改</el-button>
               <el-button type="danger" size="mini" @click="handleDelete(scope.row)">删除</el-button>-->
-              <el-button type="primary" size="mini" @click="handleUpdate(scope.row)" v-if="scope.row.PROCESS_STATE===0">修改</el-button>
-              <el-button type="danger" size="mini" @click="handleDelete(scope.row)" v-if="scope.row.PROCESS_STATE===0">删除</el-button>
-              <el-button type="warning" size="mini" @click="handleCreate2(scope.row)" v-if="scope.row.PROCESS_STATE===0">提交</el-button>
-              <el-button type="success" size="mini" @click="handleProcess(scope.row)" v-if="scope.row.PROCESS_STATE!=0">流程</el-button>
-              <el-button type="info" size="mini" v-if="scope.row.PROCESS_STATE!=2&&scope.row.PROCESS_STATE!=0">撤回</el-button>
-              <el-button type="success" size="mini" @click="Print(scope.row)" v-if="scope.row.PROCESS_STATE===2">打印</el-button>
+              <el-button
+                type="primary"
+                size="mini"
+                @click="handleUpdate(scope.row)"
+                v-if="scope.row.PROCESS_STATE===0"
+              >修改</el-button>
+              <el-button
+                type="danger"
+                size="mini"
+                @click="handleDelete(scope.row)"
+                v-if="scope.row.PROCESS_STATE===0"
+              >删除</el-button>
+              <el-button
+                type="warning"
+                size="mini"
+                @click="sendPro(scope.row)"
+                v-if="scope.row.PROCESS_STATE===0"
+              >提交</el-button>
+              <el-button
+                type="success"
+                size="mini"
+                @click="handleProcess(scope.row)"
+                v-if="scope.row.PROCESS_STATE!=0"
+              >流程</el-button>
+              <el-button
+                type="info"
+                size="mini"
+                v-if="scope.row.PROCESS_STATE!=2&&scope.row.PROCESS_STATE!=0"
+              >撤回</el-button>
+              <el-button
+                type="success"
+                size="mini"
+                @click="Print(scope.row)"
+                v-if="scope.row.PROCESS_STATE===2"
+              >打印</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -253,7 +282,7 @@
           <el-button @click="editVisible = false">取消</el-button>
           <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">保存</el-button>
           <el-button v-else type="primary" @click="updateData">保存</el-button>
-          <el-button type="success">提交</el-button>
+          <el-button type="success" @click="saveAndSend">提交</el-button>
         </div>
       </el-card>
     </el-dialog>
@@ -266,6 +295,8 @@
 <script>
 import { GetInfo, CreateInfo, GetCLXCInfo } from "@/app_src/api/jygl/CLFBX";
 import { parseTime } from "@/frame_src/utils/index";
+import { sendFlow } from "@/app_src/api/jygl/WorkFlow";
+import { UpdateAddCBJHJE, UpdateDesCBJHJE } from "@/app_src/api/jygl/CBJHSQ";
 export default {
   name: "SWKC",
   filters: {
@@ -278,7 +309,7 @@ export default {
         CLBH: "",
         limit: 10,
         page: 1,
-        userid:this.$store.state.user.userId
+        userid: this.$store.state.user.userId
       },
       workFlowVisible: false,
       inServForm: [],
@@ -302,7 +333,7 @@ export default {
     addRow(tableData, event) {
       tableData.push({ fildna: "", fildtp: "", remark: "" });
     },
-    Print(row){
+    Print(row) {
       this.temp = Object.assign({}, row); // copy obj
       this.editVisible = true;
       let query = {
@@ -351,6 +382,57 @@ export default {
         YJCLF: "",
         YTBJE: ""
       };
+    },
+    saveAndSend() {},
+    sendPro(row) {
+      let fd = new FormData();
+      fd.append("systemcode", "localhost");
+      fd.append("stepid", "");
+      fd.append("flowid", "ABC11A11-EFF2-4588-8FAE-0EE8687874E1");
+      fd.append("taskid", "");
+      fd.append("instanceid", row.CLBH);
+      fd.append("senderid", this.$store.state.user.userId);
+      fd.append("tasktitle", row.CLBH + "差旅报销审批");
+      fd.append("comment", "");
+      fd.append("type", "submit");
+      fd.append("isFreeSend", false);
+      fd.append("formtype", 2);
+      sendFlow(fd).then(repon => {
+        if (repon.data.code === 2000) {
+          let bxtemp = {
+            BXJE: row.HJJE,
+            XMBH: row.XMBH
+          };
+          UpdateAddCBJHJE(bxtemp).then(res => {
+            if (res.data.code === 2000) {
+              this.$notify({
+                position: "bottom-right",
+                title: "成功！",
+                message: "发起流程成功",
+                type: "success",
+                duration: 2000
+              });
+              this.getList();
+            } else {
+              this.$notify({
+                position: "bottom-right",
+                title: "失败！",
+                message: "业务数据更新失败，系统数据将回滚",
+                type: "warning",
+                duration: 2000
+              });
+            }
+          });
+        } else {
+          this.$notify({
+                position: "bottom-right",
+                title: "失败！",
+                message: "流程提交时出现错误！请重新提交！",
+                type: "warning",
+                duration: 2000
+              });
+        }
+      });
     },
     tableRowClassName({ row, rowIndex }) {
       // 表头行的 className 的回调方法，也可以使用字符串为所有表头行设置一个固定的 className。

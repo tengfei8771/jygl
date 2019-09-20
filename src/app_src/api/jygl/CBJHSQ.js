@@ -67,3 +67,19 @@ export function GetYearProject(query) {
     params: query
   })
 }
+
+export function UpdateAddCBJHJE(data) {
+  return request({
+    url: '/CBJHSQ/UpdateAddCBJHJE',
+    method: 'post',
+    data
+  })
+}
+
+export function UpdateDesCBJHJE(data) {
+  return request({
+    url: '/CBJHSQ/UpdateDesCBJHJE',
+    method: 'post',
+    data
+  })
+}

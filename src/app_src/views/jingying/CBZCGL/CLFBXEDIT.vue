@@ -40,12 +40,7 @@
             <tr>
               <td :rowspan="1" colspan="2">开始日期</td>
               <td :colspan="5">
-                <el-date-picker
-                  style="width:100%"
-                  v-model="temp.CCKSSJ"
-                  @change="StarTime"
-                  value-format="yyyy-MM-dd HH:mm:ss"
-                ></el-date-picker>
+                <el-date-picker style="width:100%" v-model="temp.CCKSSJ" @change="StarTime"></el-date-picker>
               </td>
               <td :rowspan="1" colspan="2 ">结束日期</td>
               <td :colspan="5">
@@ -54,14 +49,15 @@
                   v-model="temp.CCJSSJ"
                   @change="EndTime"
                   :picker-options="pickerOptions"
-                  value-format="yyyy-MM-dd HH:mm:ss"
                 ></el-date-picker>
               </td>
               <td colspan="1">出差天数</td>
               <td colspan="1">共{{temp.CCTS}}天</td>
               <td colspan="1">所属项目</td>
               <td colspan="2">{{temp.XMMC}}</td>
-              <td colspan="1"><el-button type="primary" size="mini" @click="innerVisible=true">项目</el-button></td>
+              <td colspan="1">
+                <el-button type="primary" size="mini" @click="innerVisible=true">项目</el-button>
+              </td>
             </tr>
             <tr>
               <td :rowspan="2">出发地点</td>
@@ -96,23 +92,24 @@
                 <el-date-picker
                   v-model="item.CFRQ"
                   style="max-width:140px;"
-                  value-format="yyyy-MM-dd HH:mm:ss"
                   type="datetime"
+                  @change="startTime1(key)"
                 ></el-date-picker>
               </td>
               <td :colspan="3">
                 <el-date-picker
                   v-model="item.DDRQ"
                   style="max-width:140px;"
-                  value-format="yyyy-MM-dd HH:mm:ss"
                   type="datetime"
+                  @change="endTime1(key)"
+                  :picker-options="pickerOptionsList[key]"
                 ></el-date-picker>
               </td>
               <td>
                 <el-input v-model="item.CCDD"></el-input>
               </td>
               <td>
-                <el-input v-model="item.CQTS" @change="getTotal"></el-input>
+                <el-input v-model="item.CQTS" @change="getTotal" disabled></el-input>
               </td>
               <td>
                 <el-input v-model="item.CQBZ" @change="getTotal"></el-input>
@@ -147,7 +144,12 @@
               <td>
                 <!-- <el-button type="primary" size="mini" @click="deleteRow(key,item)">移除</el-button> -->
                 <el-button type="danger" size="mini" @click="handleDelete(item)" v-if="item.XCID">删除</el-button>
-                <el-button type="warning" size="mini" @click="delRow($index)" v-else-if="!item.XCID">移除</el-button>
+                <el-button
+                  type="warning"
+                  size="mini"
+                  @click="delRow($index)"
+                  v-else-if="!item.XCID"
+                >移除</el-button>
               </td>
             </tr>
             <tr>
@@ -182,91 +184,88 @@
         <el-button @click="closetab">取消</el-button>
         <el-button type="primary" @click="createData" v-if="PageFlag===0">保存</el-button>
         <el-button type="primary" @click="UpdateData" v-if="PageFlag===1">保存</el-button>
-        <el-button type="success">提交</el-button>
+        <el-button type="success" @click="saveAndSend">提交</el-button>
       </div>
     </el-card>
     <el-dialog width="50%" title="项目信息" :visible.sync="innerVisible" append-to-body>
-       <div class="topSearh" id="topsearch">
-      <el-row>
-        <el-col :xs="5" :sm="5" :md="5" :lg="4" :xl="3">
-          <el-input
-            placeholder="项目编号"
-            style="width:95%;"
-            size="mini"
-            clearable
-            v-model="listQuery.XMBH"
-          ></el-input>
-        </el-col>
-        <el-col :xs="5" :sm="5" :md="5" :lg="4" :xl="3">
-          <el-input
-            placeholder="项目名称"
-            style="width:95%;"
-            size="mini"
-            clearable
-            v-model="listQuery.XMMC"
-          ></el-input>
-        </el-col>
+      <div class="topSearh" id="topsearch">
+        <el-row>
+          <el-col :xs="5" :sm="5" :md="5" :lg="4" :xl="3">
+            <el-input
+              placeholder="项目编号"
+              style="width:95%;"
+              size="mini"
+              clearable
+              v-model="listQuery.XMBH"
+            ></el-input>
+          </el-col>
+          <el-col :xs="5" :sm="5" :md="5" :lg="4" :xl="3">
+            <el-input
+              placeholder="项目名称"
+              style="width:95%;"
+              size="mini"
+              clearable
+              v-model="listQuery.XMMC"
+            ></el-input>
+          </el-col>
 
-        <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="5">
-          <el-button
-            size="mini"
-            class="filter-item"
-            type="primary"
-            v-waves
-            icon="el-icon-search"
-            @click="getXMList"
-          >搜索</el-button>
-         
-        </el-col>
-      </el-row>
-    </div>
+          <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="5">
+            <el-button
+              size="mini"
+              class="filter-item"
+              type="primary"
+              v-waves
+              icon="el-icon-search"
+              @click="getXMList"
+            >搜索</el-button>
+          </el-col>
+        </el-row>
+      </div>
       <el-table
-          :key="tableKey"
-            @row-click="showRow"
-            :data="list"
-            size="mini"
-            :header-cell-class-name="tableRowClassName"
-            v-loading="listLoading"
-            element-loading-text="给我一点时间"
-            border
-            fit
-            highlight-current-row
-            style="width: 100%;text-align:left;"
+        @row-click="showRow"
+        :data="list"
+        size="mini"
+        :header-cell-class-name="tableRowClassName"
+        element-loading-text="给我一点时间"
+        border
+        fit
+        highlight-current-row
+        style="width: 100%;text-align:left;"
       >
-        <el-table-column align="center" label="选择" width="50px" >
-          <template slot-scope="scope" >
-            <el-radio class="radio" v-model="radio"  :label="scope.$index">&nbsp;</el-radio>
+        <el-table-column align="center" label="选择" width="50px">
+          <template slot-scope="scope">
+            <el-radio class="radio" v-model="radio" :label="scope.$index">&nbsp;</el-radio>
             <!-- <el-radio :label="scope.row.flagIndex" v-model="scope.row.flagValue" @change.native="getTemplateRow(scope.$index,scope.row)"></el-radio> -->
           </template>
         </el-table-column>
 
-            <el-table-column align="center" label="项目编号" width="120px">
-              <template slot-scope="scope">
-                <span>{{scope.row.XMBH}}</span>
-              </template>
-            </el-table-column>
+        <el-table-column align="center" label="项目编号" width="120px">
+          <template slot-scope="scope">
+            <span>{{scope.row.XMBH}}</span>
+          </template>
+        </el-table-column>
 
-            <el-table-column label="项目名称" :show-overflow-tooltip="true" >
-              <template slot-scope="scope">
-                <span>{{scope.row.XMMC}}</span>
-              </template>
-            </el-table-column>
-            <el-table-column width="100px" align="right" prop="XMLB" label="项目类别" ></el-table-column>
-            <el-table-column width="180px" align="right" prop="CBDW" label="承办单位"></el-table-column>
-            <el-table-column width="180px" prop="PC" label="项目批次" align="right"></el-table-column>
+        <el-table-column label="项目名称" :show-overflow-tooltip="true">
+          <template slot-scope="scope">
+            <span>{{scope.row.XMMC}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column width="100px" align="right" prop="XMLB" label="项目类别"></el-table-column>
+        <el-table-column width="180px" align="right" prop="CBDW" label="承办单位"></el-table-column>
+        <el-table-column width="180px" prop="PC" label="项目批次" align="right"></el-table-column>
       </el-table>
-        <div class="page">
-            <el-pagination
-              background
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
-              :current-page="listQuery.page"
-              :page-sizes="[10,20,30, 50]"
-              :page-size="listQuery.limit"
-              layout="total, sizes, prev, pager, next, jumper"
-              :total="total"
-            ></el-pagination>
-          </div>
+      <div class="page">
+        <el-pagination
+          background
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="listQuery.page"
+          :page-sizes="[10,20,30, 50]"
+          :page-size="listQuery.limit"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+        ></el-pagination>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -280,6 +279,7 @@ import {
 } from "@/app_src/api/jygl/CLFBX";
 import { CapitalChinese } from "@/frame_src/utils/index";
 import { sendFlow } from "@/app_src/api/jygl/WorkFlow";
+import { UpdateAddCBJHJE, UpdateDesCBJHJE } from "@/app_src/api/jygl/CBJHSQ";
 import { fetchOrgList } from "@/frame_src/api/org";
 import { GetInfo } from "@/app_src/api/jygl/CBJHSQ";
 import { Treeselect, LOAD_CHILDREN_OPTIONS } from "@riophae/vue-treeselect";
@@ -291,10 +291,11 @@ export default {
   },
   data() {
     return {
-      list:[],
+      list: [],
       infiledList: [],
       treeData: [],
-      innerVisible:false,
+      total: 0,
+      innerVisible: false,
       fildtps: [{ text: "火车", value: "1" }, { text: "汽车", value: "2" }],
       textMap: {
         update: "修改差旅费用报销",
@@ -305,9 +306,11 @@ export default {
         page: 1,
         XMBH: "",
         XMMC: "",
-        userid:this.$store.state.user.userId,
+        userid: this.$store.state.user.userId,
+        type: 1
       },
       pickerOptions: {},
+      pickerOptionsList: [],
       temp: {
         DWBM: null,
         CCXM: "",
@@ -325,9 +328,9 @@ export default {
         CJSJ: "",
         CJSJ: "",
         BJSJ: "",
-        XMBH:"",
-        XMMC:"",
-        DWMC:"",
+        XMBH: "",
+        XMMC: "",
+        DWMC: "",
         userId: this.$store.state.user.userId,
         XCList: [
           {
@@ -380,7 +383,30 @@ export default {
       this.EndTime();
     },
     EndTime() {
-      this.temp.CCTS = (this.temp.CCJSSJ - this.temp.CCKSSJ) / 86400000 + 1;
+      if (this.temp.CCJSSJ != "" && this.temp.CCKSSJ != "") {
+        this.temp.CCTS = (this.temp.CCJSSJ - this.temp.CCKSSJ) / 86400000 + 1;
+      }
+    },
+    startTime1(index) {
+      console.log(index);
+      let pickerOptions = {
+        disabledDate: time => {
+          return time.getTime() < this.temp.XCList[index].CFRQ;
+        }
+      };
+      this.pickerOptionsList.push(pickerOptions);
+      this.endTime1(index);
+    },
+    endTime1(index) {
+      if (
+        this.temp.XCList[index].CFRQ != "" &&
+        this.temp.XCList[index].DDRQ != ""
+      ) {
+        this.temp.XCList[index].CQTS =
+          (this.temp.XCList[index].DDRQ - this.temp.XCList[index].CFRQ) /
+            86400000 +
+          1;
+      }
     },
     addRow() {
       let obj = {
@@ -403,8 +429,9 @@ export default {
       };
       this.temp.XCList.push(obj);
     },
-    delRow(key){
-      this.temp.XCList.splice(key,1)
+    delRow(key) {
+      this.temp.XCList.splice(key, 1);
+      this.pickerOptionsList.splice(key, 1);
     },
     showRow(row) {
       //赋值给radio
@@ -448,7 +475,7 @@ export default {
     getnode(node, instanceId) {
       this.temp.DWMC = node.orgName;
     },
-     getXMList() {
+    getXMList() {
       this.listLoading = true;
       GetInfo(this.listQuery).then(response => {
         if (response.data.code === 2000) {
@@ -485,9 +512,9 @@ export default {
         CJSJ: "",
         BJSJ: "",
         userId: this.$store.state.user.userId,
-        XMBH:"",
-        XMMC:"",
-        DWMC:"",
+        XMBH: "",
+        XMMC: "",
+        DWMC: "",
         XCList: [
           {
             CFRQ: "",
@@ -617,6 +644,84 @@ export default {
                 position: "bottom-right",
                 title: response.data.message,
                 message: "操作失败",
+                type: "warning",
+                duration: 3000
+              });
+            }
+          });
+        }
+      });
+    },
+    loadOptions({ action, parentNode, callback }) {
+      console.log(action);
+      if (action === LOAD_CHILDREN_OPTIONS) {
+        console.log(parentNode);
+        if (parentNode.children == null) {
+          parentNode.children = undefined;
+          callback();
+        }
+      }
+    },
+    saveAndSend() {
+      this.$refs["dataForm"].validate(valid => {
+        if (valid) {
+          CreateInfo(this.temp).then(response => {
+            if (response.data.code === 2000) {
+              let CLBH = response.data.CLBH;
+              let fd = new FormData();
+              fd.append("systemcode", "localhost");
+              fd.append("stepid", "");
+              fd.append("flowid", "ABC11A11-EFF2-4588-8FAE-0EE8687874E1");
+              fd.append("taskid", "");
+              fd.append("instanceid", CLBH);
+              fd.append("senderid", this.$store.state.user.userId);
+              fd.append("tasktitle", CLBH + "差旅报销审批");
+              fd.append("comment", "");
+              fd.append("type", "submit");
+              fd.append("isFreeSend", false);
+              fd.append("formtype", 2);
+              sendFlow(fd).then(repon => {
+                if (repon.data.code === 2000) {
+                  let bxtemp = {
+                    BXJE: this.temp.HJJE,
+                    XMBH: this.temp.XMBH
+                  };
+                  UpdateAddCBJHJE(bxtemp).then(res => {
+                    if (res.data.code === 2000) {
+                      this.$notify({
+                        position: "bottom-right",
+                        title: "成功！",
+                        message: "发起流程成功",
+                        type: "success",
+                        duration: 2000
+                      });
+                      setTimeout(this.closetab, 3000);
+                    } else {
+                      this.$notify({
+                        position: "bottom-right",
+                        title: "失败！",
+                        message: "业务数据更新失败，系统数据将回滚",
+                        type: "warning",
+                        duration: 2000
+                      });
+                    }
+                  });
+                  
+                } else {
+                  this.$notify({
+                    position: "bottom-right",
+                    title: "失败！",
+                    message: "提交流程失败！",
+                    type: "warning",
+                    duration: 2000
+                  });
+                }
+              });
+            } else {
+              this.$notify({
+                position: "bottom-right",
+                title: response.data.message,
+                message: "保存表单失败",
                 type: "warning",
                 duration: 3000
               });
