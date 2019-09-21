@@ -1,6 +1,6 @@
 
 <template>
-  <div id="CBJHSYB" class="app-container calendar-list-container">
+  <div id="CBJHYB" class="app-container calendar-list-container">
     <div class="topSearh" id="topsearch">
       <el-row>
         <el-col :xs="5" :sm="5" :md="5" :lg="4" :xl="3">
@@ -61,7 +61,7 @@
               </template>
             </el-table-column>
             <el-table-column width="100px" align="right" prop="XMLB" label="项目类别" fixed="left"></el-table-column>
-            <el-table-column width="180px" align="right" prop="CBDW" label="承办单位" fixed="left"></el-table-column>
+            <el-table-column width="180px" align="right" prop="CBDWMC" label="承办单位" fixed="left"></el-table-column>
             <el-table-column width="180px" prop="PC" label="项目批次" align="right"></el-table-column>
             <el-table-column
               width="280px"
@@ -124,7 +124,7 @@
 
     <el-dialog :visible.sync="workFlowVisible" class="selecttrees" title="查看流程" width="1100px">
       <IFRAME
-        style="width:1050px;height:750px;"
+        style="width:1050px;height:720px;"
         id="roadflow_Completed"
         name="roadflow_Completed"
         :src="this.baseUrl+this.frameUrl"

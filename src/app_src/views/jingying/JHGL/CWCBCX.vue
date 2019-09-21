@@ -42,8 +42,8 @@
                 <span>{{scope.row.XMMC}}</span>
               </template>
             </el-table-column>
-            <el-table-column width="100px" align="right" prop="XMLB" label="项目类别" fixed="left"></el-table-column>
-            <el-table-column width="180px" align="right" prop="CBDW" label="承办单位" fixed="left"></el-table-column>
+            <el-table-column width="100px" align="right" prop="LB" label="项目类别" fixed="left"></el-table-column>
+            <el-table-column width="180px" align="right" prop="CBDWMC" label="承办单位" fixed="left"></el-table-column>
             <el-table-column width="180px" prop="PC" label="项目批次" align="right"></el-table-column>
             <el-table-column
               width="280px"
@@ -284,7 +284,7 @@ export default {
 </script>
 
 <style lang="scss" >
-#CBJHSQ {
+#CWCBCX {
   .topSearh {
     margin-bottom: 15px;
   }

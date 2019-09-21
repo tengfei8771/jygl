@@ -296,7 +296,7 @@
       </el-card>
     </el-dialog>
     <el-dialog :visible.sync="workFlowVisible" class="selecttrees" title="查看流程" width="1100px">
-      <IFRAME STYLE="width:1050px;height:750px;" id="roadflow_Completed" name="roadflow_Completed" :src="this.baseUrl+this.frameUrl"></IFRAME>
+      <IFRAME STYLE="width:1050px;height:720px;" id="roadflow_Completed" name="roadflow_Completed" :src="this.baseUrl+this.frameUrl"></IFRAME>
       <!-- <img src="../../../img/workflow.png" style="width:980px;" /> -->
     </el-dialog>
   </div>
