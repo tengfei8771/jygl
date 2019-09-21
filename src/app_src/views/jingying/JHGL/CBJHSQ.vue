@@ -63,13 +63,13 @@
               </template>
             </el-table-column>
 
-            <el-table-column label="项目名称" :show-overflow-tooltip="true" fixed="left">
+            <el-table-column label="项目名称" width="200px" :show-overflow-tooltip="true" fixed="left">
               <template slot-scope="scope">
                 <span>{{scope.row.XMMC}}</span>
               </template>
             </el-table-column>
             <el-table-column width="100px" align="right" prop="LB" label="项目类别" fixed="left"></el-table-column>
-            <el-table-column width="180px" align="right" prop="CBDW" label="承办单位" fixed="left"></el-table-column>
+            <el-table-column width="180px" align="right" prop="CBDWMC" label="承办单位" fixed="left"></el-table-column>
             <el-table-column width="180px" prop="PC" label="项目批次" align="right"></el-table-column>
             <el-table-column
               width="280px"
@@ -103,11 +103,11 @@
                 <span>{{scope.row.CZWZ|ChangeFlag}}</span>
               </template>
             </el-table-column>
-            <el-table-column width="100px" align="right" label="是否财务下达">
+            <!-- <el-table-column width="100px" align="right" label="是否财务下达">
               <template slot-scope="scope">
                 <span>{{scope.row.SFCW|ChangeFlag}}</span>
               </template>
-            </el-table-column>
+            </el-table-column> -->
             <el-table-column align="center" width="280" label="操作" fixed="right">
               <template slot-scope="scope">
                 <el-button
@@ -229,7 +229,7 @@
                   style="font-size:14px;"
                   :clearable="true"
                   size="mini"
-                  :show-count="true"
+  
                 />
               </el-form-item>
             </el-col>
@@ -248,7 +248,7 @@
                   style="font-size:14px;"
                   :clearable="true"
                   size="mini"
-                  :show-count="true"
+   
                 />
               </el-form-item>
             </el-col>
@@ -401,7 +401,7 @@
           <el-button @click="editVisible = false">取消</el-button>
           <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">保存</el-button>
           <el-button v-else type="primary" @click="updateData">保存</el-button>
-          <el-button type="success" @click="saveAndSend">提交</el-button>
+          <el-button type="success" v-if="dialogStatus=='create'" @click="saveAndSend">提交</el-button>
         </div>
       </el-card>
     </el-dialog>
@@ -555,7 +555,7 @@ export default {
       temp: {
         XMBH: "",
         XMMC: "",
-        CBDW: null,
+        CBDW: this.$store.state.user.orgCode,
         JSNR: "",
         JHZJE: "",
         LSJE: "",
@@ -758,7 +758,7 @@ export default {
       this.temp = {
         XMBH: "",
         XMMC: "",
-        CBDW: undefined,
+        CBDW: this.$store.state.user.orgCode,
         JSNR: "",
         JHZJE: "",
         LSJE: "",

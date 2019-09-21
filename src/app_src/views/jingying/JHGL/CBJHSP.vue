@@ -209,6 +209,11 @@
                 </el-select>
               </el-form-item>
             </el-col>
+                        <el-col :span="12" v-show="temp.CZWZ==!0">
+              <el-form-item label="物资计划金额" prop="WZJHJE">
+                <el-input v-model="temp.WZJHJE" disabled></el-input>
+              </el-form-item>
+            </el-col>
           </el-row>
           <el-row>
             <el-col

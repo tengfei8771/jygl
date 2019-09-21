@@ -135,7 +135,7 @@
                  <el-button
                 size="small"
                 type="primary"
-                @click="innerVisible=true"
+                @click="chooseXM()"
                 style="width:20%;margin-left:1%;"
               >选择项目</el-button>
             </el-form-item>
@@ -212,10 +212,10 @@
       <el-table
           :key="tableKey"
             @row-click="showRow"
-            :data="list"
+            :data="listXM"
             size="mini"
             :header-cell-class-name="tableRowClassName"
-            v-loading="listLoading"
+            v-loading="listLoadingXM"
             element-loading-text="给我一点时间"
             border
             fit
@@ -290,7 +290,7 @@
               :page-sizes="[10,20,30, 50]"
               :page-size="listQueryXM.limit"
               layout="total, sizes, prev, pager, next, jumper"
-              :total="total"
+              :total="totalXM"
             ></el-pagination>
           </div>
     </el-dialog>
@@ -327,7 +327,10 @@ export default {
       },
       tableKey: 0,
       list: null,
+      listXM: null,
       total: null,
+      totalXM:null,
+      listLoadingXM: false,
       listLoading: false,
       innerVisible:false,
       defaultProps: {
@@ -347,6 +350,7 @@ export default {
         XMBH: "",
         XMMC: ""
       },
+      radio :null,
       temp: {
         S_ID: "",
         XMBH: "",
@@ -430,7 +434,12 @@ export default {
         CJR: this.$store.state.user.userId, 
       };
     },
-
+chooseXM()
+{
+  this.radio=null;
+  this.getXMList();
+this.innerVisible=true;
+},
     getList() {
       this.listLoading = true;
       GetTZInfo(this.listQuery).then(response => {
@@ -576,12 +585,12 @@ export default {
       return "";
     },
     getXMList() {
-      this.listLoading = true;
+      this.listLoadingXM = true;
       GetInfo(this.listQuery).then(response => {
         if (response.data.code === 2000) {
-          this.list = response.data.items;
-          this.total = response.data.total;
-          this.listLoading = false;
+          this.listXM = response.data.items;
+          this.totalXM = response.data.total;
+          this.listLoadingXM = false;
         } else {
           this.$notify({
             position: "bottom-right",
@@ -617,7 +626,7 @@ handleXMSizeChange(val) {
   created() {
     this.listLoading = false;
     //this.loadOrgByCode();
-    this.getXMList();
+
     this.getList();
   },
     activated() {
