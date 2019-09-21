@@ -1,7 +1,14 @@
 <template>
   <div id="FYBXEDIT" class="app-container calendar-list-container">
     <el-card class="table-d">
-      <el-form ref="dataForm" id="dataForm" :model="temp" :rules="rules" label-width="120px" style="width: 99%;">
+      <el-form
+        ref="dataForm"
+        id="dataForm"
+        :model="temp"
+        :rules="rules"
+        label-width="120px"
+        style="width: 99%;"
+      >
         <table width="100%" border="0" cellspacing="1" cellpadding="0">
           <caption>
             中国石油大港油田公司
@@ -57,7 +64,12 @@
               <td>报销金额小写</td>
               <td>
                 <!-- <el-input v-model.number="temp.BXJE" @change="CapitalChinese(temp.BXJE)"></el-input> -->
-                <el-input @input="oninput(temp.BXJE)" style="width:100%"  placeholder v-model="temp.BXJE"></el-input>
+                <el-input
+                  @input="oninput(temp.BXJE)"
+                  style="width:100%"
+                  placeholder
+                  v-model="temp.BXJE"
+                ></el-input>
               </td>
               <td>报销金额大写</td>
               <td>
@@ -124,7 +136,7 @@
         <el-button @click="closetab">取消</el-button>
         <el-button v-if="this.$route.query.type=='create'" type="primary" @click="createData">保存</el-button>
         <el-button v-else type="primary" @click="updateData">保存</el-button>
-        <el-button type="success" @click="saveAndSend" v-if="this.$route.query.type=='create'" >保存并提交</el-button>
+        <el-button type="success" @click="saveAndSend" v-if="this.$route.query.type=='create'">保存并提交</el-button>
         <!-- <el-button @click="printPdf" type="primary">打印</el-button> -->
       </div>
     </el-card>
@@ -288,7 +300,7 @@ export default {
         FYXM: "",
         BXSY: "",
         BXJEDX: "",
-        BXJE: "",
+        BXJE: 0,
         YJKJE: "",
         XFKJE: "",
         FKFS: "",
@@ -336,11 +348,14 @@ export default {
       dialogStatus: "",
       total: 0,
       listLoading: false,
-      infiledList:[],
+      SFCW: 0,
+      TZHJHZJE:0,//计划成本调整后总金额
+      infiledList: [],
       rules: {
         BXJE: [
           { required: true, message: "请输报销金额小写", trigger: "change" }
-        ]}
+        ]
+      }
     };
   },
 
@@ -396,6 +411,8 @@ export default {
       this.selected = row;
       this.temp.FYXM = row.XMMC;
       this.temp.XMBH = row.XMBH;
+      this.SFCW = row.SFCW; //是否财务下达
+      this.TZHJHZJE=row.TZHJHZJE;//计划成本调整后总金额
       this.innerVisible = false;
     },
     getnode(node, instanceId) {
@@ -515,39 +532,61 @@ export default {
       // // 创建
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
-          const tempData = Object.assign({}, this.temp); 
-          console.log(tempData)
-          // let tempData = Object.assign({}, this.temp);
-          // tempData.CJR = this.$store.state.user.userId;
-          // CreateInfo(tempData).then(response => {
-          //   if (response.data.code === 2000) {
-          //     this.$notify({
-          //       position: "bottom-right",
-          //       title: "成功",
-          //       message: "保存成功",
-          //       type: response.data.message,
-          //       duration: 3000
-          //     });
-          //     // this.getList();
-          //     // this.editVisible = false;
-          //     this.closetab();
-          //   } else {
-          //     this.$notify({
-          //       position: "bottom-right",
-          //       title: "失败",
-          //       message: "保存失败:"+response.data.message,
-          //       type: "warning",
-          //       duration: 3000
-          //     });
-          //     this.closetab();
-          //   }
-          // });
+          if (this.SFCW !=1) {
+            if (this.temp.BXJE > this.TZHJHZJE) {
+              this.$notify({
+                position: "bottom-right",
+                title: "失败",
+                message: "您选的项目是生产计划项目，报销金额不能超过计划总金额！",
+                type: "warning",
+                duration: 3000
+              });
+              return false;
+            }
+          }
+          let tempData = Object.assign({}, this.temp);
+          tempData.CJR = this.$store.state.user.userId;
+          CreateInfo(tempData).then(response => {
+            if (response.data.code === 2000) {
+              this.$notify({
+                position: "bottom-right",
+                title: "成功",
+                message: "保存成功",
+                type: response.data.message,
+                duration: 3000
+              });
+              // this.getList();
+              // this.editVisible = false;
+              this.closetab();
+            } else {
+              this.$notify({
+                position: "bottom-right",
+                title: "失败",
+                message: "保存失败:" + response.data.message,
+                type: "warning",
+                duration: 3000
+              });
+              this.closetab();
+            }
+          });
         }
       });
     },
     updateData() {
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
+          if (this.SFCW !=1) {
+            if (this.temp.BXJE > this.TZHJHZJE) {
+              this.$notify({
+                position: "bottom-right",
+                title: "失败",
+                message: "您选的项目是生产计划项目，报销金额不能超过计划总金额！",
+                type: "warning",
+                duration: 3000
+              });
+              return false;
+            }
+          }
           const tempData = Object.assign({}, this.temp); // 这样就不会共用同一个对象
           //   tempData.S_UpdateBy = this.$store.state.user.userId;
           //   //tempData.NOTICE_CONTENT=this.content
@@ -560,12 +599,12 @@ export default {
                 type: response.data.message,
                 duration: 3000
               });
-               this.closetab();
+              this.closetab();
             } else {
               this.$notify({
                 position: "bottom-right",
                 title: "失败",
-                message: "保存失败:"+response.data.message,
+                message: "保存失败:" + response.data.message,
                 type: "warning",
                 duration: 3000
               });
