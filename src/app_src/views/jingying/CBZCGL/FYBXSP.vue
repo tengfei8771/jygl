@@ -192,8 +192,8 @@
         </div>
       </el-card>
     </el-dialog>
-    <el-dialog :visible.sync="workFlowVisible" class="selecttrees" title="查看流程" width="1000px">
-      <img src="../../../img/workflow2.png" style="width:980px;" />
+    <el-dialog :visible.sync="workFlowVisible" class="selecttrees" title="查看流程" width="1100px">
+      <IFRAME STYLE="width:1050px;height:600px;" id="roadflow_Completed" name="roadflow_Completed" :src="this.baseUrl+this.frameUrl"></IFRAME>
     </el-dialog>
      <el-dialog
       :visible.sync="editTZJEVisible"
@@ -240,7 +240,7 @@ import waves from "@/frame_src/directive/waves"; // 水波纹指令
 import { getToken } from "@/frame_src/utils/auth";
 import { parseTime, parseDate } from "@/frame_src/utils/index";
 import { GetFYSPInfo } from "@/app_src/api/jygl/FYBX";
-import { executeFlow, sendFlow, backFlow } from "@/app_src/api/jygl/WorkFlow";
+import { executeFlow, sendFlow, backFlow,flowProcess } from "@/app_src/api/jygl/WorkFlow";
 export default {
   name: "FYBXSP",
   directives: {
@@ -253,6 +253,8 @@ export default {
         create: "添加费用报销"
       },
       workFlowVisible: false,
+      baseUrl:process.env.BASE_API,
+       frameUrl:"",
       temp: {
         BXDH: "GY01JL9.11-02",
         SQBM: "北京项目部",
@@ -346,7 +348,13 @@ export default {
         this.$refs["dataForm"].resetFields();
       }
     },
-    handleProcess() {
+    handleProcess(row) {
+      let fd = new FormData();
+      fd.append("instanceid", row.BXDH);
+      flowProcess(fd).then(repon => {
+      if (repon.data.code === 2000) {
+        this.frameUrl="/roadflowcore/FlowTask/Detail?flowid=" + repon.data.data.flowId + "&groupid=" + repon.data.data.groupId 
+      }});
       this.workFlowVisible = true;
     },
     handleUpdate(row) {

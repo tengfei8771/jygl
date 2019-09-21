@@ -79,7 +79,7 @@
                 size="mini"
                 @click="handleProcess(scope.row)"
                 v-if="scope.row.PROCESS_STATE!=0&&scope.row.PROCESS_STATE!=3"
-              >流程</el-button>
+              >查看流程</el-button>
               <el-button
                 type="info"
                 size="mini"
@@ -108,8 +108,8 @@
         ></el-pagination>
       </el-col>
     </el-row>
-    <el-dialog :visible.sync="workFlowVisible" class="selecttrees" title="查看流程" width="1000px">
-      <img src="../../../img/workflow2.png" style="width:980px;" />
+    <el-dialog :visible.sync="workFlowVisible" class="selecttrees" title="查看流程" width="1100px">
+     <IFRAME STYLE="width:1050px;height:600px;" id="roadflow_Completed" name="roadflow_Completed" :src="this.baseUrl+this.frameUrl"></IFRAME>
     </el-dialog>
   </div>
 </template>
@@ -123,7 +123,8 @@ import {
   getStep,
   sendTask,
   sendFlow,
-  revokeFlow
+  revokeFlow,
+  flowProcess
 } from "@/app_src/api/jygl/WorkFlow";
 
 export default {
@@ -134,6 +135,8 @@ export default {
   data() {
     return {
       workFlowVisible: false,
+       baseUrl:process.env.BASE_API,
+       frameUrl:"",
       temp: {
         S_ID: "",
         BXDH: "",
@@ -199,7 +202,13 @@ export default {
       } // 'el-button--primary is-plain'// 'warning-row'
       return "";
     },
-    handleProcess() {
+    handleProcess(row) {
+      let fd = new FormData();
+      fd.append("instanceid", row.BXDH);
+      flowProcess(fd).then(repon => {
+      if (repon.data.code === 2000) {
+        this.frameUrl="/roadflowcore/FlowTask/Detail?flowid=" + repon.data.data.flowId + "&groupid=" + repon.data.data.groupId 
+      }});
       this.workFlowVisible = true;
     },
 

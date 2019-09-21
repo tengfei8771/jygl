@@ -1,7 +1,7 @@
 <template>
   <div id="FYBXEDIT" class="app-container calendar-list-container">
     <el-card class="table-d">
-      <el-form ref="dataForm" id="dataForm" :model="temp" label-width="120px" style="width: 99%;">
+      <el-form ref="dataForm" id="dataForm" :model="temp" :rules="rules" label-width="120px" style="width: 99%;">
         <table width="100%" border="0" cellspacing="1" cellpadding="0">
           <caption>
             中国石油大港油田公司
@@ -25,6 +25,7 @@
                   :clearable="true"
                   @select="getnode"
                   size="mini"
+                  prop="S_OrgCode"
                 />
               </td>
               <td>费用项目</td>
@@ -37,7 +38,7 @@
                     :value="item.value"
                   ></el-option>
                 </el-select>-->
-                <el-input v-model="temp.FYXM" disabled style="width:78%;"></el-input>
+                <el-input v-model="temp.FYXM" props="FYXM" disabled style="width:78%;"></el-input>
                 <el-button
                   size="small"
                   type="primary"
@@ -56,7 +57,7 @@
               <td>报销金额小写</td>
               <td>
                 <!-- <el-input v-model.number="temp.BXJE" @change="CapitalChinese(temp.BXJE)"></el-input> -->
-                <el-input @input="oninput(temp.BXJE)" placeholder v-model="temp.BXJE"></el-input>
+                <el-input @input="oninput(temp.BXJE)" style="width:100%"  placeholder v-model="temp.BXJE"></el-input>
               </td>
               <td>报销金额大写</td>
               <td>
@@ -334,7 +335,12 @@ export default {
       editVisible: false,
       dialogStatus: "",
       total: 0,
-      listLoading: false
+      listLoading: false,
+      infiledList:[],
+      rules: {
+        BXJE: [
+          { required: true, message: "请输报销金额小写", trigger: "change" }
+        ]}
     };
   },
 
@@ -507,57 +513,35 @@ export default {
     },
     createData() {
       // // 创建
-      // this.$refs["dataForm"].validate(valid => {
-      //   if (valid) {
-      //     //   createTaxOrg(this.temp).then(response => {
-      //     //     var message = response.data.message;
-      //     var message = "成功";
-      //     var title = "失败";
-      //     var type = "error";
-      //     //     if (response.data.code === 2000) {
-      //     this.getList();
-      //     title = "成功";
-      //     type = "success";
-      //     // this.list.unshift(this.temp)
-      //     //     }
-      //     this.editVisible = false;
-      //     this.$notify({
-      //       position: "bottom-right",
-      //       title: title,
-      //       message: message,
-      //       type: type,
-      //       duration: 3000
-      //     });
-      //     //   });
-      //     this.closetab();
-      //   }
-      // });
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
-          this.temp.CJR = this.$store.state.user.userId;
-          CreateInfo(this.temp).then(response => {
-            if (response.data.code === 2000) {
-              this.$notify({
-                position: "bottom-right",
-                title: "成功",
-                message: "保存成功",
-                type: response.data.message,
-                duration: 3000
-              });
-              // this.getList();
-              // this.editVisible = false;
-              this.closetab();
-            } else {
-              this.$notify({
-                position: "bottom-right",
-                title: "失败",
-                message: "保存失败:"+response.data.message,
-                type: "warning",
-                duration: 3000
-              });
-              this.closetab();
-            }
-          });
+          const tempData = Object.assign({}, this.temp); 
+          console.log(tempData)
+          // let tempData = Object.assign({}, this.temp);
+          // tempData.CJR = this.$store.state.user.userId;
+          // CreateInfo(tempData).then(response => {
+          //   if (response.data.code === 2000) {
+          //     this.$notify({
+          //       position: "bottom-right",
+          //       title: "成功",
+          //       message: "保存成功",
+          //       type: response.data.message,
+          //       duration: 3000
+          //     });
+          //     // this.getList();
+          //     // this.editVisible = false;
+          //     this.closetab();
+          //   } else {
+          //     this.$notify({
+          //       position: "bottom-right",
+          //       title: "失败",
+          //       message: "保存失败:"+response.data.message,
+          //       type: "warning",
+          //       duration: 3000
+          //     });
+          //     this.closetab();
+          //   }
+          // });
         }
       });
     },
