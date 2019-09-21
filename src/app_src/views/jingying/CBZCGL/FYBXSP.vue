@@ -5,14 +5,14 @@
         <el-input placeholder="报销单号" style="width:95%;" size="mini" clearable></el-input>
       </el-col>
       <el-col :xs="5" :sm="5" :md="5" :lg="4" :xl="3">
-          <el-input
-            placeholder="项目名称"
-            style="width:95%;"
-            size="mini"
-            clearable
-            v-model="listQuery.XMMC"
-          ></el-input>
-        </el-col>
+        <el-input
+          placeholder="项目名称"
+          style="width:95%;"
+          size="mini"
+          clearable
+          v-model="listQuery.XMMC"
+        ></el-input>
+      </el-col>
       <el-col :xs="5" :sm="5" :md="5" :lg="4" :xl="3">
         <el-button type="primary" icon="el-icon-search" @click="getList" size="mini">查询</el-button>
       </el-col>
@@ -29,9 +29,14 @@
           fit
           highlight-current-row
           style="width: 100%; border-collapse:separate;"
-          
         >
-    <el-table-column label="报销单号" prop="BXDH" fixed="left" width="160"></el-table-column>
+          <el-table-column
+            label="报销单号"
+            prop="BXDH"
+            fixed="left"
+            show-overflow-tooltip="true"
+            width="160"
+          ></el-table-column>
           <el-table-column label="申请单位(部门)" prop="DWBM" fixed="left" width="160"></el-table-column>
           <el-table-column label="申请时间" prop="SQSJ" fixed="left" width="120">
             <template slot-scope="scope">
@@ -45,17 +50,22 @@
           <el-table-column label="原借款金额" prop="YJKJE" width="120"></el-table-column>
           <el-table-column label="现付款金额" prop="XFKJE" width="120"></el-table-column>
           <el-table-column label="付款方式" prop="FKFSName" width="120"></el-table-column>
-          <el-table-column label="附件张数" width="80" prop="FJZS" ></el-table-column>
+          <el-table-column label="附件张数" width="80" prop="FJZS"></el-table-column>
           <el-table-column label="收款单位名称" prop="SKDW" width="120" :show-overflow-tooltip="true"></el-table-column>
-          <el-table-column label="开户银行" prop="KHH"  width="120":show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="开户银行" prop="KHH" width="120" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column label="账户" prop="YHZH" width="120" :show-overflow-tooltip="true"></el-table-column>
-           <el-table-column align="center" width="270" label="操作"  fixed="right">
-              <template slot-scope="scope">
-                <el-button type="danger" size="mini" @click="handleDelete(scope.row)">预算调整</el-button>
-                <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">审批</el-button>
-                <el-button type="success"  size="mini" @click="handleProcess(scope.row)">查看流程</el-button>
-              </template>
-            </el-table-column>
+          <el-table-column align="center" width="270" label="操作" fixed="right">
+            <template slot-scope="scope">
+              <el-button
+                type="danger"
+                size="mini"
+                @click="handleOpenTZJEDialog()"
+                v-if="temp.StepId==='6AF91852-B861-4ABB-A90A-A76803D76208'"
+              >预算调整</el-button>
+              <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">审批</el-button>
+              <el-button type="success" size="mini" @click="handleProcess(scope.row)">查看流程</el-button>
+            </template>
+          </el-table-column>
         </el-table>
         <el-pagination
           background
@@ -71,7 +81,7 @@
       </el-col>
     </el-row>
 
-     <el-dialog
+    <el-dialog
       :visible.sync="editVisible"
       class="selecttrees"
       :title="textMap[dialogStatus]"
@@ -79,31 +89,30 @@
     >
       <el-card>
         <el-form ref="dataForm" :model="temp" label-width="120px" style="width: 99%;">
-           <el-row>
+          <el-row>
             <el-col :span="12">
-             <el-form-item label="报销时间" prop="SQSJ">
-              <el-date-picker
-                type="date"
-                placeholder="选择日期"
-                v-model="temp.SQSJ"
-                style="width: 100%;"
-                disabled
-              ></el-date-picker>
-            </el-form-item>
+              <el-form-item label="报销时间" prop="SQSJ">
+                <el-date-picker
+                  type="date"
+                  placeholder="选择日期"
+                  v-model="temp.SQSJ"
+                  style="width: 100%;"
+                  disabled
+                ></el-date-picker>
+              </el-form-item>
             </el-col>
             <el-col :span="12">
-
-            <el-form-item label="费用项目" prop="FYXM">
-                    <el-select size="mini" style="width:100%;" disabled v-model="temp.FYXM">
-                      <el-option
-                        v-for="(item,key) in selectOptions"
-                        :key="key"
-                        :label="item.label"
-                        :value="item.value"
-                        enabled="enabled"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
+              <el-form-item label="费用项目" prop="FYXM">
+                <el-select size="mini" style="width:100%;" disabled v-model="temp.FYXM">
+                  <el-option
+                    v-for="(item,key) in selectOptions"
+                    :key="key"
+                    :label="item.label"
+                    :value="item.value"
+                    enabled="enabled"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
             </el-col>
           </el-row>
           <el-row>
@@ -114,7 +123,7 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="附件张数" prop="FJZS">
-                <el-input v-model="temp.FJZS" disabled> </el-input>
+                <el-input v-model="temp.FJZS" disabled></el-input>
               </el-form-item>
             </el-col>
           </el-row>
@@ -162,7 +171,7 @@
             </el-col>
           </el-row>
           <el-row>
-             <el-col :span="12">
+            <el-col :span="12">
               <el-form-item label="开户银行" prop="KHYH">
                 <el-input v-model="temp.KHH" disabled></el-input>
               </el-form-item>
@@ -173,27 +182,56 @@
               </el-form-item>
             </el-col>
           </el-row>
-
-
-        
         </el-form>
         <div style="text-align:center">
           <!-- <el-button @click="editVisible = false">取消</el-button> -->
           <!-- <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">保存</el-button>
-          <el-button v-else type="primary" @click="updateData">保存</el-button> -->
-          <el-button type="success">同意</el-button>
-           <el-button type="danger">不同意</el-button>
+          <el-button v-else type="primary" @click="updateData">保存</el-button>-->
+          <el-button type="success" @click="handleSubmit(temp)">同意</el-button>
+          <el-button type="danger" @click="handleBack(temp)">不同意</el-button>
         </div>
       </el-card>
     </el-dialog>
-        <el-dialog
-      :visible.sync="workFlowVisible"
+    <el-dialog :visible.sync="workFlowVisible" class="selecttrees" title="查看流程" width="1000px">
+      <img src="../../../img/workflow2.png" style="width:980px;" />
+    </el-dialog>
+     <el-dialog
+      :visible.sync="editTZJEVisible"
       class="selecttrees"
-      title="查看流程"
+      title="调整金额表单"
       width="1000px"
     >
-      <img src="../../../img/workflow2.png" style="width:980px;">
-        </el-dialog>
+      <el-card>
+        <el-form ref="dataForm" :model="temp" label-width="120px" style="width: 99%;">
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="报销时间" prop="SQSJ">
+                <el-date-picker
+                  type="date"
+                  placeholder="选择日期"
+                  v-model="temp.SQSJ"
+                  style="width: 100%;"
+                  disabled
+                ></el-date-picker>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="费用项目" prop="FYXM">
+                <el-select size="mini" style="width:100%;" disabled v-model="temp.FYXM">
+                  <el-option
+                    v-for="(item,key) in selectOptions"
+                    :key="key"
+                    :label="item.label"
+                    :value="item.value"
+                    enabled="enabled"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+      </el-card>
+     </el-dialog>
   </div>
 </template>
 
@@ -202,41 +240,43 @@ import waves from "@/frame_src/directive/waves"; // 水波纹指令
 import { getToken } from "@/frame_src/utils/auth";
 import { parseTime, parseDate } from "@/frame_src/utils/index";
 import { GetFYSPInfo } from "@/app_src/api/jygl/FYBX";
+import { executeFlow, sendFlow, backFlow } from "@/app_src/api/jygl/WorkFlow";
 export default {
   name: "FYBXSP",
-    directives: {
+  directives: {
     waves
   },
   data() {
     return {
-         textMap: {
+      textMap: {
         update: "修改费用报销",
         create: "添加费用报销"
       },
-      workFlowVisible:false,
-            temp: {
-         BXDH: "GY01JL9.11-02",
-          SQBM: "北京项目部",
-          SQSJ: "219-05-31",
-          FYXM:"房屋租赁费",
-          BXSY:"缴纳房租",
-         
-          BXJE: 200,
-          BXJEDX: "贰佰元",
-          YJKJE: 0,
-          XFKJE: 0,
-          FKFS:"电汇",
-          FJZS:2,
-          SKDW:"北京卓进房地产经济有限公司",
-          KHYH:"中国工商银行",
-          ZH:"7893777726500043943094"
+      workFlowVisible: false,
+      temp: {
+        BXDH: "GY01JL9.11-02",
+        SQBM: "北京项目部",
+        SQSJ: "219-05-31",
+        FYXM: "房屋租赁费",
+        BXSY: "缴纳房租",
+
+        BXJE: 200,
+        BXJEDX: "贰佰元",
+        YJKJE: 0,
+        XFKJE: 0,
+        FKFS: "电汇",
+        FJZS: 2,
+        SKDW: "北京卓进房地产经济有限公司",
+        KHYH: "中国工商银行",
+        ZH: "7893777726500043943094"
       },
       editVisible: false,
+      editTZJEVisible:false,//调整金额表单弹窗
       dialogStatus: "",
       listLoading: false,
       tableKey: 0,
       list: [],
-      total:0,
+      total: 0,
       listQuery: {
         limit: 10,
         page: 1,
@@ -244,16 +284,14 @@ export default {
         userid: this.$store.state.user.userId,
         XMMC: ""
       }
-     
     };
   },
   filters: {
-    parseTime, parseDate
-
+    parseTime,
+    parseDate
   },
   methods: {
-
-      // 查询数据
+    // 查询数据
     getList() {
       this.listLoading = true;
       GetFYSPInfo(this.listQuery).then(response => {
@@ -273,23 +311,22 @@ export default {
       });
     },
 
-      resetTemp() {
+    resetTemp() {
       this.temp = {
-       BXDH: "",
-          SQBM: "",
-          SQSJ: "",
-          FYXM:"",
-          BXSY:"",
-         
-          BXJE: "",
-          BXJEDX: "",
-          YJKJE: "",
-          XFKJE: "",
-          FKFS:"",
-          FJZS:"",
-          SKDW:"",
-          KHYH:"",
-          ZH:""
+        BXDH: "",
+        SQBM: "",
+        SQSJ: "",
+        FYXM: "",
+        BXSY: "",
+        BXJE: "",
+        BXJEDX: "",
+        YJKJE: "",
+        XFKJE: "",
+        FKFS: "",
+        FJZS: "",
+        SKDW: "",
+        KHYH: "",
+        ZH: ""
       };
     },
     tableRowClassName({ row, rowIndex }) {
@@ -301,7 +338,7 @@ export default {
     },
     handleSizeChange() {},
     handleCurrentChange() {},
-      handleCreate() {
+    handleCreate() {
       this.resetTemp();
       this.editVisible = true;
       this.dialogStatus = "create";
@@ -309,9 +346,8 @@ export default {
         this.$refs["dataForm"].resetFields();
       }
     },
-      handleProcess()
-    {
- this.workFlowVisible = true;
+    handleProcess() {
+      this.workFlowVisible = true;
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row); // copy obj
@@ -378,6 +414,9 @@ export default {
         }
       });
     },
+    handleOpenTZJEDialog(){
+      this.editTZJEVisible=true;
+    },
     updateData() {
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
@@ -406,11 +445,87 @@ export default {
         }
       });
     },
-
-  },
-         created() {
-      this.getList();
+    handleSubmit(temp) {
+      //同意提交
+      this.$refs["dataForm"].validate(valid => {
+        if (valid) {
+          let fd = new FormData();
+          fd.append("systemcode", "localhost");
+          fd.append("stepid", temp.StepId);
+          fd.append("flowid", "ABC11A11-EFF2-4588-8FAE-0EE8687874E1");
+          fd.append("taskid", temp.Id);
+          fd.append("instanceid", temp.BXDH);
+          fd.append("senderid", this.$store.state.user.userId);
+          fd.append("tasktitle", temp.BXDH + "费用报销审批同意");
+          fd.append("comment", "");
+          fd.append("type", "submit");
+          fd.append("isFreeSend", false);
+          fd.append("formtype", 1);
+          sendFlow(fd).then(repon => {
+            if (repon.data.code === 2000) {
+              this.$notify({
+                position: "bottom-right",
+                title: "成功！",
+                message: "处理成功",
+                type: "success",
+                duration: 2000
+              });
+              this.editVisible = false;
+              this.getList();
+            } else {
+              this.$notify({
+                position: "bottom-right",
+                title: "失败!",
+                message: repon.data.message,
+                type: "error",
+                duration: 2000
+              });
+            }
+            this.editVisible = false;
+            this.getList();
+          });
+        }
+      });
+    },
+    handleBack(temp) {
+      //t退回
+      let fd = new FormData();
+      fd.append("systemcode", "localhost");
+      fd.append("flowid", "ABC11A11-EFF2-4588-8FAE-0EE8687874E1");
+      fd.append("taskid", temp.Id);
+      fd.append("instanceid", temp.BXDH);
+      fd.append("senderid", this.$store.state.user.userId);
+      fd.append("tasktitle", temp.BXDH + "费用报销审批退回");
+      fd.append("comment", "");
+      fd.append("formtype", 1);
+      backFlow(fd).then(repon => {
+        if (repon.data.code === 2000) {
+          this.$notify({
+            position: "bottom-right",
+            title: "成功！",
+            message: "处理成功",
+            type: "success",
+            duration: 2000
+          });
+          this.editVisible = false;
+          this.getList();
+        } else {
+          this.$notify({
+            position: "bottom-right",
+            title: "失败!",
+            message: repon.data.message,
+            type: "error",
+            duration: 2000
+          });
+        }
+        this.editVisible = false;
+        this.getList();
+      });
     }
+  },
+  created() {
+    this.getList();
+  }
 };
 </script>
 

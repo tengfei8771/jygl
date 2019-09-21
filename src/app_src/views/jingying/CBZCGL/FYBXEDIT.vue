@@ -123,7 +123,7 @@
         <el-button @click="closetab">取消</el-button>
         <el-button v-if="this.$route.query.type=='create'" type="primary" @click="createData">保存</el-button>
         <el-button v-else type="primary" @click="updateData">保存</el-button>
-        <el-button type="success" @click="saveAndSend">提交</el-button>
+        <el-button type="success" @click="saveAndSend" v-if="this.$route.query.type=='create'" >保存并提交</el-button>
         <!-- <el-button @click="printPdf" type="primary">打印</el-button> -->
       </div>
     </el-card>
@@ -444,6 +444,9 @@ export default {
       // window.open("", "_top").close();
       this.$store.dispatch("delVisitedViews", this.$route);
       this.$router.go(-1);
+      // this.$router.push({
+      //   path: "/jingying/CBZCGL/FYBX"
+      // });
     },
 
     tableRowClassName({ row, rowIndex }) {
@@ -537,7 +540,7 @@ export default {
               this.$notify({
                 position: "bottom-right",
                 title: "成功",
-                message: response.data.message,
+                message: "保存成功",
                 type: response.data.message,
                 duration: 3000
               });
@@ -548,7 +551,7 @@ export default {
               this.$notify({
                 position: "bottom-right",
                 title: "失败",
-                message: response.data.message,
+                message: "保存失败:"+response.data.message,
                 type: "warning",
                 duration: 3000
               });
@@ -565,44 +568,25 @@ export default {
           //   tempData.S_UpdateBy = this.$store.state.user.userId;
           //   //tempData.NOTICE_CONTENT=this.content
           UpdateInfo(tempData).then(response => {
-            // //   var message = response.data.message;
-            // var message = "成功";
-            // var title = "失败";
-            // var type = "error";
-            // //     if (response.data.code === 2000) {
-            // this.getList();
-            // title = "成功";
-            // type = "success";
-            // // }
-            // this.editVisible = false;
-            // this.$notify({
-            //   position: "bottom-right",
-            //   title: title,
-            //   message: message,
-            //   type: type,
-            //   duration: 3000
-            // });
             if (response.data.code === 2000) {
               this.$notify({
                 position: "bottom-right",
                 title: "成功",
-                message: response.data.message,
+                message: "保存成功",
                 type: response.data.message,
                 duration: 3000
               });
-              this.closetab();
+               this.closetab();
             } else {
               this.$notify({
                 position: "bottom-right",
                 title: "失败",
-                message: response.data.message,
+                message: "保存失败:"+response.data.message,
                 type: "warning",
                 duration: 3000
               });
-              this.closetab();
             }
           });
-          this.closetab();
         }
       });
     },
@@ -678,7 +662,6 @@ export default {
     // this.listLoading = false;
     //this.temp = this.$route.query.row;
     this.temp = Object.assign({}, this.$route.query.row); // copy obj
-    console.log(this.temp);
     this.getOrgDate();
     this.GetFKFSOpions();
     this.getXMList();

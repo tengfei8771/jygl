@@ -60,28 +60,38 @@
                 type="primary"
                 size="mini"
                 @click="handleUpdate(scope.row)"
-                v-if="scope.row.PROCESS_STATE===0"
+                v-if="scope.row.PROCESS_STATE===0||scope.row.PROCESS_STATE===3"
               >修改</el-button>
               <el-button
                 type="danger"
                 size="mini"
                 @click="handleDelete(scope.row)"
-                v-if="scope.row.PROCESS_STATE===0"
+                v-if="scope.row.PROCESS_STATE===0||scope.row.PROCESS_STATE===3 "
               >删除</el-button>
               <el-button
                 type="warning"
                 size="mini"
                 @click="handleSubmit(scope.row)"
-                v-if="scope.row.PROCESS_STATE===0"
+                v-if="scope.row.PROCESS_STATE===0||scope.row.PROCESS_STATE===3"
               >提交</el-button>
               <el-button
                 type="success"
                 size="mini"
                 @click="handleProcess(scope.row)"
-                v-if="scope.row.PROCESS_STATE!=0"
+                v-if="scope.row.PROCESS_STATE!=0&&scope.row.PROCESS_STATE!=3"
               >流程</el-button>
-              <el-button type="info" size="mini" v-if="scope.row.PROCESS_STATE!=2&&scope.row.PROCESS_STATE!=0">撤回</el-button>
-              <el-button type="success" size="mini" @click="Print(scope.row)" v-if="scope.row.PROCESS_STATE===2">打印</el-button>
+              <el-button
+                type="info"
+                size="mini"
+                @click="revokeSubmit(scope.row)"
+                v-if="scope.row.PROCESS_STATE===1"
+              >撤回</el-button>
+              <el-button
+                type="success"
+                size="mini"
+                @click="Print(scope.row)"
+                v-if="scope.row.PROCESS_STATE===2"
+              >打印</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -109,7 +119,12 @@ import waves from "@/frame_src/directive/waves"; // 水波纹指令
 import { getToken } from "@/frame_src/utils/auth";
 import { parseTime, parseDate } from "@/frame_src/utils/index";
 import { GetInfo, DeleteInfo } from "@/app_src/api/jygl/FYBX";
-import { getStep, sendTask, sendFlow } from "@/app_src/api/jygl/WorkFlow";
+import {
+  getStep,
+  sendTask,
+  sendFlow,
+  revokeFlow
+} from "@/app_src/api/jygl/WorkFlow";
 
 export default {
   name: "FYBX",
@@ -207,7 +222,6 @@ export default {
       });
     },
     Print(row) {
-      console.log(row);
       this.$router.push({
         path: "/jingying/CBZCGL/FYBXPRINT",
         query: { type: "update", row: row }
@@ -223,11 +237,11 @@ export default {
       let fd = new FormData();
       fd.append("systemcode", "localhost");
       fd.append("stepid", "");
-      fd.append("flowid", "0273B9EF-9903-4C29-8F1C-E3CF04A00FB7");
+      fd.append("flowid", "ABC11A11-EFF2-4588-8FAE-0EE8687874E1");
       fd.append("taskid", "");
       fd.append("instanceid", row.BXDH);
       fd.append("senderid", this.$store.state.user.userId);
-      fd.append("tasktitle", row.BXDH + "费用报销审批");
+      fd.append("tasktitle", row.BXDH + "费用报销审批申请");
       fd.append("comment", "");
       fd.append("type", "submit");
       fd.append("isFreeSend", false);
@@ -242,6 +256,33 @@ export default {
             duration: 2000
           });
           this.getList();
+        }
+      });
+    },
+    revokeSubmit(row) {
+      //撤回
+      let fd = new FormData();
+      fd.append("instanceid", row.BXDH);
+      fd.append("senderid", this.$store.state.user.userId);
+      fd.append("formtype", 1);
+      revokeFlow(fd).then(repon => {
+        if (repon.data.code === 2000) {
+          this.$notify({
+            position: "bottom-right",
+            title: "成功！",
+            message: "流程撤回成功！",
+            type: "success",
+            duration: 2000
+          });
+          this.getList();
+        } else {
+          this.$notify({
+            position: "bottom-right",
+            title: "失败!",
+            message: repon.data.message,
+            type: "error",
+            duration: 2000
+          });
         }
       });
     },
