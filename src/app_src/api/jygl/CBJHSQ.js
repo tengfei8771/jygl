@@ -83,3 +83,11 @@ export function UpdateDesCBJHJE(data) {
     data
   })
 }
+
+export function GetYBInfo(query) {
+  return request({
+    url: '/CBJHSQ/GetYBInfo',
+    method: 'get',
+    params: query
+  })
+}

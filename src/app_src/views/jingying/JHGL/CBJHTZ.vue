@@ -175,7 +175,7 @@
       </el-card>
     </el-dialog>
     <el-dialog width="50%" title="项目信息" :visible.sync="innerVisible" append-to-body>
-       <div class="topSearh" id="topsearch">
+       <div style="margin-bottom: 15px;" id="topsearch">
       <el-row>
         <el-col :xs="5" :sm="5" :md="5" :lg="4" :xl="3">
           <el-input

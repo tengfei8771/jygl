@@ -133,7 +133,7 @@
                   size="mini"
                   @click="handleProcess(scope.row)"
                   v-if="scope.row.PROCESS_STATE!=0"
-                >流程</el-button>
+                >查看流程</el-button>
                 <el-button type="info" size="mini" @click="revokeSubmit(scope.row)" v-if="scope.row.PROCESS_STATE===1">撤回</el-button>
               </template>
             </el-table-column>
@@ -740,14 +740,13 @@ export default {
       tableData.push({ WZMC: "", WZSL: "", WZLX: "", WZSM: "" });
     },
     handleProcess(row) {
-             console.log("1212121112"); 
+
         let fd = new FormData();
       fd.append("instanceid", row.XMBH);
       flowProcess(fd).then(repon => {
         console.log(repon.data.code);
       if (repon.data.code === 2000) {
         this.frameUrl="/roadflowcore/FlowTask/Detail?flowid=" + repon.data.data.flowId + "&groupid=" + repon.data.data.groupId 
-             console.log(this.frameUrl); 
       }
             this.workFlowVisible = true;
 

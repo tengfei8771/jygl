@@ -99,7 +99,12 @@
               <template slot-scope="scope">
                 <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">审批</el-button>
                 <!-- <el-button type="danger" size="mini" @click="handleDelete(scope.row)">退回</el-button> -->
-                <el-button type="success" size="mini" @click="handleProcess()">查看流程</el-button>
+                                <el-button
+                  type="success"
+                  size="mini"
+                  @click="handleProcess(scope.row)"
+                  v-if="scope.row.PROCESS_STATE!=0"
+                >查看流程</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -290,8 +295,9 @@
         </div>
       </el-card>
     </el-dialog>
-    <el-dialog :visible.sync="workFlowVisible" class="selecttrees" title="查看流程" width="1000px">
-      <img src="../../../img/workflow.png" style="width:980px;" />
+    <el-dialog :visible.sync="workFlowVisible" class="selecttrees" title="查看流程" width="1100px">
+      <IFRAME STYLE="width:1050px;height:750px;" id="roadflow_Completed" name="roadflow_Completed" :src="this.baseUrl+this.frameUrl"></IFRAME>
+      <!-- <img src="../../../img/workflow.png" style="width:980px;" /> -->
     </el-dialog>
   </div>
 </template>
@@ -305,7 +311,7 @@
 import waves from "@/frame_src/directive/waves"; // 水波纹指令
 import { getToken } from "@/frame_src/utils/auth";
 import { GetInfo, GetDetailInfo, UpdateSFCW } from "@/app_src/api/jygl/CBJHSP";
-import { executeFlow, sendFlow, backFlow } from "@/app_src/api/jygl/WorkFlow";
+import { executeFlow, sendFlow, backFlow,flowProcess } from "@/app_src/api/jygl/WorkFlow";
 export default {
   name: "CBJHSQP",
   directives: {
@@ -319,6 +325,8 @@ export default {
       rules: {
         SFCW: [{ required: true, message: "请选择类型", trigger: "change" }]
       },
+      baseUrl:process.env.BASE_API,
+      frameUrl:"",
       inServForm: {},
       infiledList: [],
       fildtps: [{ text: "设备", value: "1" }, { text: "材料", value: "2" }],
@@ -495,8 +503,18 @@ export default {
         resource: ""
       };
     },
-    handleProcess() {
-      this.workFlowVisible = true;
+    handleProcess(row) {
+        let fd = new FormData();
+      fd.append("instanceid", row.XMBH);
+      flowProcess(fd).then(repon => {
+      if (repon.data.code === 2000) {
+        this.frameUrl="/roadflowcore/FlowTask/Detail?flowid=" + repon.data.data.flowId + "&groupid=" + repon.data.data.groupId 
+             console.log(this.frameUrl); 
+      }
+            this.workFlowVisible = true;
+
+});
+
     },
     getList() {
       this.listLoading = true;
