@@ -131,7 +131,7 @@
                 <el-button
                   type="success"
                   size="mini"
-                  @click="handleProcess()"
+                  @click="handleProcess(scope.row)"
                   v-if="scope.row.PROCESS_STATE!=0"
                 >流程</el-button>
                 <el-button type="info" size="mini" @click="revokeSubmit(scope.row)" v-if="scope.row.PROCESS_STATE===1">撤回</el-button>
@@ -405,8 +405,9 @@
         </div>
       </el-card>
     </el-dialog>
-    <el-dialog :visible.sync="workFlowVisible" class="selecttrees" title="流程" width="1000px">
-      <img src="../../../img/workflow2.png" style="width:980px;" />
+    <el-dialog :visible.sync="workFlowVisible" class="selecttrees" title="流程" width="1100px">
+      <IFRAME STYLE="width:1050px;height:750px;" id="roadflow_Completed" name="roadflow_Completed" :src="this.baseUrl+this.frameUrl"></IFRAME>
+      <!-- <img src="../../../img/workflow2.png" style="width:980px;" /> -->
     </el-dialog>
   </div>
 </template>
@@ -419,7 +420,7 @@
 // import {flowSend} from '@/app_src/api/workflow/common.js' //注意路径
 import waves from "@/frame_src/directive/waves"; // 水波纹指令
 import { getToken } from "@/frame_src/utils/auth";
-import { sendFlow,revokeFlow } from "@/app_src/api/jygl/WorkFlow";
+import { sendFlow,revokeFlow,flowProcess } from "@/app_src/api/jygl/WorkFlow";
 import {
   GetInfo,
   CreateInfo,
@@ -452,6 +453,8 @@ export default {
       }
     };
     return {
+       baseUrl:process.env.BASE_API,
+       frameUrl:"",
       infiledList: [],
       treeData: [],
       treeData1: [],
@@ -579,6 +582,7 @@ export default {
     };
   },
   methods: {
+
     revokeSubmit(row){
   let fd = new FormData();
       fd.append("instanceid", row.XMBH);
@@ -735,8 +739,20 @@ export default {
     addRow(tableData, event) {
       tableData.push({ WZMC: "", WZSL: "", WZLX: "", WZSM: "" });
     },
-    handleProcess() {
-      this.workFlowVisible = true;
+    handleProcess(row) {
+             console.log("1212121112"); 
+        let fd = new FormData();
+      fd.append("instanceid", row.XMBH);
+      flowProcess(fd).then(repon => {
+        console.log(repon.data.code);
+      if (repon.data.code === 2000) {
+        this.frameUrl="/roadflowcore/FlowTask/Detail?flowid=" + repon.data.data.flowId + "&groupid=" + repon.data.data.groupId 
+             console.log(this.frameUrl); 
+      }
+            this.workFlowVisible = true;
+
+});
+
     },
     resetTemp() {
       this.temp = {

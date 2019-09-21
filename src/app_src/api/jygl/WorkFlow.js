@@ -52,3 +52,11 @@ export function revokeFlow(data) {
     data
   })
 }
+
+export function flowProcess(data) {
+  return request({
+    url: '/WorkFlow/flowProcess',
+    method: 'post',
+    data
+  })
+}
