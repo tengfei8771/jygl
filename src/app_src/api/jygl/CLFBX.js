@@ -45,3 +45,19 @@ export function DeleteXCInfo(query) {
     params:query
   })
 }
+
+export function GetSPInfo(query) {
+  return request({
+    url: '/TravelExpense/GetSPInfo',
+    method: 'get',
+    params: query
+  })
+}
+
+export function GetSPXCInfo(query) {
+  return request({
+    url: '/TravelExpense/GetSPXCInfo',
+    method: 'get',
+    params: query
+  })
+}

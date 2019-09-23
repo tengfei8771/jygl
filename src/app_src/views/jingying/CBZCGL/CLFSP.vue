@@ -2,7 +2,13 @@
   <div id="SWKC" class="app-container calendar-list-container">
     <el-row style="margin-bottom:10px;">
       <el-col :xs="5" :sm="5" :md="5" :lg="4" :xl="3">
-        <el-input placeholder="报销单号" style="width:95%;" size="mini" clearable v-model="listQuery.CLBH"></el-input>
+        <el-input
+          placeholder="报销单号"
+          style="width:95%;"
+          size="mini"
+          clearable
+          v-model="listQuery.CLBH"
+        ></el-input>
       </el-col>
       <el-col :xs="5" :sm="5" :md="5" :lg="4" :xl="3">
         <el-button type="primary" icon="el-icon-search" size="mini" @click="getList">查询</el-button>
@@ -30,17 +36,17 @@
           style="width: 100%"
         >
           <el-table-column label="报销单号" prop="CLBH" fixed="left"></el-table-column>
-          <el-table-column label="申请单位(部门)" prop="DWBM" fixed="left"></el-table-column>
+          <el-table-column label="申请单位(部门)" prop="DWMC" fixed="left"></el-table-column>
           <el-table-column label="申请时间" fixed="left">
             <template slot-scope="scope">{{scope.row.CJSJ|parseTime}}</template>
           </el-table-column>
           <el-table-column label="出差人" prop="CCXM" fixed="left"></el-table-column>
           <el-table-column label="出差事由" prop="CCSY"></el-table-column>
           <el-table-column label="出差开始时间">
-            <template slot-scope="scope">{{scope.row.CCKSSJ|parseTime}}</template>
+            <template slot-scope="scope">{{scope.row.CCKSSJ|subTime}}</template>
           </el-table-column>
           <el-table-column label="出差结束时间">
-            <template slot-scope="scope">{{scope.row.CCJSSJ|parseTime}}</template>
+            <template slot-scope="scope">{{scope.row.CCJSSJ|subTime}}</template>
           </el-table-column>
           <el-table-column label="出差天数" prop="CCTS"></el-table-column>
           <el-table-column label="报销金额" prop="HJJE"></el-table-column>
@@ -68,12 +74,7 @@
         ></el-pagination>
       </el-col>
     </el-row>
-    <el-dialog
-      :visible.sync="editVisible"
-      class="selecttrees"
-      :title="textMap[dialogStatus]"
-      width="1000px"
-    >
+    <el-dialog :visible.sync="editVisible" class="selecttrees" title="审批" width="80%">
       <el-card>
         <el-form ref="dataForm" :model="temp" label-width="120px" style="width: 99%;">
           <el-row>
@@ -173,62 +174,47 @@
           </el-row>
           <el-row>
             <el-col :span="24">
-              <el-form
-                :model="inServForm"
-                ref="inServForm"
-                label-width="130px"
-                size="mini"
-                highlight-current-row
-                border
-              >
-                <el-form-item label="行程明细" prop="servin">
-                  <!-- <el-button type="primary" @click="addRow(infiledList)">新增</el-button> -->
+              <el-form-item label="行程明细" prop="servin">
+                <!-- <el-button type="primary" @click="addRow(infiledList)">新增</el-button> -->
 
-                  <el-table
-                    :data="infiledList"
-                    size="mini"
-                    highlight-current-row
-                    border
-                    style="width: 100%"
-                  >
-                    <el-table-column prop="fildna" label="出发地">
-                      <template slot-scope="scope">
-                        <el-input size="mini" v-model="scope.row.fildna"></el-input>
-                      </template>
+                <el-table
+                  :data="infiledList"
+                  size="mini"
+                  highlight-current-row
+                  border
+                  style="width: 100%"
+                >
+                  <el-table-column label="出发地点" prop="CFDD"></el-table-column>
+                  <el-table-column label="乘车船、飞机起止时间">
+                    <el-table-column label="出发日期">
+                      <template slot-scope="scope">{{scope.row.CFRQ|subTime}}</template>
                     </el-table-column>
-                    <el-table-column prop="fildna" label="目的地">
-                      <template slot-scope="scope">
-                        <el-input size="mini" v-model="scope.row.fildnasl"></el-input>
-                      </template>
+                    <el-table-column label="到达日期">
+                      <template slot-scope="scope">{{scope.row.DDRQ|subTime}}</template>
                     </el-table-column>
-                    <el-table-column prop="fildtp" label="交通工具">
-                      <template slot-scope="scope">
-                        <el-select v-model="scope.row.fildtp" clearable>
-                          <el-option
-                            v-for="(item,index) in fildtps"
-                            :key="index"
-                            :label="item.text"
-                            :value="item.value"
-                          ></el-option>
-                        </el-select>
-                      </template>
-                    </el-table-column>
-                    <el-table-column prop="remark" label="行程明细">
-                      <template slot-scope="scope">
-                        <el-input size="mini" v-model="scope.row.remark"></el-input>
-                      </template>
-                    </el-table-column>
-                    <!-- <el-table-column fixed="right" label="操作">
-            <template slot-scope="scope">
-              <el-button type="danger" 
-                @click.native.prevent="deleteRow(scope.$index, infiledList)"
-                size="small"
-              >移除</el-button>
-            </template>
-                    </el-table-column>-->
-                  </el-table>
-                </el-form-item>
-              </el-form>
+                  </el-table-column>
+                  <el-table-column label="到达地点" prop="CCDD"></el-table-column>
+                  <el-table-column label="出勤补助">
+                    <el-table-column label="出差天数" prop="CCDD"></el-table-column>
+                    <el-table-column label="出差标准" prop="CQBZ"></el-table-column>
+                    <el-table-column label="补助金额" prop="BZJE"></el-table-column>
+                  </el-table-column>
+                  <el-table-column label="硬座、火车补助">
+                    <el-table-column label="%" prop="BFB"></el-table-column>
+                    <el-table-column label="天数" prop="TS"></el-table-column>
+                    <el-table-column label="费用" prop="HCFY"></el-table-column>
+                  </el-table-column>
+                  <el-table-column label="车船飞机费">
+                    <el-table-column label="车船类别" prop="FCLB"></el-table-column>
+                    <el-table-column label="席别" prop="FCXB"></el-table-column>
+                    <el-table-column label="金额" prop="FCJE"></el-table-column>
+                  </el-table-column>
+                  <el-table-column label="杂费">
+                    <el-table-column label="类别" prop="ZFLB"></el-table-column>
+                    <el-table-column label="金额" prop="ZFJE"></el-table-column>
+                  </el-table-column>
+                </el-table>
+              </el-form-item>
             </el-col>
           </el-row>
         </el-form>
@@ -236,8 +222,8 @@
           <el-button @click="editVisible = false">取消</el-button>
           <!-- <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">保存</el-button>
           <el-button v-else type="primary" @click="updateData">保存</el-button>-->
-          <el-button type="success">审核通过</el-button>
-          <el-button type="danger">不通过</el-button>
+          <el-button type="success" @click="subProcess">同意</el-button>
+          <el-button type="danger" @click="revokeProcess">不同意</el-button>
         </div>
       </el-card>
     </el-dialog>
@@ -248,34 +234,22 @@
 </template>
 
 <script>
-import { GetInfo, CreateInfo, GetCLXCInfo } from "@/app_src/api/jygl/CLFBX";
+import { GetCLXCInfo, GetSPInfo, GetSPXCInfo } from "@/app_src/api/jygl/CLFBX";
+import { sendFlow, backFlow } from "@/app_src/api/jygl/WorkFlow";
 export default {
   name: "SWKC",
   data() {
     return {
       infiledList: [],
-      inServForm:[],
       fildtps: [{ text: "设备", value: "1" }, { text: "材料", value: "2" }],
       textMap: {
         update: "修改差旅费用报销",
         create: "添加差旅费用报销"
       },
       workFlowVisible: false,
-      temp: {
-        BXDH: "GY01JL9.11-02",
-        SQBM: "北京项目部",
-        SQSJ: "219-05-31",
-        CCR: "张三,李四",
-        CCKSSJ: "2019-5-9",
-        CCJSSJ: "219-5-10",
-        CCSY: "学习交流",
-        CCTS: 3,
-        BXJE: 200,
-        BXJEDX: "贰佰元",
-        YJCLF: 0,
-        YTBJE: 0
-      },
+      temp: {},
       listQuery: {
+        userid: this.$store.state.user.userId,
         CLBH: "",
         limit: 10,
         page: 1
@@ -289,7 +263,7 @@ export default {
   methods: {
     getList() {
       this.listloading = true;
-      GetInfo(this.listQuery).then(response => {
+      GetSPInfo(this.listQuery).then(response => {
         if (response.data.code === 2000) {
           this.fac = response.data.items;
           this.total = response.data.total;
@@ -345,7 +319,14 @@ export default {
     handleUpdate(row) {
       this.temp = Object.assign({}, row); // copy obj
       this.editVisible = true;
-      this.dialogStatus = "update";
+      let t = {
+        CLBH: this.temp.CLBH
+      };
+      GetSPXCInfo(t).then(response => {
+        if (response.data.code === 2000) {
+          this.infiledList = response.data.items;
+        }
+      });
       this.$nextTick(() => {
         this.$refs["dataForm"].clearValidate();
       });
@@ -434,6 +415,85 @@ export default {
           //   });
         }
       });
+    },
+    subProcess() {
+      let fd = new FormData();
+      fd.append("systemcode", "localhost");
+      fd.append("stepid", this.temp.StepId);
+      fd.append("flowid", this.temp.FlowId);
+      fd.append("taskid", this.temp.Id);
+      fd.append("instanceid", this.temp.CLBH);
+      fd.append("senderid", this.$store.state.user.userId);
+      fd.append("tasktitle", this.temp.CLBH + "差旅报销审批");
+      fd.append("formtype",2);
+      fd.append("comment", "");
+      fd.append("type", "submit");
+      fd.append("isFreeSend", false);
+      sendFlow(fd).then(response => {
+        if (response.data.code === 2000) {
+          this.$notify({
+            position: "bottom-right",
+            title: "成功！",
+            message: "流程流转成功",
+            type: "success",
+            duration: 2000
+          });
+          this.editVisible=false;
+          this.getList();
+        } else {
+          this.$notify({
+            position: "bottom-right",
+            title: "失败",
+            message: response.data.message,
+            type: "success",
+            duration: 2000
+          });
+        }
+      });
+    },
+    revokeProcess() {
+      let fd = new FormData();
+      fd.append("systemcode", "localhost");
+      fd.append("flowid", this.temp.FlowId);
+      fd.append("taskid", this.temp.Id);//传记录表ID字段
+      fd.append("instanceid", this.temp.InstanceId);
+      fd.append("senderid", this.$store.state.user.userId);
+      fd.append("tasktitle", this.temp.CLBH + "差旅报销审批退回");
+      fd.append("comment", "");
+      fd.append("groupid",this.temp.GroupId)
+      fd.append("formtype", 2);
+      backFlow(fd).then(repon => {
+        if (repon.data.code === 2000) {
+          this.$notify({
+            position: "bottom-right",
+            title: "成功！",
+            message: "处理成功",
+            type: "success",
+            duration: 2000
+          });
+          this.editVisible = false;
+          this.getList();
+        } else {
+          this.$notify({
+            position: "bottom-right",
+            title: "失败!",
+            message: repon.data.message,
+            type: "error",
+            duration: 2000
+          });
+        }
+        this.editVisible = false;
+        this.getList();
+      });
+    }
+  },
+  filters: {
+    subTime(val) {
+      if (val != "" && val != null && val != undefined) {
+        return val.substring(0, 10);
+      } else {
+        return "";
+      }
     }
   },
   mounted() {
