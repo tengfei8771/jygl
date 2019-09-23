@@ -377,7 +377,9 @@ export default {
     handleBack(temp) {
       let fd = new FormData();
       fd.append("systemcode", "localhost");
-      fd.append("flowid", "0273b9ef-9903-4c29-8f1c-e3cf04a00fb7");
+      //fd.append("flowid", "0273b9ef-9903-4c29-8f1c-e3cf04a00fb7");
+      fd.append("flowid", temp.FlowId);
+      fd.append("groupid", temp.GroupId);
       fd.append("taskid", temp.Id);
       fd.append("instanceid", temp.XMBH);
       fd.append("senderid", this.$store.state.user.userId);
@@ -415,7 +417,8 @@ export default {
          let fd = new FormData();
       fd.append("systemcode", "localhost");
       fd.append("stepid", temp.StepId);
-      fd.append("flowid", "0273b9ef-9903-4c29-8f1c-e3cf04a00fb7");
+      //fd.append("flowid", "0273b9ef-9903-4c29-8f1c-e3cf04a00fb7");
+      fd.append("flowid", temp.FlowId);
       fd.append("taskid", temp.Id);
       fd.append("instanceid", temp.XMBH);
       fd.append("senderid", this.$store.state.user.userId);

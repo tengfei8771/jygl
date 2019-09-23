@@ -534,7 +534,8 @@ export default {
           let fd = new FormData();
           fd.append("systemcode", "localhost");
           fd.append("stepid", temp.StepId);
-          fd.append("flowid", "ABC11A11-EFF2-4588-8FAE-0EE8687874E1");
+          //fd.append("flowid", "ABC11A11-EFF2-4588-8FAE-0EE8687874E1");
+          fd.append("flowid", temp.FlowId);
           fd.append("taskid", temp.Id);
           fd.append("instanceid", temp.BXDH);
           fd.append("senderid", this.$store.state.user.userId);
@@ -573,7 +574,9 @@ export default {
       //t退回
       let fd = new FormData();
       fd.append("systemcode", "localhost");
-      fd.append("flowid", "ABC11A11-EFF2-4588-8FAE-0EE8687874E1");
+      //fd.append("flowid", "ABC11A11-EFF2-4588-8FAE-0EE8687874E1");
+      fd.append("flowid", temp.FlowId);
+      fd.append("groupid", temp.GroupId);
       fd.append("taskid", temp.Id);
       fd.append("instanceid", temp.BXDH);
       fd.append("senderid", this.$store.state.user.userId);
