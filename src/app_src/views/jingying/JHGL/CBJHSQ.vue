@@ -569,6 +569,7 @@ export default {
         XMLE: "",
         XMCODE: "",
         HASINCOME: "",
+        WZJHJE:"",
         JHND: ""
       },
       inServForm: {},
