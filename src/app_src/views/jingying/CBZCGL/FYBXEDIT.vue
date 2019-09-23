@@ -32,7 +32,6 @@
                   :clearable="true"
                   @select="getnode"
                   size="mini"
-                  prop="S_OrgCode"
                 />
               </td>
               <td>费用项目</td>
@@ -297,6 +296,7 @@ export default {
         BXDH: "",
         SQSJ: "",
         DWBM: "",
+        S_OrgCode:this.$store.state.user.orgCode,
         FYXM: "",
         BXSY: "",
         BXJEDX: "",
@@ -448,6 +448,7 @@ export default {
         BXDH: "",
         SQSJ: "",
         DWBM: "",
+        S_OrgCode:this.$store.state.user.orgCode,
         FYXM: "",
         BXSY: "",
         BXJEDX: "",
@@ -575,18 +576,18 @@ export default {
     updateData() {
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
-          if (this.SFCW !=1) {
-            if (this.temp.BXJE > this.TZHJHZJE) {
-              this.$notify({
-                position: "bottom-right",
-                title: "失败",
-                message: "您选的项目是生产计划项目，报销金额不能超过计划总金额！",
-                type: "warning",
-                duration: 3000
-              });
-              return false;
-            }
-          }
+          // if (this.SFCW !=1) {
+          //   if (this.temp.BXJE > this.TZHJHZJE) {
+          //     this.$notify({
+          //       position: "bottom-right",
+          //       title: "失败",
+          //       message: "您选的项目是生产计划项目，报销金额不能超过计划总金额！",
+          //       type: "warning",
+          //       duration: 3000
+          //     });
+          //     return false;
+          //   }
+          // }
           const tempData = Object.assign({}, this.temp); // 这样就不会共用同一个对象
           //   tempData.S_UpdateBy = this.$store.state.user.userId;
           //   //tempData.NOTICE_CONTENT=this.content
@@ -688,6 +689,9 @@ export default {
     this.getOrgDate();
     this.GetFKFSOpions();
     this.getXMList();
+    if(this.$route.query.type=='create'){
+         this.temp.S_OrgCode=this.$store.state.user.orgCode;
+    }
   }
 };
 </script>
