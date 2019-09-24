@@ -56,9 +56,6 @@
           <el-table-column label="账户" prop="YHZH" width="120" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column align="center" width="270" label="操作" fixed="right">
             <template slot-scope="scope">
-              <el-button type="danger" size="mini" @click="handleOpenTZJEDialog(scope.row)">预算调整</el-button>
-              <!-- sd v-if="temp.StepId==='6AF91852-B861-4ABB-A90A-A76803D76208'"-->
-              <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">审批</el-button>
               <el-button type="success" size="mini" @click="handleProcess(scope.row)">查看流程</el-button>
             </template>
           </el-table-column>
@@ -181,13 +178,6 @@
             </el-col>
           </el-row>
         </el-form>
-        <div style="text-align:center">
-          <!-- <el-button @click="editVisible = false">取消</el-button> -->
-          <!-- <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">保存</el-button>
-          <el-button v-else type="primary" @click="updateData">保存</el-button>-->
-          <el-button type="success" @click="handleSubmit(temp)">同意</el-button>
-          <el-button type="danger" @click="handleBack(temp)">不同意</el-button>
-        </div>
       </el-card>
     </el-dialog>
     <el-dialog :visible.sync="workFlowVisible" class="selecttrees" title="查看流程" width="1100px">
@@ -198,68 +188,6 @@
         :src="this.baseUrl+this.frameUrl"
       ></IFRAME>
     </el-dialog>
-    <el-dialog :visible.sync="editTZJEVisible" class="selecttrees" title="调整金额表单" width="1000px">
-      <el-card>
-        <el-form ref="dataFormTZ" :model="tempTZ" label-width="120px" style="width: 99%;">
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="成本计划编号" prop="XMBH">
-                <el-input v-model="tempTZ.XMBH" disabled></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="费用项目" prop="XMMC">
-                <el-input v-model="tempTZ.XMMC" disabled></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="项目总金额" prop="TZQJE">
-                <el-input v-model="tempTZ.TZQJE" disabled></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="已报销金额" prop="YBXJE">
-                <el-input v-model="tempTZ.YBXJE" disabled></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="本次申请金额" prop="BXJE">
-                <el-input v-model="tempTZ.BXJE" disabled></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12"></el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="需调整金额" prop="TZJE">
-                <el-input v-model="tempTZ.TZJE" @input="validataYJK(tempTZ.TZJE)"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="调整时间" prop="TZSJ">
-                <el-date-picker style="width:100%" v-model="tempTZ.TZSJ"></el-date-picker>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12"></el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="24">
-              <el-form-item label="调整说明" prop="TZSM">
-                <el-input v-model="tempTZ.TZSM"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </el-form>
-        <div style="text-align:center;margin-top:20px;">
-          <el-button @click="()=>{this.editTZJEVisible=false;}">取消</el-button>
-          <el-button type="primary" @click="createDataTZ">保存</el-button>
-        </div>
-      </el-card>
-    </el-dialog>
   </div>
 </template>
 
@@ -267,7 +195,7 @@
 import waves from "@/frame_src/directive/waves"; // 水波纹指令
 import { getToken } from "@/frame_src/utils/auth";
 import { parseTime, parseDate } from "@/frame_src/utils/index";
-import { GetFYSPInfo } from "@/app_src/api/jygl/FYBX";
+import { GetFYYBInfo } from "@/app_src/api/jygl/FYBX";
 import {
   executeFlow,
   sendFlow,
@@ -285,17 +213,6 @@ export default {
       textMap: {
         update: "修改费用报销",
         create: "添加费用报销"
-      },
-      tempTZ: {
-        XMBH: "",
-        XMMC: "",
-        TZQJE: "",
-        YBXJE: "",
-        BXJE: "",
-        TZJE: "",
-        TZSM: "",
-        TZSJ: "",
-        CJR: this.$store.state.user.userId
       },
       workFlowVisible: false,
       baseUrl: process.env.BASE_API,
@@ -340,7 +257,7 @@ export default {
     // 查询数据
     getList() {
       this.listLoading = true;
-      GetFYSPInfo(this.listQuery).then(response => {
+      GetFYYBInfo(this.listQuery).then(response => {
         if (response.data.code === 2000) {
           this.list = response.data.items;
           this.total = response.data.total;
@@ -414,91 +331,15 @@ export default {
         this.$refs["dataForm"].clearValidate();
       });
     },
-    handleDelete(row) {
-      this.$confirm("确认退回记录吗?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          //   const query = { S_ID: row.S_Id };
-          //   deleteTaxOrg(query).then(response => {
-          //     this.message = response.data.message;
-          //     this.title = "失败";
-          //     this.type = "error";
-          //     if (response.data.code === 2000) {
-          //       // const index = this.list.indexOf(row)
-          //       // this.list.splice(index, 1)
-          this.getList();
-          this.title = "成功";
-          this.type = "success";
-          //     }
-          this.$notify({
-            position: "bottom-right",
-            title: this.title,
-            message: this.message,
-            type: this.type,
-            duration: 2000
-          });
-          //   });
-        })
-        .catch(() => {});
-    },
-    createDataTZ() {
-      // 创建调整单
-      this.$refs["dataFormTZ"].validate(valid => {
-        if (valid) {
-          CreateInfo(this.tempTZ).then(response => {
-            var message = response.data.message;
-            var title = "失败";
-            var type = "error";
-            if (response.data.code === 2000) {
-              this.getList();
-              title = "成功";
-              type = "保存成功";
-            } else {
-              this.$notify({
-                position: "bottom-right",
-                title:type,
-                message: "保存失败："+message,
-                type: type,
-                duration: 3000
-              });
-            }
-          });
-          this.editTZJEVisible = false;
-        }
-      });
-    },
+    
+    
     validataYJK(e) {
       // 通过正则过滤小数点后两位
       if (!/^-*(([0-9]*)|(([0]\.\d{0,2}|[1-9][0-9]*\.\d{0,2})))$/.test(e)) {
         this.tempTZ.TZJE = "";
       }
     },
-    resetTempTZ() {
-      this.tempTZ.XMBH = "";
-      this.tempTZ.XMMC = "";
-      this.tempTZ.TZQJE = "";
-      this.tempTZ.YBXJE = "";
-      this.tempTZ.BXJE = "";
-      this.tempTZ.TZJE = "";
-      this.tempTZ.TZSM = "";
-      this.tempTZ.TZSJ = "";
-    },
-    handleOpenTZJEDialog(row) {
-      this.resetTempTZ();
-      this.tempTZ.XMBH = row.XMBH;
-      this.tempTZ.XMMC = row.FYXM;
-      this.tempTZ.TZQJE = row.TZHJHZJE; //TZHJHZJE
-      this.tempTZ.YBXJE = row.YBXJE;
-      this.tempTZ.BXJE = row.BXJE;
-      this.tempTZ.TZSJ = new Date(Date.now());
-      // this.tempTZ.TZJE="";
-      // this.tempTZ.TZSM="";
-      // this.tempTZ.CJR=this.$store.state.user.userId;
-      this.editTZJEVisible = true;
-    },
+    
     updateData() {
       this.$refs["dataForm"].validate(valid => {
         if (valid) {

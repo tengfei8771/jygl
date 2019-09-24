@@ -18,21 +18,23 @@
             <tr>
               <td>单位部门</td>
               <td width="25%">
-                <treeselect
-                  v-model="temp.S_OrgCode"
-                  :multiple="false"
-                  :options="treeData"
-                  :load-options="loadOptions"
-                  placeholder="请选择部门"
-                  :normalizer="normalizer"
-                  :disable-branch-nodes="false"
-                  noResultsText="未搜索到结果"
-                  noChildrenText=" "
-                  style="font-size:14px;"
-                  :clearable="true"
-                  @select="getnode"
-                  size="mini"
-                />
+                <el-form-item prop="S_OrgCode">
+                  <treeselect
+                    v-model="temp.S_OrgCode"
+                    :multiple="false"
+                    :options="treeData"
+                    :load-options="loadOptions"
+                    placeholder="请选择部门"
+                    :normalizer="normalizer"
+                    :disable-branch-nodes="false"
+                    noResultsText="未搜索到结果"
+                    noChildrenText=" "
+                    style="font-size:14px;"
+                    :clearable="true"
+                    @select="getnode"
+                    size="mini"
+                  />
+                </el-form-item>
               </td>
               <td>费用项目</td>
               <td>
@@ -44,88 +46,112 @@
                     :value="item.value"
                   ></el-option>
                 </el-select>-->
-                <el-input v-model="temp.FYXM" props="FYXM" disabled style="width:78%;"></el-input>
+                <el-form-item prop="FYXM" style="width:77%;float:left;">
+                  <el-input v-model="temp.FYXM" props="FYXM" disabled></el-input>
+                </el-form-item>
                 <el-button
                   size="small"
                   type="primary"
                   @click="innerVisible=true"
-                  style="width:20%;margin-left:1%;"
+                  style="width:20%;margin-left:1%;clear:both;"
                 >选择项目</el-button>
               </td>
             </tr>
             <tr>
               <td>报销事由</td>
               <td :colspan="3">
-                <el-input v-model="temp.BXSY" type="textarea" :rows="3"></el-input>
+                <el-form-item prop="BXSY">
+                  <el-input v-model="temp.BXSY" type="textarea" :rows="3"></el-input>
+                </el-form-item>
               </td>
             </tr>
             <tr>
               <td>报销金额小写</td>
               <td>
                 <!-- <el-input v-model.number="temp.BXJE" @change="CapitalChinese(temp.BXJE)"></el-input> -->
-                <el-input
-                  @input="oninput(temp.BXJE)"
-                  style="width:100%"
-                  placeholder
-                  v-model="temp.BXJE"
-                ></el-input>
+                <el-form-item prop="BXJE">
+                  <el-input
+                    @input="oninput(temp.BXJE)"
+                    style="width:100%"
+                    placeholder
+                    v-model="temp.BXJE"
+                  ></el-input>
+                </el-form-item>
               </td>
               <td>报销金额大写</td>
               <td>
-                <el-input v-model="temp.BXJEDX"></el-input>
+                <el-form-item prop="BXJEDX">
+                  <el-input v-model="temp.BXJEDX"></el-input>
+                </el-form-item>
               </td>
             </tr>
             <tr>
               <td>原借款金额（小写）</td>
               <td>
-                <el-input v-model="temp.YJKJE" @input="validataYJK(temp.YJKJE)"></el-input>
+                <el-form-item prop="YJKJE">
+                  <el-input v-model="temp.YJKJE" @input="validataYJK(temp.YJKJE)"></el-input>
+                </el-form-item>
               </td>
               <td>现付款（收回）金额（小写）</td>
               <td>
-                <el-input v-model="temp.XFKJE" @input="validataXFK(temp.XFKJE)"></el-input>
+                <el-form-item prop="XFKJE">
+                  <el-input v-model="temp.XFKJE" @input="validataXFK(temp.XFKJE)"></el-input>
+                </el-form-item>
               </td>
             </tr>
             <tr>
               <td>付款方式</td>
               <td>
-                <el-select style="width:100%;" v-model="temp.FKFS">
-                  <el-option
-                    v-for="(item,key) in FKFSOptions"
-                    :key="key"
-                    :label="item.Name"
-                    :value="item.Code"
-                  ></el-option>
-                </el-select>
+                <el-form-item prop="FKFS">
+                  <el-select style="width:100%;" v-model="temp.FKFS">
+                    <el-option
+                      v-for="(item,key) in FKFSOptions"
+                      :key="key"
+                      :label="item.Name"
+                      :value="item.Code"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
               </td>
               <td>附件张数</td>
               <td>
-                <el-input v-model="temp.FJZS"></el-input>
+                <el-form-item prop="FJZS">
+                  <el-input v-model="temp.FJZS"></el-input>
+                </el-form-item>
               </td>
             </tr>
             <tr>
               <td>收款单位名称</td>
               <td>
-                <el-input v-model="temp.SKDW"></el-input>
+                <el-form-item prop="SKDW">
+                  <el-input v-model="temp.SKDW"></el-input>
+                </el-form-item>
               </td>
               <td>开户行</td>
               <td>
-                <el-input v-model="temp.KHH"></el-input>
+                <el-form-item prop="KHH">
+                  <el-input v-model="temp.KHH"></el-input>
+                </el-form-item>
               </td>
             </tr>
             <tr>
               <td>账号</td>
               <td>
-                <el-input v-model="temp.YHZH"></el-input>
+                <el-form-item prop="YHZH">
+                  <el-input v-model="temp.YHZH"></el-input>
+                </el-form-item>
               </td>
               <td>申请时间</td>
               <td>
-                <el-date-picker
-                  type="date"
-                  v-model="temp.SQSJ"
-                  placeholder="申请时间"
-                  style="width:100%;"
-                  value-format="yyyy-MM-dd"
-                ></el-date-picker>
+                <el-form-item prop="SQSJ">
+                  <el-date-picker
+                    type="date"
+                    v-model="temp.SQSJ"
+                    placeholder="申请时间"
+                    style="width:100%;"
+                    value-format="yyyy-MM-dd"
+                  ></el-date-picker>
+                </el-form-item>
               </td>
             </tr>
           </tbody>
@@ -296,8 +322,9 @@ export default {
         BXDH: "",
         SQSJ: "",
         DWBM: "",
-        S_OrgCode:this.$store.state.user.orgCode,
+        S_OrgCode: this.$store.state.user.orgCode,
         FYXM: "",
+        XMBH: "",
         BXSY: "",
         BXJEDX: "",
         BXJE: 0,
@@ -349,12 +376,13 @@ export default {
       total: 0,
       listLoading: false,
       SFCW: 0,
-      TZHJHZJE:0,//计划成本调整后总金额
+      TZHJHZJE: 0, //计划成本调整后总金额
       infiledList: [],
       rules: {
-        BXJE: [
-          { required: true, message: "请输报销金额小写", trigger: "change" }
-        ]
+        BXJE: [{ required: true, message: " ", trigger: "change" }],
+        FYXM: [{ required: true, message: " ", trigger: "change" }],
+        BXSY: [{ required: true, message: " ", trigger: "change" }],
+        BXJE: [{ required: true, message: " ", trigger: "change" }]
       }
     };
   },
@@ -412,7 +440,7 @@ export default {
       this.temp.FYXM = row.XMMC;
       this.temp.XMBH = row.XMBH;
       this.SFCW = row.SFCW; //是否财务下达
-      this.TZHJHZJE=row.TZHJHZJE;//计划成本调整后总金额
+      this.TZHJHZJE = row.TZHJHZJE; //计划成本调整后总金额
       this.innerVisible = false;
     },
     getnode(node, instanceId) {
@@ -448,8 +476,9 @@ export default {
         BXDH: "",
         SQSJ: "",
         DWBM: "",
-        S_OrgCode:this.$store.state.user.orgCode,
+        S_OrgCode: this.$store.state.user.orgCode,
         FYXM: "",
+        XMBH: "",
         BXSY: "",
         BXJEDX: "",
         BXJE: "",
@@ -530,9 +559,21 @@ export default {
       e.target.value = e.target.value.match(/^\d*(\.?\d{0,1})/g)[0] || null;
     },
     createData() {
+      console.log(this.temp);
       // // 创建
+      if (this.temp.FYXM == "") {
+        this.$notify({
+          position: "bottom-right",
+          title: "提示",
+          message: "请选择费用项目",
+          type: "warning",
+          duration: 3000
+        });
+        return false;
+      }
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
+          console.log();
           if (this.SFCW !=1) {
             if (this.temp.BXJE > this.TZHJHZJE) {
               this.$notify({
@@ -545,9 +586,7 @@ export default {
               return false;
             }
           }
-          let tempData = Object.assign({}, this.temp);
-          tempData.CJR = this.$store.state.user.userId;
-          CreateInfo(tempData).then(response => {
+          CreateInfo(this.temp).then(response => {
             if (response.data.code === 2000) {
               this.$notify({
                 position: "bottom-right",
@@ -576,18 +615,18 @@ export default {
     updateData() {
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
-          // if (this.SFCW !=1) {
-          //   if (this.temp.BXJE > this.TZHJHZJE) {
-          //     this.$notify({
-          //       position: "bottom-right",
-          //       title: "失败",
-          //       message: "您选的项目是生产计划项目，报销金额不能超过计划总金额！",
-          //       type: "warning",
-          //       duration: 3000
-          //     });
-          //     return false;
-          //   }
-          // }
+          if (this.SFCW!=1) {//如果是财务下达的项目金额才可以超
+            if (this.temp.BXJE > this.TZHJHZJE) {
+              this.$notify({
+                position: "bottom-right",
+                title: "失败",
+                message: "您选的项目是生产计划项目，报销金额不能超过计划总金额！",
+                type: "warning",
+                duration: 3000
+              });
+              return false;
+            }
+          }
           const tempData = Object.assign({}, this.temp); // 这样就不会共用同一个对象
           //   tempData.S_UpdateBy = this.$store.state.user.userId;
           //   //tempData.NOTICE_CONTENT=this.content
@@ -679,18 +718,24 @@ export default {
     }
   },
   mounted() {
-    //console.log(this.$refs.jizhun.offsetWidth);
+    //console.log(this.$store.state.user.orgName);
     //  console.log(this.$refs.orgtree.offsetWidth);
   },
   created() {
     // this.listLoading = false;
     //this.temp = this.$route.query.row;
-    this.temp = Object.assign({}, this.$route.query.row); // copy obj
+
     this.getOrgDate();
     this.GetFKFSOpions();
     this.getXMList();
-    if(this.$route.query.type=='create'){
-         this.temp.S_OrgCode=this.$store.state.user.orgCode;
+    if (this.$route.query.type == "create") {
+      this.temp.SQSJ = new Date(Date.now());
+      this.temp.S_OrgCode = this.$store.state.user.orgCode;
+      this.temp.DWBM=this.$store.state.user.orgName;
+    } else {
+      this.temp = Object.assign({}, this.$route.query.row); // copy obj
+      this.SFCW=this.$route.query.row.SFCW;//如果是财务下达的项目金额才可以超
+      this.TZHJHZJE=this.$route.query.row.TZHJHZJE;//成本计划调整后总金额
     }
   }
 };
@@ -730,6 +775,12 @@ export default {
   text-align: right;
   border: 1px solid #a8aeb2;
   padding: 5px 10px;
+}
+#FYBXEDIT .el-form-item {
+  margin-bottom: 0px;
+}
+#FYBXEDIT /deep/.el-form-item__content {
+  margin-left: 0px !important;
 }
 </style>
 

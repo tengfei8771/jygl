@@ -42,3 +42,10 @@ export function GetFYSPInfo(query) {
     params: query
   })
 }
+export function GetFYYBInfo(query) { 
+  return request({
+    url: '/FYBX/GetFYYBInfo',
+    method: 'get',
+    params: query
+  })
+}

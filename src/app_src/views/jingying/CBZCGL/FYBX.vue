@@ -109,7 +109,12 @@
       </el-col>
     </el-row>
     <el-dialog :visible.sync="workFlowVisible" class="selecttrees" title="查看流程" width="1100px">
-     <IFRAME STYLE="width:1050px;height:600px;" id="roadflow_Completed" name="roadflow_Completed" :src="this.baseUrl+this.frameUrl"></IFRAME>
+      <IFRAME
+        style="width:1050px;height:600px;"
+        id="roadflow_Completed"
+        name="roadflow_Completed"
+        :src="this.baseUrl+this.frameUrl"
+      ></IFRAME>
     </el-dialog>
   </div>
 </template>
@@ -126,7 +131,7 @@ import {
   revokeFlow,
   flowProcess
 } from "@/app_src/api/jygl/WorkFlow";
-
+import { UpdateAddCBJHJE, UpdateDesCBJHJE } from "@/app_src/api/jygl/CBJHSQ";
 export default {
   name: "FYBX",
   directives: {
@@ -135,8 +140,8 @@ export default {
   data() {
     return {
       workFlowVisible: false,
-       baseUrl:process.env.BASE_API,
-       frameUrl:"",
+      baseUrl: process.env.BASE_API,
+      frameUrl: "",
       temp: {
         S_ID: "",
         BXDH: "",
@@ -206,9 +211,14 @@ export default {
       let fd = new FormData();
       fd.append("instanceid", row.BXDH);
       flowProcess(fd).then(repon => {
-      if (repon.data.code === 2000) {
-        this.frameUrl="/roadflowcore/FlowTask/Detail?flowid=" + repon.data.data.flowId + "&groupid=" + repon.data.data.groupId 
-      }});
+        if (repon.data.code === 2000) {
+          this.frameUrl =
+            "/roadflowcore/FlowTask/Detail?flowid=" +
+            repon.data.data.flowId +
+            "&groupid=" +
+            repon.data.data.groupId;
+        }
+      });
       this.workFlowVisible = true;
     },
 
@@ -257,14 +267,38 @@ export default {
       fd.append("formtype", 1);
       sendFlow(fd).then(repon => {
         if (repon.data.code === 2000) {
+          let bxtemp = {
+            BXJE: row.BXJE,
+            XMBH: row.XMBH
+          };
+          UpdateAddCBJHJE(bxtemp).then(res => {
+            if (res.data.code === 2000) {
+              this.$notify({
+                position: "bottom-right",
+                title: "成功！",
+                message: "发起流程成功",
+                type: "success",
+                duration: 2000
+              });
+              this.getList();
+            } else {
+              this.$notify({
+                position: "bottom-right",
+                title: "失败！",
+                message: "业务数据更新失败，系统数据将回滚",
+                type: "warning",
+                duration: 2000
+              });
+            }
+          });
+        } else {
           this.$notify({
             position: "bottom-right",
-            title: "成功！",
-            message: "发起流程成功",
-            type: "success",
+            title: "失败！",
+            message: "流程提交时出现错误！请重新提交！",
+            type: "warning",
             duration: 2000
           });
-          this.getList();
         }
       });
     },
@@ -276,14 +310,30 @@ export default {
       fd.append("formtype", 1);
       revokeFlow(fd).then(repon => {
         if (repon.data.code === 2000) {
-          this.$notify({
-            position: "bottom-right",
-            title: "成功！",
-            message: "流程撤回成功！",
-            type: "success",
-            duration: 2000
+          let bxtemp = {
+            BXJE: row.BXJE,
+            XMBH: row.XMBH
+          };
+          UpdateDesCBJHJE(bxtemp).then(res => {
+            if (res.data.code === 2000) {
+              this.$notify({
+                position: "bottom-right",
+                title: "成功！",
+                message: "流程撤回成功！",
+                type: "success",
+                duration: 2000
+              });
+              this.getList();
+            } else {
+              this.$notify({
+                position: "bottom-right",
+                title: "失败！",
+                message: "业务数据更新失败，系统数据将回滚",
+                type: "warning",
+                duration: 2000
+              });
+            }
           });
-          this.getList();
         } else {
           this.$notify({
             position: "bottom-right",

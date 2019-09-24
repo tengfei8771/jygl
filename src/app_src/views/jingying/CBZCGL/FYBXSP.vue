@@ -275,6 +275,7 @@ import {
   flowProcess
 } from "@/app_src/api/jygl/WorkFlow";
 import { CreateInfo } from "@/app_src/api/jygl/CBJHTZ";
+import { UpdateDesCBJHJE } from "@/app_src/api/jygl/CBJHSQ";
 export default {
   name: "FYBXSP",
   directives: {
@@ -585,15 +586,30 @@ export default {
       fd.append("formtype", 1);
       backFlow(fd).then(repon => {
         if (repon.data.code === 2000) {
-          this.$notify({
-            position: "bottom-right",
-            title: "成功！",
-            message: "处理成功",
-            type: "success",
-            duration: 2000
+          let bxtemp = {
+            BXJE: temp.BXJE,
+            XMBH: temp.XMBH
+          };
+          UpdateDesCBJHJE(bxtemp).then(res => {
+            if (res.data.code === 2000) {
+              this.$notify({
+                position: "bottom-right",
+                title: "成功！",
+                message: "流程撤回成功！",
+                type: "success",
+                duration: 2000
+              });
+              this.getList();
+            } else {
+              this.$notify({
+                position: "bottom-right",
+                title: "失败！",
+                message: "业务数据更新失败，系统数据将回滚",
+                type: "warning",
+                duration: 2000
+              });
+            }
           });
-          this.editVisible = false;
-          this.getList();
         } else {
           this.$notify({
             position: "bottom-right",
