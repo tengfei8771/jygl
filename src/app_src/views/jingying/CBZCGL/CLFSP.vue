@@ -228,18 +228,26 @@
       </el-card>
     </el-dialog>
     <el-dialog :visible.sync="workFlowVisible" class="selecttrees" title="查看流程" width="1000px">
-      <img src="../../../img/workflow2.png" style="width:980px;" />
+      <IFRAME
+        style="width:900px;height:600px;"
+        id="roadflow_Completed"
+        name="roadflow_Completed"
+        :src="this.baseUrl+this.frameUrl"
+      ></IFRAME>
     </el-dialog>
   </div>
 </template>
 
 <script>
 import { GetCLXCInfo, GetSPInfo, GetSPXCInfo } from "@/app_src/api/jygl/CLFBX";
-import { sendFlow, backFlow } from "@/app_src/api/jygl/WorkFlow";
+import { sendFlow, backFlow, flowProcess } from "@/app_src/api/jygl/WorkFlow";
+import { UpdateAddCBJHJE, UpdateDesCBJHJE } from "@/app_src/api/jygl/CBJHSQ";
 export default {
   name: "SWKC",
   data() {
     return {
+      baseUrl: process.env.BASE_API,
+      frameUrl: "",
       infiledList: [],
       fildtps: [{ text: "设备", value: "1" }, { text: "材料", value: "2" }],
       textMap: {
@@ -313,8 +321,20 @@ export default {
         this.$refs["dataForm"].resetFields();
       }
     },
-    handleProcess() {
-      this.workFlowVisible = true;
+    handleProcess(row) {
+      let fd = new FormData();
+      fd.append("instanceid", row.CLBH);
+      flowProcess(fd).then(repon => {
+        console.log(repon.data.code);
+        if (repon.data.code === 2000) {
+          this.frameUrl =
+            "/roadflowcore/FlowTask/Detail?flowid=" +
+            repon.data.data.flowId +
+            "&groupid=" +
+            repon.data.data.groupId;
+        }
+        this.workFlowVisible = true;
+      });
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row); // copy obj
@@ -425,7 +445,7 @@ export default {
       fd.append("instanceid", this.temp.CLBH);
       fd.append("senderid", this.$store.state.user.userId);
       fd.append("tasktitle", this.temp.CLBH + "差旅报销审批");
-      fd.append("formtype",2);
+      fd.append("formtype", 2);
       fd.append("comment", "");
       fd.append("type", "submit");
       fd.append("isFreeSend", false);
@@ -438,7 +458,7 @@ export default {
             type: "success",
             duration: 2000
           });
-          this.editVisible=false;
+          this.editVisible = false;
           this.getList();
         } else {
           this.$notify({
@@ -455,21 +475,38 @@ export default {
       let fd = new FormData();
       fd.append("systemcode", "localhost");
       fd.append("flowid", this.temp.FlowId);
-      fd.append("taskid", this.temp.Id);//传记录表ID字段
+      fd.append("taskid", this.temp.Id); //传记录表ID字段
       fd.append("instanceid", this.temp.InstanceId);
       fd.append("senderid", this.$store.state.user.userId);
       fd.append("tasktitle", this.temp.CLBH + "差旅报销审批退回");
       fd.append("comment", "");
-      fd.append("groupid",this.temp.GroupId)
+      fd.append("groupid", this.temp.GroupId);
       fd.append("formtype", 2);
       backFlow(fd).then(repon => {
         if (repon.data.code === 2000) {
-          this.$notify({
-            position: "bottom-right",
-            title: "成功！",
-            message: "处理成功",
-            type: "success",
-            duration: 2000
+          let bxtemp = {
+            BXJE: this.temp.HJJE,
+            XMBH: this.temp.XMBH
+          };
+          UpdateDesCBJHJE(bxtemp).then(res => {
+            if (res.data.code === 2000) {
+              this.$notify({
+                position: "bottom-right",
+                title: "成功！",
+                message: "发起流程成功",
+                type: "success",
+                duration: 2000
+              });
+              this.getList();
+            } else {
+              this.$notify({
+                position: "bottom-right",
+                title: "失败！",
+                message: "业务数据更新失败，系统数据将回滚",
+                type: "warning",
+                duration: 2000
+              });
+            }
           });
           this.editVisible = false;
           this.getList();

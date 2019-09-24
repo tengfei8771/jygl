@@ -81,7 +81,7 @@
                 type="warning"
                 size="mini"
                 @click="sendPro(scope.row)"
-                v-if="scope.row.PROCESS_STATE===0"
+                v-if="scope.row.PROCESS_STATE===0||scope.row.PROCESS_STATE===3"
               >提交</el-button>
               <el-button
                 type="success"
@@ -92,7 +92,8 @@
               <el-button
                 type="info"
                 size="mini"
-                v-if="scope.row.PROCESS_STATE!=2&&scope.row.PROCESS_STATE!=0"
+                v-if="scope.row.PROCESS_STATE===1"
+                @click="revokeSubmit(scope.row)"
               >撤回</el-button>
               <el-button
                 type="success"
@@ -287,7 +288,12 @@
       </el-card>
     </el-dialog>
     <el-dialog :visible.sync="workFlowVisible" class="selecttrees" title="查看流程" width="1000px">
-      <img src="../../../img/workflow2.png" style="width:980px;" />
+      <IFRAME
+        style="width:950px;height:720px;"
+        id="roadflow_Completed"
+        name="roadflow_Completed"
+        :src="this.baseUrl+this.frameUrl"
+      ></IFRAME>
     </el-dialog>
   </div>
 </template>
@@ -295,7 +301,7 @@
 <script>
 import { GetInfo, CreateInfo, GetCLXCInfo } from "@/app_src/api/jygl/CLFBX";
 import { parseTime } from "@/frame_src/utils/index";
-import { sendFlow } from "@/app_src/api/jygl/WorkFlow";
+import { sendFlow, revokeFlow, flowProcess } from "@/app_src/api/jygl/WorkFlow";
 import { UpdateAddCBJHJE, UpdateDesCBJHJE } from "@/app_src/api/jygl/CBJHSQ";
 export default {
   name: "SWKC",
@@ -304,6 +310,8 @@ export default {
   },
   data() {
     return {
+      baseUrl: process.env.BASE_API,
+      frameUrl: "",
       infiledList: [],
       listQuery: {
         CLBH: "",
@@ -425,12 +433,58 @@ export default {
           });
         } else {
           this.$notify({
+            position: "bottom-right",
+            title: "失败！",
+            message: "流程提交时出现错误！请重新提交！",
+            type: "warning",
+            duration: 2000
+          });
+        }
+      });
+    },
+    revokeSubmit(row) {
+      let fd = new FormData();
+      fd.append("instanceid", row.CLBH);
+      fd.append("senderid", this.$store.state.user.userId);
+      fd.append("formtype", 2);
+      revokeFlow(fd).then(repon => {
+        if (repon.data.code === 2000) {
+          let bxtemp = {
+            BXJE: row.HJJE,
+            XMBH: row.XMBH
+          };
+          UpdateDesCBJHJE(bxtemp).then(res => {
+            if (res.data.code === 2000) {
+              this.$notify({
+                position: "bottom-right",
+                title: "成功！",
+                message: "流程撤回成功！",
+                type: "success",
+                duration: 2000
+              });
+              this.getList();
+            } else {
+              this.$notify({
                 position: "bottom-right",
                 title: "失败！",
-                message: "流程提交时出现错误！请重新提交！",
+                message: "业务数据更新失败，系统数据将回滚",
                 type: "warning",
                 duration: 2000
               });
+            }
+          });
+          this.editVisible = false;
+          this.getList();
+
+          this.getList();
+        } else {
+          this.$notify({
+            position: "bottom-right",
+            title: "失败!",
+            message: repon.data.message,
+            type: "error",
+            duration: 2000
+          });
         }
       });
     },
@@ -441,8 +495,20 @@ export default {
       } // 'el-button--primary is-plain'// 'warning-row'
       return "";
     },
-    handleProcess() {
-      this.workFlowVisible = true;
+    handleProcess(row) {
+      let fd = new FormData();
+      fd.append("instanceid", row.CLBH);
+      flowProcess(fd).then(repon => {
+        console.log(repon.data.code);
+        if (repon.data.code === 2000) {
+          this.frameUrl =
+            "/roadflowcore/FlowTask/Detail?flowid=" +
+            repon.data.data.flowId +
+            "&groupid=" +
+            repon.data.data.groupId;
+        }
+        this.workFlowVisible = true;
+      });
     },
     handleSizeChange() {},
     handleCurrentChange() {},
