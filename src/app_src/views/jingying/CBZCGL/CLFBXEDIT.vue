@@ -318,7 +318,7 @@ export default {
         CCKSSJ: "",
         CCJSSJ: "",
         CCTS: 0,
-        DDRQ:"",
+        DDRQ: "",
         HJJE: "",
         HJDX: "",
         YJCLF: "",
@@ -371,6 +371,7 @@ export default {
     deleteRow(index, rows) {
       //删除改行
       this.temp.XCList.splice(index, 1);
+      this.getTotal();
     },
     addRow(tableData, event) {
       tableData.push({ fildna: "", fildtp: "", remark: "" });
@@ -415,7 +416,7 @@ export default {
         CFSJ: "",
         CFDD: "",
         CCDD: "",
-        DDRQ:"",
+        DDRQ: "",
         CQTS: 0,
         CQBZ: 0,
         BZJE: 0,
@@ -433,6 +434,7 @@ export default {
     delRow(key) {
       this.temp.XCList.splice(key, 1);
       this.pickerOptionsList.splice(key, 1);
+      this.getTotal();
     },
     showRow(row) {
       //赋值给radio
@@ -510,7 +512,7 @@ export default {
         SKRXM: "",
         CJR: "",
         CJSJ: "",
-        DDRQ:"",
+        DDRQ: "",
         CJSJ: "",
         BJSJ: "",
         userId: this.$store.state.user.userId,
@@ -708,7 +710,6 @@ export default {
                       });
                     }
                   });
-                  
                 } else {
                   this.$notify({
                     position: "bottom-right",
