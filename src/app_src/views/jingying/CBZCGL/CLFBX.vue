@@ -43,25 +43,25 @@
           highlight-current-row
           style="width: 100%"
         >
-          <el-table-column label="报销单号" prop="CLBH" fixed="left"></el-table-column>
-          <el-table-column label="申请单位(部门)" prop="DWBM" fixed="left"></el-table-column>
-          <el-table-column label="申请时间" fixed="left">
+          <el-table-column label="报销单号" prop="CLBH" width="170" fixed="left"></el-table-column>
+          <el-table-column label="申请单位(部门)" prop="DWBM" width="150"  fixed="left"></el-table-column>
+          <el-table-column label="申请时间" width="150"  fixed="left">
             <template slot-scope="scope">{{scope.row.CJSJ|parseTime}}</template>
           </el-table-column>
-          <el-table-column label="出差人" prop="CCXM" fixed="left"></el-table-column>
-          <el-table-column label="出差事由" prop="CCSY"></el-table-column>
-          <el-table-column label="出差开始时间">
+          <el-table-column label="出差人" width="100"  prop="CCXM" fixed="left"></el-table-column>
+          <el-table-column label="出差事由" width="150" prop="CCSY"></el-table-column>
+          <el-table-column label="出差开始时间" width="150">
             <template slot-scope="scope">{{scope.row.CCKSSJ|parseTime}}</template>
           </el-table-column>
-          <el-table-column label="出差结束时间">
+          <el-table-column label="出差结束时间" width="150">
             <template slot-scope="scope">{{scope.row.CCJSSJ|parseTime}}</template>
           </el-table-column>
-          <el-table-column label="出差天数" prop="CCTS"></el-table-column>
-          <el-table-column label="报销金额" prop="HJJE"></el-table-column>
-          <el-table-column label="报销金额(大写)" prop="HJDX"></el-table-column>
-          <el-table-column label="预借差旅费" prop="YJCLF"></el-table-column>
-          <el-table-column label="应退补金额" prop="YTBJE"></el-table-column>
-          <el-table-column align="center" width="230" label="操作" fixed="right">
+          <el-table-column label="出差天数" width="120" prop="CCTS"></el-table-column>
+          <el-table-column label="报销金额" width="120" prop="HJJE"></el-table-column>
+          <el-table-column label="报销金额(大写)" width="120" prop="HJDX"></el-table-column>
+          <el-table-column label="预借差旅费" width="120" prop="YJCLF"></el-table-column>
+          <el-table-column label="应退补金额" width="120" prop="YTBJE"></el-table-column>
+          <el-table-column align="center" width="300" label="操作" fixed="right">
             <template slot-scope="scope">
               <!-- <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">修改</el-button>
               <el-button type="danger" size="mini" @click="handleDelete(scope.row)">删除</el-button>-->
@@ -69,13 +69,13 @@
                 type="primary"
                 size="mini"
                 @click="handleUpdate(scope.row)"
-                v-if="scope.row.PROCESS_STATE===0"
+                v-if="scope.row.PROCESS_STATE===0||scope.row.PROCESS_STATE===3"
               >修改</el-button>
               <el-button
                 type="danger"
                 size="mini"
                 @click="handleDelete(scope.row)"
-                v-if="scope.row.PROCESS_STATE===0"
+                v-if="scope.row.PROCESS_STATE===0||scope.row.PROCESS_STATE===3"
               >删除</el-button>
               <el-button
                 type="warning"
@@ -299,7 +299,12 @@
 </template>
 
 <script>
-import { GetInfo, CreateInfo, GetCLXCInfo } from "@/app_src/api/jygl/CLFBX";
+import {
+  GetInfo,
+  CreateInfo,
+  GetCLXCInfo,
+  DeleteInfo
+} from "@/app_src/api/jygl/CLFBX";
 import { parseTime } from "@/frame_src/utils/index";
 import { sendFlow, revokeFlow, flowProcess } from "@/app_src/api/jygl/WorkFlow";
 import { UpdateAddCBJHJE, UpdateDesCBJHJE } from "@/app_src/api/jygl/CBJHSQ";
@@ -499,7 +504,6 @@ export default {
       let fd = new FormData();
       fd.append("instanceid", row.CLBH);
       flowProcess(fd).then(repon => {
-        console.log(repon.data.code);
         if (repon.data.code === 2000) {
           this.frameUrl =
             "/roadflowcore/FlowTask/Detail?flowid=" +
@@ -538,26 +542,25 @@ export default {
         type: "warning"
       })
         .then(() => {
-          //   const query = { S_ID: row.S_Id };
-          //   deleteTaxOrg(query).then(response => {
-          //     this.message = response.data.message;
-          //     this.title = "失败";
-          //     this.type = "error";
-          //     if (response.data.code === 2000) {
-          //       // const index = this.list.indexOf(row)
-          //       // this.list.splice(index, 1)
-          this.getList();
-          this.title = "成功";
-          this.type = "success";
-          //     }
-          this.$notify({
-            position: "bottom-right",
-            title: this.title,
-            message: this.message,
-            type: this.type,
-            duration: 2000
+          const query = { CLBH: row.CLBH };
+          DeleteInfo(query).then(response => {
+            this.message = response.data.message;
+            this.title = "失败";
+            this.type = "error";
+            if (response.data.code === 2000) {
+              this.getList();
+              this.title = "成功";
+              this.type = "success";
+              this.message="删除成功";
+            }
+            this.$notify({
+              position: "bottom-right",
+              title: this.title,
+              message: this.message,
+              type: this.type,
+              duration: 2000
+            });
           });
-          //   });
         })
         .catch(() => {});
     },

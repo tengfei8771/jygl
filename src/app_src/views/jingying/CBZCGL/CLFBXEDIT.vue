@@ -147,7 +147,7 @@
                 <el-button
                   type="warning"
                   size="mini"
-                  @click="delRow($index)"
+                  @click="delRow(item)"
                   v-else-if="!item.XCID"
                 >移除</el-button>
               </td>
@@ -291,6 +291,7 @@ export default {
   },
   data() {
     return {
+      rindex:0,
       list: [],
       infiledList: [],
       treeData: [],
@@ -369,6 +370,8 @@ export default {
   },
   methods: {
     deleteRow(index, rows) {
+      console.log(index);
+      console.log(rows);
       //删除改行
       this.temp.XCList.splice(index, 1);
     },
@@ -389,7 +392,6 @@ export default {
       }
     },
     startTime1(index) {
-      console.log(index);
       let pickerOptions = {
         disabledDate: time => {
           return time.getTime() < this.temp.XCList[index].CFRQ;
@@ -410,6 +412,7 @@ export default {
       }
     },
     addRow() {
+      this.rindex=this.rindex+1;
       let obj = {
         CFRQ: "",
         CFSJ: "",
@@ -421,7 +424,7 @@ export default {
         BZJE: 0,
         BFB: "",
         TS: 0,
-        HCFY: "",
+        HCFY: 0,
         FCLB: "",
         FCXB: "",
         FCJE: 0,
@@ -430,9 +433,21 @@ export default {
       };
       this.temp.XCList.push(obj);
     },
-    delRow(key) {
-      this.temp.XCList.splice(key, 1);
-      this.pickerOptionsList.splice(key, 1);
+    delRow(item) {
+      if(this.temp.XCList.length===1){
+         this.$notify({
+            position: "bottom-right",
+            title: "提示",
+            message: "必须有一条行程！",
+            type: "warning",
+            duration: 2000
+          });
+          return false;
+      }
+      let _index=this.temp.XCList.indexOf(item);
+      this.temp.XCList.splice(_index, 1);
+      this.pickerOptionsList.splice(_index, 1);
+      this.getTotal();
     },
     showRow(row) {
       //赋值给radio
@@ -574,7 +589,6 @@ export default {
           let temp = {
             XCID: data.XCID
           };
-          console.log(temp);
           DeleteXCInfo(temp).then(response => {
             if (response.data.code === 2000) {
               this.$notify({
@@ -655,9 +669,7 @@ export default {
       });
     },
     loadOptions({ action, parentNode, callback }) {
-      console.log(action);
       if (action === LOAD_CHILDREN_OPTIONS) {
-        console.log(parentNode);
         if (parentNode.children == null) {
           parentNode.children = undefined;
           callback();
@@ -746,7 +758,6 @@ export default {
         this.temp.HJJE = total;
         this.temp.HJDX = CapitalChinese(total);
         //this.CapitalChinese(total);
-        //console.log(item);
       });
     },
     CapitalChinese(data) {
@@ -817,7 +828,6 @@ export default {
           } else {
             heightStr += "万";
           }
-          //console.log(str2);
           for (let i = 0; i < str2.length; i++) {
             if (lowStr[lowStr.length - 1] == "零" && str2[i] == "0") {
               continue;
