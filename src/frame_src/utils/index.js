@@ -3,7 +3,7 @@
  */
 
 export function parseTime(time, cFormat) {
-  if (arguments.length === 0) {
+  if (arguments.length === 0||time==null||time==undefined) {//zp新增time判断
     return null
   }
   const format = cFormat || '{y}-{m}-{d} {h}:{i}:{s}'
