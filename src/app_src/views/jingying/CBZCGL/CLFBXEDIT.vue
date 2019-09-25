@@ -627,7 +627,8 @@ export default {
             type: "success",
             duration: 3000
           });
-          setTimeout(this.closetab, 3000);
+          //setTimeout(this.closetab, 3000);
+          this.closetab();
         } else {
           this.$notify({
             position: "bottom-right",
@@ -647,12 +648,13 @@ export default {
             if (response.data.code === 2000) {
               this.$notify({
                 position: "bottom-right",
-                title: response.data.message,
+                title: "成功",
                 message: "操作成功，3秒后返回原界面",
                 type: "success",
                 duration: 3000
               });
-              setTimeout(this.closetab, 3000);
+              //setTimeout(this.closetab, 3000);
+              this.closetab();
             } else {
               this.$notify({
                 position: "bottom-right",
@@ -683,7 +685,7 @@ export default {
               let fd = new FormData();
               fd.append("systemcode", "localhost");
               fd.append("stepid", "");
-              fd.append("flowid", "ABC11A11-EFF2-4588-8FAE-0EE8687874E1");
+              fd.append("flowid", "F24B5FEF-2BCC-4F73-9A29-AA5E333FBFDA");
               fd.append("taskid", "");
               fd.append("instanceid", CLBH);
               fd.append("senderid", this.$store.state.user.userId);
