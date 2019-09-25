@@ -147,6 +147,7 @@
                 <el-button
                   type="warning"
                   size="mini"
+          
                   @click="delRow(item)"
                   v-else-if="!item.XCID"
                 >移除</el-button>
@@ -291,7 +292,6 @@ export default {
   },
   data() {
     return {
-      rindex:0,
       list: [],
       infiledList: [],
       treeData: [],
@@ -370,8 +370,6 @@ export default {
   },
   methods: {
     deleteRow(index, rows) {
-      console.log(index);
-      console.log(rows);
       //删除改行
       this.temp.XCList.splice(index, 1);
     },
@@ -412,7 +410,7 @@ export default {
       }
     },
     addRow() {
-      this.rindex=this.rindex+1;
+     
       let obj = {
         CFRQ: "",
         CFSJ: "",
