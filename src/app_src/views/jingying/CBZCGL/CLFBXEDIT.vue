@@ -622,8 +622,8 @@ export default {
         if (response.data.code === 2000) {
           this.$notify({
             position: "bottom-right",
-            title: response.data.message,
-            message: "操作成功，3秒后返回原界面",
+            title: "成功",
+            message: "操作成功！",
             type: "success",
             duration: 3000
           });
@@ -633,7 +633,7 @@ export default {
           this.$notify({
             position: "bottom-right",
             title: response.data.message,
-            message: "操作失败",
+            message: "操作失败！",
             type: "warning",
             duration: 3000
           });
@@ -649,7 +649,7 @@ export default {
               this.$notify({
                 position: "bottom-right",
                 title: "成功",
-                message: "操作成功，3秒后返回原界面",
+                message: "操作成功！",
                 type: "success",
                 duration: 3000
               });
@@ -659,7 +659,7 @@ export default {
               this.$notify({
                 position: "bottom-right",
                 title: response.data.message,
-                message: "操作失败",
+                message: "操作失败！",
                 type: "warning",
                 duration: 3000
               });

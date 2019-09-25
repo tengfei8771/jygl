@@ -44,7 +44,7 @@
           style="width: 100%"
         >
           <el-table-column label="报销单号" prop="CLBH" width="170" fixed="left"></el-table-column>
-          <el-table-column label="申请单位(部门)" prop="DWBM" width="150"  fixed="left"></el-table-column>
+          <el-table-column label="申请单位(部门)" prop="DWMC" width="150"  fixed="left"></el-table-column>
           <el-table-column label="申请时间" width="150"  fixed="left">
             <template slot-scope="scope">{{scope.row.CJSJ|parseTime}}</template>
           </el-table-column>
