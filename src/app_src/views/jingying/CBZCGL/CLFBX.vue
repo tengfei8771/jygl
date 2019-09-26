@@ -358,7 +358,7 @@ export default {
       });
     },
     handleCreate2() {
-      this.$router.push({ path: "/jingying/CBZCGL/CLFBXEDIT" });
+      this.$router.push({ path: "/jingying/CBZCGL/CLFBXEDIT" , query: { type:"create" }});
     },
     getList() {
       this.listloading = true;
@@ -532,7 +532,7 @@ export default {
       };
       this.$router.push({
         path: "/jingying/CBZCGL/CLFBXEDIT",
-        query: { CLBH: this.temp.CLBH }
+        query: { CLBH: this.temp.CLBH,row:row,type:"update" }
       });
     },
     handleDelete(row) {

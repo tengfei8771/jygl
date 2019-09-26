@@ -55,7 +55,7 @@
           <el-table-column label="应退补金额" prop="YTBJE"></el-table-column>
           <el-table-column align="center" width="270" label="操作" fixed="right">
             <template slot-scope="scope">
-              <el-button type="danger" size="mini" @click="handleDelete(scope.row)">预算调整</el-button>
+              <el-button type="danger" size="mini" @click="handleOpenTZJEDialog(scope.row)" v-if="scope.row.StepId==='5868a173-1f02-4564-aa28-c885bf04e2a2'">预算调整</el-button>
               <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">审批</el-button>
               <el-button type="success" size="mini" @click="handleProcess(scope.row)">查看流程</el-button>
             </template>
@@ -235,6 +235,68 @@
         :src="this.baseUrl+this.frameUrl"
       ></IFRAME>
     </el-dialog>
+    <el-dialog :visible.sync="editTZJEVisible" class="selecttrees" title="调整金额表单" width="1000px">
+      <el-card>
+        <el-form ref="dataFormTZ" :model="tempTZ" label-width="120px" style="width: 99%;">
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="成本计划编号" prop="XMBH">
+                <el-input v-model="tempTZ.XMBH" disabled></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="费用项目" prop="XMMC">
+                <el-input v-model="tempTZ.XMMC" disabled></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="项目总金额" prop="TZQJE">
+                <el-input v-model="tempTZ.TZQJE" disabled></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="已报销金额" prop="YBXJE">
+                <el-input v-model="tempTZ.YBXJE" disabled></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="本次申请金额" prop="BXJE">
+                <el-input v-model="tempTZ.BXJE" disabled></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12"></el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="需调整金额" prop="TZJE">
+                <el-input v-model="tempTZ.TZJE" @input="validataYJK(tempTZ.TZJE)"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="调整时间" prop="TZSJ">
+                <el-date-picker style="width:100%" v-model="tempTZ.TZSJ"></el-date-picker>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12"></el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="调整说明" prop="TZSM">
+                <el-input v-model="tempTZ.TZSM"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <div style="text-align:center;margin-top:20px;">
+          <el-button @click="()=>{this.editTZJEVisible=false;}">取消</el-button>
+          <el-button type="primary" @click="createDataTZ">保存</el-button>
+        </div>
+      </el-card>
+    </el-dialog>
   </div>
 </template>
 
@@ -242,6 +304,7 @@
 import { GetCLXCInfo, GetSPInfo, GetSPXCInfo } from "@/app_src/api/jygl/CLFBX";
 import { sendFlow, backFlow, flowProcess } from "@/app_src/api/jygl/WorkFlow";
 import { UpdateAddCBJHJE, UpdateDesCBJHJE } from "@/app_src/api/jygl/CBJHSQ";
+import { CreateInfo } from "@/app_src/api/jygl/CBJHTZ";
 export default {
   name: "SWKC",
   data() {
@@ -265,7 +328,19 @@ export default {
       editVisible: false,
       dialogStatus: "",
       listloading: false,
-      fac: []
+      fac: [],
+      tempTZ: {
+        XMBH: "",
+        XMMC: "",
+        TZQJE: "",
+        YBXJE: "",
+        BXJE: "",
+        TZJE: "",
+        TZSM: "",
+        TZSJ: "",
+        CJR: this.$store.state.user.userId
+      },
+      editTZJEVisible:false
     };
   },
   methods: {
@@ -320,6 +395,58 @@ export default {
       if (this.$refs["dataForm"] !== undefined) {
         this.$refs["dataForm"].resetFields();
       }
+    },
+     validataYJK(e) {
+      // 通过正则过滤小数点后两位
+      if (!/^-*(([0-9]*)|(([0]\.\d{0,2}|[1-9][0-9]*\.\d{0,2})))$/.test(e)) {
+        this.tempTZ.TZJE = "";
+      }
+    },
+    resetTempTZ() {
+      this.tempTZ.XMBH = "";
+      this.tempTZ.XMMC = "";
+      this.tempTZ.TZQJE = "";
+      this.tempTZ.YBXJE = "";
+      this.tempTZ.BXJE = "";
+      this.tempTZ.TZJE = "";
+      this.tempTZ.TZSM = "";
+      this.tempTZ.TZSJ = "";
+    },
+     handleOpenTZJEDialog(row) {
+      this.resetTempTZ();
+      this.tempTZ.XMBH = row.XMBH;
+      this.tempTZ.XMMC = row.XMMC;
+      this.tempTZ.TZQJE = row.TZHJHZJE; //TZHJHZJE
+      this.tempTZ.YBXJE = row.YBXJE;
+      this.tempTZ.BXJE = row.HJJE;
+      this.tempTZ.TZSJ = new Date(Date.now());
+      this.editTZJEVisible = true;
+    },
+    createDataTZ() {
+      // 创建调整单
+      this.$refs["dataFormTZ"].validate(valid => {
+        if (valid) {
+          CreateInfo(this.tempTZ).then(response => {
+            var message = response.data.message;
+            var title = "失败";
+            var type = "error";
+            if (response.data.code === 2000) {
+              this.getList();
+              title = "成功";
+              type = "保存成功";
+            } else {
+              this.$notify({
+                position: "bottom-right",
+                title:type,
+                message: "保存失败："+message,
+                type: type,
+                duration: 3000
+              });
+            }
+          });
+          this.editTZJEVisible = false;
+        }
+      });
     },
     handleProcess(row) {
       let fd = new FormData();

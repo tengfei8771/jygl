@@ -161,7 +161,7 @@
         <el-button @click="closetab">取消</el-button>
         <el-button v-if="this.$route.query.type=='create'" type="primary" @click="createData">保存</el-button>
         <el-button v-else type="primary" @click="updateData">保存</el-button>
-        <el-button type="success" @click="saveAndSend" v-if="this.$route.query.type=='create'">保存并提交</el-button>
+        <!-- <el-button type="success" @click="saveAndSend" v-if="this.$route.query.type=='create'">保存并提交</el-button> -->
         <!-- <el-button @click="printPdf" type="primary">打印</el-button> -->
       </div>
     </el-card>
@@ -377,6 +377,7 @@ export default {
       listLoading: false,
       SFCW: 0,
       TZHJHZJE: 0, //计划成本调整后总金额
+      YBXJE: 0, //项目中已报销金额
       infiledList: [],
       rules: {
         BXJE: [{ required: true, message: " ", trigger: "change" }],
@@ -441,6 +442,7 @@ export default {
       this.temp.XMBH = row.XMBH;
       this.SFCW = row.SFCW; //是否财务下达
       this.TZHJHZJE = row.TZHJHZJE; //计划成本调整后总金额
+      this.YBXJE = row.YBXJE; //项目中已报销金额
       this.innerVisible = false;
     },
     getnode(node, instanceId) {
@@ -559,7 +561,6 @@ export default {
       e.target.value = e.target.value.match(/^\d*(\.?\d{0,1})/g)[0] || null;
     },
     createData() {
-      console.log(this.temp);
       // // 创建
       if (this.temp.FYXM == "") {
         this.$notify({
@@ -573,13 +574,14 @@ export default {
       }
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
-          console.log();
-          if (this.SFCW !=1) {
-            if (this.temp.BXJE > this.TZHJHZJE) {
+          if (this.SFCW != 1) {
+            if (this.temp.BXJE > this.TZHJHZJE - this.YBXJE) {
               this.$notify({
                 position: "bottom-right",
                 title: "失败",
-                message: "您选的项目是生产计划项目，报销金额不能超过计划总金额！",
+                message:
+                  "您选的项目是生产计划项目，报销金额不能超过项目剩余报销金额：" +
+                  (this.TZHJHZJE - this.YBXJE),
                 type: "warning",
                 duration: 3000
               });
@@ -615,12 +617,15 @@ export default {
     updateData() {
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
-          if (this.SFCW!=1) {//如果是财务下达的项目金额才可以超
-            if (this.temp.BXJE > this.TZHJHZJE) {
+          if (this.SFCW != 1) {
+            //如果是财务下达的项目金额才可以超
+            if (this.temp.BXJE > this.TZHJHZJE - this.YBXJE) {
               this.$notify({
                 position: "bottom-right",
                 title: "失败",
-                message: "您选的项目是生产计划项目，报销金额不能超过计划总金额！",
+                message:
+                  "您选的项目是生产计划项目，报销金额不能超过项目剩余报销金额：" +
+                  (this.TZHJHZJE - this.YBXJE),
                 type: "warning",
                 duration: 3000
               });
@@ -731,11 +736,12 @@ export default {
     if (this.$route.query.type == "create") {
       this.temp.SQSJ = new Date(Date.now());
       this.temp.S_OrgCode = this.$store.state.user.orgCode;
-      this.temp.DWBM=this.$store.state.user.orgName;
+      this.temp.DWBM = this.$store.state.user.orgName;
     } else {
       this.temp = Object.assign({}, this.$route.query.row); // copy obj
-      this.SFCW=this.$route.query.row.SFCW;//如果是财务下达的项目金额才可以超
-      this.TZHJHZJE=this.$route.query.row.TZHJHZJE;//成本计划调整后总金额
+      this.SFCW = this.$route.query.row.SFCW; //如果是财务下达的项目金额才可以超
+      this.TZHJHZJE = this.$route.query.row.TZHJHZJE; //成本计划调整后总金额
+      this.YBXJE = this.$route.query.row.YBXJE; //项目已报销金额
     }
   }
 };

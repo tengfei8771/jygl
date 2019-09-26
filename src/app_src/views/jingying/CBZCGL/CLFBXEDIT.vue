@@ -147,7 +147,6 @@
                 <el-button
                   type="warning"
                   size="mini"
-          
                   @click="delRow(item)"
                   v-else-if="!item.XCID"
                 >移除</el-button>
@@ -185,7 +184,7 @@
         <el-button @click="closetab">取消</el-button>
         <el-button type="primary" @click="createData" v-if="PageFlag===0">保存</el-button>
         <el-button type="primary" @click="UpdateData" v-if="PageFlag===1">保存</el-button>
-        <el-button type="success" @click="saveAndSend">提交</el-button>
+        <!-- <el-button type="success" @click="saveAndSend">提交</el-button> -->
       </div>
     </el-card>
     <el-dialog width="50%" title="项目信息" :visible.sync="innerVisible" append-to-body>
@@ -319,7 +318,7 @@ export default {
         CCKSSJ: "",
         CCJSSJ: "",
         CCTS: 0,
-        DDRQ:"",
+        DDRQ: "",
         HJJE: "",
         HJDX: "",
         YJCLF: "",
@@ -353,7 +352,10 @@ export default {
             ZFLB: "",
             ZFJE: 0
           }
-        ]
+        ],
+        SFCW: 0,
+        TZHJHZJE: 0, //计划成本调整后总金额
+        YBXJE: 0 //项目中已报销金额
       },
       normalizer(node) {
         return {
@@ -410,13 +412,12 @@ export default {
       }
     },
     addRow() {
-     
       let obj = {
         CFRQ: "",
         CFSJ: "",
         CFDD: "",
         CCDD: "",
-        DDRQ:"",
+        DDRQ: "",
         CQTS: 0,
         CQBZ: 0,
         BZJE: 0,
@@ -432,17 +433,17 @@ export default {
       this.temp.XCList.push(obj);
     },
     delRow(item) {
-      if(this.temp.XCList.length===1){
-         this.$notify({
-            position: "bottom-right",
-            title: "提示",
-            message: "必须有一条行程！",
-            type: "warning",
-            duration: 2000
-          });
-          return false;
+      if (this.temp.XCList.length === 1) {
+        this.$notify({
+          position: "bottom-right",
+          title: "提示",
+          message: "必须有一条行程！",
+          type: "warning",
+          duration: 2000
+        });
+        return false;
       }
-      let _index=this.temp.XCList.indexOf(item);
+      let _index = this.temp.XCList.indexOf(item);
       this.temp.XCList.splice(_index, 1);
       this.pickerOptionsList.splice(_index, 1);
       this.getTotal();
@@ -453,6 +454,9 @@ export default {
       this.selected = row;
       this.temp.XMMC = row.XMMC;
       this.temp.XMBH = row.XMBH;
+      this.SFCW = row.SFCW; //是否财务下达
+      this.TZHJHZJE = row.TZHJHZJE; //计划成本调整后总金额
+      this.YBXJE = row.YBXJE; //项目中已报销金额
       this.innerVisible = false;
     },
     getList() {
@@ -523,7 +527,7 @@ export default {
         SKRXM: "",
         CJR: "",
         CJSJ: "",
-        DDRQ:"",
+        DDRQ: "",
         CJSJ: "",
         BJSJ: "",
         userId: this.$store.state.user.userId,
@@ -618,6 +622,20 @@ export default {
       this.$router.go(-1);
     },
     UpdateData() {
+      if (this.SFCW != 1) {
+        if (this.temp.HJJE > this.TZHJHZJE - this.YBXJE) {
+          this.$notify({
+            position: "bottom-right",
+            title: "失败",
+            message:
+              "您选的项目是生产计划项目，报销金额不能超过项目剩余报销金额：" +
+              (this.TZHJHZJE - this.YBXJE),
+            type: "warning",
+            duration: 3000
+          });
+          return false;
+        }
+      }
       UpdateInfo(this.temp).then(response => {
         if (response.data.code === 2000) {
           this.$notify({
@@ -644,6 +662,20 @@ export default {
       // 创建
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
+          if (this.SFCW != 1) {
+            if (this.temp.HJJE > this.TZHJHZJE - this.YBXJE) {
+              this.$notify({
+                position: "bottom-right",
+                title: "失败",
+                message:
+                  "您选的项目是生产计划项目，报销金额不能超过项目剩余报销金额：" +
+                  (this.TZHJHZJE - this.YBXJE),
+                type: "warning",
+                duration: 3000
+              });
+              return false;
+            }
+          }
           CreateInfo(this.temp).then(response => {
             if (response.data.code === 2000) {
               this.$notify({
@@ -720,7 +752,6 @@ export default {
                       });
                     }
                   });
-                  
                 } else {
                   this.$notify({
                     position: "bottom-right",
@@ -894,6 +925,13 @@ export default {
     this.getList();
     this.getOrgDate();
     this.getXMList();
+    if (this.$route.query.type == "create") {
+    } else {
+      console.log(111);
+      this.SFCW = this.$route.query.row.SFCW; //如果是财务下达的项目金额才可以超
+      this.TZHJHZJE = this.$route.query.row.TZHJHZJE; //成本计划调整后总金额
+      this.YBXJE = this.$route.query.row.YBXJE; //项目已报销金额
+    }
   },
   watch: {}
 };
