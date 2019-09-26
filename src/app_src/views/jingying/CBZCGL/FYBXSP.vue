@@ -56,7 +56,7 @@
           <el-table-column label="账户" prop="YHZH" width="120" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column align="center" width="270" label="操作" fixed="right">
             <template slot-scope="scope">
-              <el-button type="danger" size="mini" @click="handleOpenTZJEDialog(scope.row)">预算调整</el-button>
+              <el-button type="danger" size="mini" @click="handleOpenTZJEDialog(scope.row)" v-if="temp.StepId==='6AF91852-B861-4ABB-A90A-A76803D76208'">预算调整</el-button>
               <!-- sd v-if="temp.StepId==='6AF91852-B861-4ABB-A90A-A76803D76208'"-->
               <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">审批</el-button>
               <el-button type="success" size="mini" @click="handleProcess(scope.row)">查看流程</el-button>
