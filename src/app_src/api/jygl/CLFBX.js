@@ -61,3 +61,10 @@ export function GetSPXCInfo(query) {
     params: query
   })
 }
+export function GetYBInfo(query) {
+  return request({
+    url: '/TravelExpense/GetYBInfo',
+    method: 'get',
+    params: query
+  })
+}
