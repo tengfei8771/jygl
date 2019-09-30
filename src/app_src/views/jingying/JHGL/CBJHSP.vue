@@ -99,7 +99,7 @@
               <template slot-scope="scope">
                 <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">审批</el-button>
                 <!-- <el-button type="danger" size="mini" @click="handleDelete(scope.row)">退回</el-button> -->
-                                <el-button
+                <el-button
                   type="success"
                   size="mini"
                   @click="handleProcess(scope.row)"
@@ -214,7 +214,7 @@
                 </el-select>
               </el-form-item>
             </el-col>
-                        <el-col :span="12" v-show="temp.CZWZ==!0">
+            <el-col :span="12" v-show="temp.CZWZ==!0">
               <el-form-item label="物资计划金额" prop="WZJHJE">
                 <el-input v-model="temp.WZJHJE" disabled></el-input>
               </el-form-item>
@@ -296,7 +296,12 @@
       </el-card>
     </el-dialog>
     <el-dialog :visible.sync="workFlowVisible" class="selecttrees" title="查看流程" width="1100px">
-      <IFRAME STYLE="width:1050px;height:720px;" id="roadflow_Completed" name="roadflow_Completed" :src="this.baseUrl+this.frameUrl"></IFRAME>
+      <IFRAME
+        style="width:1050px;height:720px;"
+        id="roadflow_Completed"
+        name="roadflow_Completed"
+        :src="this.baseUrl+this.frameUrl"
+      ></IFRAME>
       <!-- <img src="../../../img/workflow.png" style="width:980px;" /> -->
     </el-dialog>
   </div>
@@ -311,7 +316,12 @@
 import waves from "@/frame_src/directive/waves"; // 水波纹指令
 import { getToken } from "@/frame_src/utils/auth";
 import { GetInfo, GetDetailInfo, UpdateSFCW } from "@/app_src/api/jygl/CBJHSP";
-import { executeFlow, sendFlow, backFlow,flowProcess } from "@/app_src/api/jygl/WorkFlow";
+import {
+  executeFlow,
+  sendFlow,
+  backFlow,
+  flowProcess
+} from "@/app_src/api/jygl/WorkFlow";
 export default {
   name: "CBJHSQP",
   directives: {
@@ -325,8 +335,8 @@ export default {
       rules: {
         SFCW: [{ required: true, message: "请选择类型", trigger: "change" }]
       },
-      baseUrl:process.env.BASE_API,
-      frameUrl:"",
+      baseUrl: process.env.BASE_API,
+      frameUrl: "",
       inServForm: {},
       infiledList: [],
       fildtps: [{ text: "设备", value: "1" }, { text: "材料", value: "2" }],
@@ -362,7 +372,7 @@ export default {
         XMBH: "",
         XMMC: ""
       },
-      temp: {StepId:""},
+      temp: { StepId: "" },
       textMap: {
         update: "审批计划信息",
         create: "添加计划信息"
@@ -412,30 +422,69 @@ export default {
     },
     handleSubmit(temp) {
       //  if (temp.StepId === "457F9912-9002-4DDC-914A-B141698FAECC") {
-       this.$refs["dataForm"].validate(valid => {
+      this.$refs["dataForm"].validate(valid => {
         if (valid) {
-         let fd = new FormData();
-      fd.append("systemcode", "localhost");
-      fd.append("stepid", temp.StepId);
-      //fd.append("flowid", "0273b9ef-9903-4c29-8f1c-e3cf04a00fb7");
-      fd.append("flowid", temp.FlowId);
-      fd.append("taskid", temp.Id);
-      fd.append("instanceid", temp.XMBH);
-      fd.append("senderid", this.$store.state.user.userId);
-      fd.append("tasktitle", temp.XMBH + "成本计划报销审批");
-      fd.append("comment", "");
-      fd.append("type", "submit");
-      fd.append("isFreeSend", false);
-      fd.append("formtype", 0);
-      sendFlow(fd).then(repon => {
-        if (repon.data.code === 2000) {
-          if (temp.StepId.toUpperCase() === "457F9912-9002-4DDC-914A-B141698FAECC") {
+          if (
+            temp.StepId.toUpperCase() === "457F9912-9002-4DDC-914A-B141698FAECC"
+          ) {
             let updateData = {
               XMBH: temp.XMBH,
               sfcw: temp.SFCW
             };
             UpdateSFCW(updateData).then(response => {
               if (response.data.code === 2000) {
+                let fd = new FormData();
+                fd.append("systemcode", "localhost");
+                fd.append("stepid", temp.StepId);
+                //fd.append("flowid", "0273b9ef-9903-4c29-8f1c-e3cf04a00fb7");
+                fd.append("flowid", temp.FlowId);
+                fd.append("taskid", temp.Id);
+                fd.append("instanceid", temp.XMBH);
+                fd.append("senderid", this.$store.state.user.userId);
+                fd.append("tasktitle", temp.XMBH + "成本计划报销审批");
+                fd.append("comment", "");
+                fd.append("type", "submit");
+                fd.append("isFreeSend", false);
+                fd.append("formtype", 0);
+                sendFlow(fd).then(repon => {
+                  if (repon.data.code === 2000) {
+                    this.$notify({
+                      position: "bottom-right",
+                      title: "成功！",
+                      message: "处理成功",
+                      type: "success",
+                      duration: 2000
+                    });
+                    this.editVisible = false;
+                    this.getList();
+                  }
+                });
+              } else {
+                this.$notify({
+                  position: "bottom-right",
+                  title: "失败",
+                  message: response.data.message,
+                  type: "warning",
+                  duration: 2000
+                });
+              }
+            });
+          } else {
+            let fd = new FormData();
+            fd.append("systemcode", "localhost");
+            fd.append("stepid", temp.StepId);
+            //fd.append("flowid", "0273b9ef-9903-4c29-8f1c-e3cf04a00fb7");
+            fd.append("flowid", temp.FlowId);
+            fd.append("taskid", temp.Id);
+            fd.append("instanceid", temp.XMBH);
+            fd.append("senderid", this.$store.state.user.userId);
+            fd.append("tasktitle", temp.XMBH + "成本计划报销审批");
+            fd.append("comment", "");
+            fd.append("type", "submit");
+            fd.append("isFreeSend", false);
+            fd.append("formtype", 0);
+            sendFlow(fd).then(repon => {
+              if (repon.data.code === 2000) {
                 this.$notify({
                   position: "bottom-right",
                   title: "成功！",
@@ -448,40 +497,18 @@ export default {
               } else {
                 this.$notify({
                   position: "bottom-right",
-                  title: "失败",
-                  message: response.data.message,
-                  type: "warning",
+                  title: "失败!",
+                  message: repon.data.message,
+                  type: "error",
                   duration: 2000
                 });
               }
+              this.editVisible = false;
+              this.getList();
             });
-          } else {
-            this.$notify({
-              position: "bottom-right",
-              title: "成功！",
-              message: "处理成功",
-              type: "success",
-              duration: 2000
-            });
-            this.editVisible = false;
-            this.getList();
           }
-        } else {
-          this.$notify({
-            position: "bottom-right",
-            title: "失败!",
-            message: repon.data.message,
-            type: "error",
-            duration: 2000
-          });
         }
-        this.editVisible = false;
-        this.getList();
       });
-        }
-       });
-       //}
-      
     },
     deleteRow(index, rows) {
       //删除改行
@@ -507,17 +534,19 @@ export default {
       };
     },
     handleProcess(row) {
-        let fd = new FormData();
+      let fd = new FormData();
       fd.append("instanceid", row.XMBH);
       flowProcess(fd).then(repon => {
-      if (repon.data.code === 2000) {
-        this.frameUrl="/roadflowcore/FlowTask/Detail?flowid=" + repon.data.data.flowId + "&groupid=" + repon.data.data.groupId 
-             console.log(this.frameUrl); 
-      }
-            this.workFlowVisible = true;
-
-});
-
+        if (repon.data.code === 2000) {
+          this.frameUrl =
+            "/roadflowcore/FlowTask/Detail?flowid=" +
+            repon.data.data.flowId +
+            "&groupid=" +
+            repon.data.data.groupId;
+          console.log(this.frameUrl);
+        }
+        this.workFlowVisible = true;
+      });
     },
     getList() {
       this.listLoading = true;
