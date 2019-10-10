@@ -1174,7 +1174,7 @@ export default {
         XMBH: "",
         XMMC: this.adjusttemp.XMMC,
         userid: this.$store.state.user.userId,
-        type: 1
+        type: 2
       };
       GetInfo(listQuery).then(response => {
         if (response.data.code === 2000) {
@@ -1270,7 +1270,7 @@ export default {
           let arr = [...this.infiledList];
           this.adjusttemp.IS_ADJUSTMENT = 1;
           arr.push(this.adjusttemp);
-          if (this.adjusttemp.TZJE > 0) {
+          if (parseFloat(this.adjusttemp.TZJE) >= 0) {
             CreateInfo(arr).then(response => {
               if (response.data.code === 2000) {
                 this.$notify({
@@ -1296,14 +1296,9 @@ export default {
             if (
               this.adjusttemp.JHZJE -
                 this.adjusttemp.YBXJE +
-                this.adjusttemp.TZJE >
+                parseFloat(this.adjusttemp.TZJE) >
               0
             ) {
-              console.log(
-                this.adjusttemp.JHZJE -
-                  this.adjusttemp.YBXJE +
-                  this.adjusttemp.TZJE
-              );
               CreateInfo(arr).then(response => {
                 if (response.data.code === 2000) {
                   this.$notify({
