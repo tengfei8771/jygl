@@ -39,6 +39,14 @@
             type="primary"
             icon="el-icon-edit"
           >新增</el-button>
+          <el-button
+            size="mini"
+            class="filter-item"
+            style="margin-left: 10px;"
+            @click="handleCreateAdjustment"
+            type="primary"
+            icon="el-icon-edit"
+          >调整</el-button>
         </el-col>
       </el-row>
     </div>
@@ -103,11 +111,16 @@
                 <span>{{scope.row.CZWZ|ChangeFlag}}</span>
               </template>
             </el-table-column>
+            <el-table-column width="100px" align="right" label="是否调整计划">
+              <template slot-scope="scope">
+                <span>{{scope.row.IS_ADJUSTMENT|ChangeFlag}}</span>
+              </template>
+            </el-table-column>
             <!-- <el-table-column width="100px" align="right" label="是否财务下达">
               <template slot-scope="scope">
                 <span>{{scope.row.SFCW|ChangeFlag}}</span>
               </template>
-            </el-table-column> -->
+            </el-table-column>-->
             <el-table-column align="center" width="280" label="操作" fixed="right">
               <template slot-scope="scope">
                 <el-button
@@ -134,7 +147,12 @@
                   @click="handleProcess(scope.row)"
                   v-if="scope.row.PROCESS_STATE!=0"
                 >查看流程</el-button>
-                <el-button type="info" size="mini" @click="revokeSubmit(scope.row)" v-if="scope.row.PROCESS_STATE===1">撤回</el-button>
+                <el-button
+                  type="info"
+                  size="mini"
+                  @click="revokeSubmit(scope.row)"
+                  v-if="scope.row.PROCESS_STATE===1"
+                >撤回</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -229,7 +247,6 @@
                   style="font-size:14px;"
                   :clearable="true"
                   size="mini"
-  
                 />
               </el-form-item>
             </el-col>
@@ -248,7 +265,6 @@
                   style="font-size:14px;"
                   :clearable="true"
                   size="mini"
-   
                 />
               </el-form-item>
             </el-col>
@@ -288,6 +304,18 @@
             <!-- <el-col :span="12">
               <el-form-item label="是否财务下达" prop="SFCW">
                 <el-select style="width:100%;" v-model="temp.SFCW">
+                  <el-option
+                    v-for="(item,key) in selectOptions"
+                    :key="key"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>-->
+            <!-- <el-col :span="12">
+              <el-form-item label="是否为调整计划" prop="IS_ADJUSTMENT">
+                <el-select style="width:100%;" v-model="temp.IS_ADJUSTMENT">
                   <el-option
                     v-for="(item,key) in selectOptions"
                     :key="key"
@@ -406,8 +434,278 @@
       </el-card>
     </el-dialog>
     <el-dialog :visible.sync="workFlowVisible" class="selecttrees" title="流程" width="1100px">
-      <IFRAME STYLE="width:1050px;height:720px;" id="roadflow_Completed" name="roadflow_Completed" :src="this.baseUrl+this.frameUrl"></IFRAME>
+      <IFRAME
+        style="width:1050px;height:720px;"
+        id="roadflow_Completed"
+        name="roadflow_Completed"
+        :src="this.baseUrl+this.frameUrl"
+      ></IFRAME>
       <!-- <img src="../../../img/workflow2.png" style="width:980px;" /> -->
+    </el-dialog>
+    <el-dialog :visible.sync="adjustVisible" title="新建调整计划">
+      <el-collapse v-model="activeNames" @change="handleChange">
+        <el-collapse-item title="项目名称" name="1">
+          <el-select style="width:50%;" v-model="adjusttemp.XMMC" @change="adjustChange">
+            <el-option
+              v-for="(item,key) in XMOptions"
+              :key="key"
+              :label="item.XMCODE+'-'+item.XMMC"
+              :value="item.XMMC"
+            ></el-option>
+          </el-select>
+        </el-collapse-item>
+        <el-collapse-item title="已建项目信息" name="2">
+          <el-card>
+            <el-form :v-model="adjusttemp">
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="项目批次" prop="XMPC">
+                    <el-select
+                      style="width:100%;"
+                      v-model="adjusttemp.XMPC"
+                      @change="selectChange"
+                      disabled
+                    >
+                      <el-option
+                        v-for="(item,key) in BatchOptions"
+                        :key="key"
+                        :label="item.Name"
+                        :value="item.Code"
+                      ></el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="计划年度" prop="JHND">
+                    <el-date-picker
+                      v-model="adjusttemp.JHND"
+                      type="year"
+                      value-format="yyyy-MM-dd"
+                      placeholder="选择年月"
+                      :clearable="true"
+                      style="width:100%"
+                      disabled
+                    ></el-date-picker>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="项目编号" prop="XMCODE">
+                    <el-input v-model="adjusttemp.XMCODE" disabled></el-input>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="项目名称" prop="XMMC">
+                    <el-input v-model="adjusttemp.XMMC" v-if="!finallFlag" disabled></el-input>
+                    <el-select
+                      style="width:100%;"
+                      v-model="adjusttemp.XMMC"
+                      v-else-if="finallFlag"
+                      disabled
+                    >
+                      <el-option
+                        v-for="(item,key) in XMOptions"
+                        :key="key"
+                        :label="adjusttemp.XMCODE+'-'+adjusttemp.XMMC"
+                        :value="adjusttemp.XMMC"
+                      ></el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="项目类别" prop="XMLB">
+                    <treeselect
+                      v-model="adjusttemp.XMLB"
+                      :multiple="false"
+                      :options="treeData"
+                      :load-options="loadOptions"
+                      placeholder="请选择项目类别"
+                      :normalizer="normalizer"
+                      :disable-branch-nodes="false"
+                      noResultsText="未搜索到结果"
+                      noChildrenText=" "
+                      style="font-size:14px;"
+                      :clearable="true"
+                      size="mini"
+                      disabled
+                    />
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="承办单位" prop="CBDW">
+                    <treeselect
+                      v-model="adjusttemp.CBDW"
+                      :multiple="false"
+                      :options="treeData1"
+                      :load-options="loadOptions"
+                      placeholder="请选择部门"
+                      :normalizer="normalizer1"
+                      :disable-branch-nodes="false"
+                      noResultsText="未搜索到结果"
+                      noChildrenText=" "
+                      style="font-size:14px;"
+                      :clearable="true"
+                      size="mini"
+                      disabled
+                    />
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="24">
+                  <el-form-item label="建设内容" prop="JSNR">
+                    <el-input v-model="adjusttemp.JSNR" type="textarea" :rows="3" disabled></el-input>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="计划总金额" prop="JHZJE">
+                    <el-input v-model="adjusttemp.JHZJE" disabled></el-input>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="历史计划金额">
+                    <el-input v-model="adjusttemp.LSJE" disabled></el-input>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="本年计划金额" prop="BNJE">
+                    <el-input v-model="adjusttemp.BNJE" disabled></el-input>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="未来计划金额">
+                    <el-input v-model="adjusttemp.WLJE" disabled></el-input>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="是否有收入" prop="HASINCOME">
+                    <el-select style="width:100%;" v-model="adjusttemp.HASINCOME" disabled>
+                      <el-option
+                        v-for="(item,key) in selectOptions"
+                        :key="key"
+                        :label="item.label"
+                        :value="item.value"
+                      ></el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="是否存在物资" prop="CZWZ">
+                    <el-select style="width:100%;" v-model="adjusttemp.CZWZ" disabled>
+                      <el-option
+                        v-for="(item,key) in selectOptions"
+                        :key="key"
+                        :label="item.label"
+                        :value="item.value"
+                      ></el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12" v-show="adjusttemp.CZWZ==!0">
+                  <el-form-item label="物资计划金额" prop="WZJHJE">
+                    <el-input v-model="adjusttemp.WZJHJE" disabled></el-input>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="24" v-show="adjusttemp.CZWZ==!0">
+                  <el-form
+                    :model="inServForm"
+                    ref="inServForm"
+                    label-width="130px"
+                    size="mini"
+                    highlight-current-row
+                    border
+                  >
+                    <el-form-item label="物资明细" prop="servin">
+                      <el-button type="primary" @click="addRow(infiledList)">新增</el-button>
+                      <el-table
+                        :data="infiledList"
+                        size="mini"
+                        highlight-current-row
+                        border
+                        style="width: 100%"
+                        :header-cell-class-name="tableRowClassName"
+                      >
+                        <el-table-column prop="fildna" label="物资名称">
+                          <template slot-scope="scope">
+                            <el-input size="mini" v-model="scope.row.WZMC"></el-input>
+                          </template>
+                        </el-table-column>
+                        <el-table-column prop="fildna" label="物资数量">
+                          <template slot-scope="scope">
+                            <el-input size="mini" v-model="scope.row.WZSL"></el-input>
+                          </template>
+                        </el-table-column>
+                        <el-table-column prop="fildtp" label="类型">
+                          <template slot-scope="scope">
+                            <el-select v-model="scope.row.WZLX" clearable>
+                              <el-option
+                                v-for="(item,index) in fildtps"
+                                :key="index"
+                                :label="item.text"
+                                :value="item.value"
+                              ></el-option>
+                            </el-select>
+                          </template>
+                        </el-table-column>
+                        <el-table-column prop="remark" label="物资说明">
+                          <template slot-scope="scope">
+                            <el-input size="mini" v-model="scope.row.WZSM"></el-input>
+                          </template>
+                        </el-table-column>
+                        <el-table-column fixed="right" label="操作">
+                          <template slot-scope="scope">
+                            <el-button
+                              type="warning"
+                              @click.native.prevent="deleteRow(scope.$index, infiledList)"
+                              size="small"
+                            >移除</el-button>
+                            <el-button
+                              type="danger"
+                              @click.native.prevent="deleteDetailInfo(scope.$index, infiledList,scope.row)"
+                              size="small"
+                              v-if="scope.row.WZID"
+                            >删除</el-button>
+                          </template>
+                        </el-table-column>
+                      </el-table>
+                    </el-form-item>
+                  </el-form>
+                </el-col>
+              </el-row>
+            </el-form>
+          </el-card>
+        </el-collapse-item>
+        <el-collapse-item title="调整输入栏" name="3">
+          <el-card>
+            <el-form :model="adjusttemp" ref="adjusttemp" :rules="rules1">
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="调整金额" prop="TZJE">
+                    <el-input v-model="adjusttemp.TZJE"></el-input>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <div style="text-align:center">
+                <el-button @click="adjustVisible = false">取消</el-button>
+                <el-button type="primary" @click="createAdjust">保存</el-button>
+              </div>
+            </el-form>
+          </el-card>
+        </el-collapse-item>
+      </el-collapse>
     </el-dialog>
   </div>
 </template>
@@ -420,7 +718,7 @@
 // import {flowSend} from '@/app_src/api/workflow/common.js' //注意路径
 import waves from "@/frame_src/directive/waves"; // 水波纹指令
 import { getToken } from "@/frame_src/utils/auth";
-import { sendFlow,revokeFlow,flowProcess } from "@/app_src/api/jygl/WorkFlow";
+import { sendFlow, revokeFlow, flowProcess } from "@/app_src/api/jygl/WorkFlow";
 import {
   GetInfo,
   CreateInfo,
@@ -452,9 +750,21 @@ export default {
         callback();
       }
     };
+    const ValidateZJE = (rule, value, callback) => {
+      if (
+        parseFloat(this.temp.LSJE) +
+          parseFloat(this.temp.BNJE) +
+          parseFloat(this.temp.WLJE) ==
+        parseFloat(this.temp.JHZJE)
+      ) {
+        callback();
+      } else {
+        return callback(new Error("请认真填写计划总金额的值！"));
+      }
+    };
     return {
-       baseUrl:process.env.BASE_API,
-       frameUrl:"",
+      baseUrl: process.env.BASE_API,
+      frameUrl: "",
       infiledList: [],
       treeData: [],
       treeData1: [],
@@ -462,6 +772,8 @@ export default {
       fildtps: [{ text: "设备", value: "1" }, { text: "材料", value: "2" }],
       tableKey: 0,
       workFlowVisible: false,
+      adjustVisible: false,
+      activeNames: ["1"],
       normalizer(node) {
         return {
           id: node.Code,
@@ -504,7 +816,8 @@ export default {
         ],
         JHZJE: [
           { required: true, message: "请输入计划总金额", trigger: "change" },
-          { validator: changeNumber, trigger: "change" }
+          { validator: changeNumber, trigger: "change" },
+          { validator: ValidateZJE, trigger: "change" }
         ],
         LSJE: [
           { required: true, message: "请输入历史金额", trigger: "change" },
@@ -515,7 +828,7 @@ export default {
           { validator: changeNumber, trigger: "change" }
         ],
         WLJE: [
-          { required: true, message: "请输入蔚来金额", trigger: "change" },
+          { required: true, message: "请输入未来金额", trigger: "change" },
           { validator: changeNumber, trigger: "change" }
         ],
         CZWZ: [
@@ -527,10 +840,26 @@ export default {
         HASINCOME: [
           { required: true, message: "请选择是否有收入", trigger: "change" }
         ],
+        IS_ADJUSTMENT: [
+          { required: true, message: "请选择是否有收入", trigger: "change" }
+        ],
         XMCODE: [
           { required: true, message: "请输入项目编号", trigger: "change" }
         ],
         JHND: [{ required: true, message: "请选择计划年度", trigger: "change" }]
+      },
+      rules1: {
+        XMMC: [
+          { required: true, message: "请输入项目名称", trigger: "change" }
+        ],
+        TZJE: [
+          {
+            requierd: true,
+            message: "请输入调整金额",
+            trigger: "change"
+          },
+          { validator: changeNumber, trigger: "change" }
+        ]
       },
       total: 0,
       listLoading: false,
@@ -557,10 +886,10 @@ export default {
         XMMC: "",
         CBDW: this.$store.state.user.orgCode,
         JSNR: "",
-        JHZJE: "",
-        LSJE: "",
-        BNJE: "",
-        WLJE: "",
+        JHZJE: 0,
+        LSJE: 0,
+        BNJE: 0,
+        WLJE: 0,
         XMPC: "",
         CJR: this.$store.state.user.userId,
         IS_DELETE: 0,
@@ -569,8 +898,33 @@ export default {
         XMLE: "",
         XMCODE: "",
         HASINCOME: "",
-        WZJHJE:"",
-        JHND: ""
+        WZJHJE: "",
+        JHND: "",
+        IS_ADJUSTMENT: 0,
+        TZJE: 0
+      },
+      adjusttemp: {
+        XMBH: "",
+        XMMC: "",
+        CBDW: undefined,
+        JSNR: "",
+        JHZJE: 0,
+        LSJE: 0,
+        BNJE: 0,
+        WLJE: 0,
+        XMPC: "",
+        CJR: "",
+        IS_DELETE: 0,
+        CZWZ: "",
+        SFCW: "",
+        XMLE: "",
+        XMCODE: "",
+        HASINCOME: "",
+        WZJHJE: "",
+        JHND: "",
+        IS_ADJUSTMENT: 1,
+        YBXJE: "",
+        TZJE: 0
       },
       inServForm: {},
       textMap: {
@@ -583,9 +937,8 @@ export default {
     };
   },
   methods: {
-
-    revokeSubmit(row){
-  let fd = new FormData();
+    revokeSubmit(row) {
+      let fd = new FormData();
       fd.append("instanceid", row.XMBH);
       fd.append("senderid", this.$store.state.user.userId);
       fd.append("formtype", 0);
@@ -599,9 +952,8 @@ export default {
             duration: 2000
           });
           this.getList();
-        }
-        else{
-            this.$notify({
+        } else {
+          this.$notify({
             position: "bottom-right",
             title: "失败!",
             message: repon.data.message,
@@ -634,9 +986,8 @@ export default {
             duration: 2000
           });
           this.getList();
-        }
-        else{
-            this.$notify({
+        } else {
+          this.$notify({
             position: "bottom-right",
             title: "失败!",
             message: repon.data.message,
@@ -678,10 +1029,9 @@ export default {
                     duration: 2000
                   });
                   this.getList();
-                  this.editVisible=false;
-                }
-                else{
-                   this.$notify({
+                  this.editVisible = false;
+                } else {
+                  this.$notify({
                     position: "bottom-right",
                     title: "失败！",
                     message: "发起流程失败！",
@@ -726,7 +1076,10 @@ export default {
         this.BatchOptions.findIndex(t => t.Code === val)
       ) {
         this.finallFlag = true;
-        GetYearProject().then(response => {
+        let temp = {
+          userid: this.$store.state.user.userId
+        };
+        GetYearProject(temp).then(response => {
           this.XMOptions = response.data.items;
         });
       } else {
@@ -741,18 +1094,19 @@ export default {
       tableData.push({ WZMC: "", WZSL: "", WZLX: "", WZSM: "" });
     },
     handleProcess(row) {
-
-        let fd = new FormData();
+      let fd = new FormData();
       fd.append("instanceid", row.XMBH);
       flowProcess(fd).then(repon => {
         console.log(repon.data.code);
-      if (repon.data.code === 2000) {
-        this.frameUrl="/roadflowcore/FlowTask/Detail?flowid=" + repon.data.data.flowId + "&groupid=" + repon.data.data.groupId 
-      }
-            this.workFlowVisible = true;
-
-});
-
+        if (repon.data.code === 2000) {
+          this.frameUrl =
+            "/roadflowcore/FlowTask/Detail?flowid=" +
+            repon.data.data.flowId +
+            "&groupid=" +
+            repon.data.data.groupId;
+        }
+        this.workFlowVisible = true;
+      });
     },
     resetTemp() {
       this.temp = {
@@ -760,10 +1114,10 @@ export default {
         XMMC: "",
         CBDW: this.$store.state.user.orgCode,
         JSNR: "",
-        JHZJE: "",
-        LSJE: "",
-        BNJE: "",
-        WLJE: "",
+        JHZJE: 0,
+        LSJE: 0,
+        BNJE: 0,
+        WLJE: 0,
         XMPC: "",
         CJR: this.$store.state.user.userId,
         IS_DELETE: 0,
@@ -772,7 +1126,9 @@ export default {
         XMLE: "",
         XMCODE: "",
         HASINCOME: "",
-        JHND: ""
+        JHND: "",
+        IS_ADJUSTMENT: 0,
+        TZJE: 0
       };
       this.infiledList = [];
     },
@@ -802,6 +1158,31 @@ export default {
         this.$refs["dataForm"].resetFields();
       }
     },
+    handleCreateAdjustment() {
+      this.adjustVisible = true;
+      let temp = {
+        userid: this.$store.state.user.userId
+      };
+      GetYearProject(temp).then(response => {
+        this.XMOptions = response.data.items;
+      });
+    },
+    adjustChange(val) {
+      let listQuery = {
+        limit: 10,
+        page: 1,
+        XMBH: "",
+        XMMC: this.adjusttemp.XMMC,
+        userid: this.$store.state.user.userId,
+        type: 1
+      };
+      GetInfo(listQuery).then(response => {
+        if (response.data.code === 2000) {
+          this.adjusttemp = response.data.items[0];
+        }
+      });
+    },
+    handleChange(val) {},
     handleUpdate(row) {
       this.temp = Object.assign({}, row); // copy obj
       this.editVisible = true;
@@ -883,6 +1264,80 @@ export default {
         }
       });
     },
+    createAdjust() {
+      this.$refs["adjusttemp"].validate(valid => {
+        if (valid) {
+          let arr = [...this.infiledList];
+          this.adjusttemp.IS_ADJUSTMENT = 1;
+          arr.push(this.adjusttemp);
+          if (this.adjusttemp.TZJE > 0) {
+            CreateInfo(arr).then(response => {
+              if (response.data.code === 2000) {
+                this.$notify({
+                  position: "bottom-right",
+                  title: "成功",
+                  message: response.data.message,
+                  type: "success",
+                  duration: 3000
+                });
+                this.getList();
+                this.adjustVisible = false;
+              } else {
+                this.$notify({
+                  position: "bottom-right",
+                  title: "失败",
+                  message: response.data.message,
+                  type: "warning",
+                  duration: 3000
+                });
+              }
+            });
+          } else {
+            if (
+              this.adjusttemp.JHZJE -
+                this.adjusttemp.YBXJE +
+                this.adjusttemp.TZJE >
+              0
+            ) {
+              console.log(
+                this.adjusttemp.JHZJE -
+                  this.adjusttemp.YBXJE +
+                  this.adjusttemp.TZJE
+              );
+              CreateInfo(arr).then(response => {
+                if (response.data.code === 2000) {
+                  this.$notify({
+                    position: "bottom-right",
+                    title: "成功",
+                    message: response.data.message,
+                    type: "success",
+                    duration: 3000
+                  });
+                  this.getList();
+                  this.adjustVisible = false;
+                } else {
+                  this.$notify({
+                    position: "bottom-right",
+                    title: "失败",
+                    message: response.data.message,
+                    type: "warning",
+                    duration: 3000
+                  });
+                }
+              });
+            } else {
+              this.$notify({
+                position: "bottom-right",
+                title: "失败",
+                message: "您输入的金额不符合业务逻辑",
+                type: "warning",
+                duration: 3000
+              });
+            }
+          }
+        }
+      });
+    },
     updateData() {
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
@@ -893,7 +1348,7 @@ export default {
               this.$notify({
                 position: "bottom-right",
                 title: "成功",
-                message: response.data.message,
+                message: "success",
                 type: response.data.message,
                 duration: 3000
               });
@@ -927,7 +1382,7 @@ export default {
               this.$notify({
                 position: "bottom-right",
                 title: "成功",
-                message: response.data.message,
+                message: "success",
                 type: response.data.message,
                 duration: 3000
               });
